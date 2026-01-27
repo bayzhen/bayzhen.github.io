@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陈栢成 - 虚幻引擎客户端工程师 / AI数据工程师</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .resume {
+            background: #fff;
+            padding: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        .contact-info a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        .experience-years {
+            margin-top: 10px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        section {
+            margin-bottom: 35px;
+        }
+
+        h2 {
+            font-size: 1.4em;
+            color: #2c3e50;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 1.15em;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        h4 {
+            font-size: 1em;
+            color: #555;
+            margin: 15px 0 10px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .job-meta {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .job {
+            margin-bottom: 30px;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .skills-list {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 10px 20px;
+        }
+
+        .skill-category {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .publications {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .publications li {
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .publications li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+        }
+
+        .publication-venue {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .highlights {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .highlights ul {
+            margin-left: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .resume {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .job-header {
+                flex-direction: column;
+            }
+
+            .skills-list {
+                grid-template-columns: 1fr;
+            }
+
+            .skill-category {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="resume">
+            <header>
+                <h1>陈栢成</h1>
+                <p class="subtitle">虚幻引擎客户端工程师 / AI数据工程师</p>
+                <div class="contact-info">
+                    <span>深圳市南山区</span>
+                    <span>+86 15541571178</span>
+                    <a href="mailto:baychen354@gmail.com">baychen354@gmail.com</a>
+                    <a href="https://github.com/bayzhen" target="_blank">github.com/bayzhen</a>
+                </div>
+                <p class="experience-years">工作经验：2.2年</p>
+            </header>
+
+            <section>
+                <h2>教育背景</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>学校</th>
+                            <th>专业</th>
+                            <th>学历</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2020.9 - 2023.6</td>
+                            <td>德克萨斯大学阿灵顿分校</td>
+                            <td>计算机科学</td>
+                            <td>硕士</td>
+                        </tr>
+                        <tr>
+                            <td>2020.9 - 2023.6</td>
+                            <td>东北大学</td>
+                            <td>软件工程</td>
+                            <td>硕士</td>
+                        </tr>
+                        <tr>
+                            <td>2015.9 - 2019.6</td>
+                            <td>东北大学</td>
+                            <td>机械工程与自动化</td>
+                            <td>本科</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>专业技能</h2>
+                <div class="skills-list">
+                    <span class="skill-category">虚幻引擎</span>
+                    <span>编辑器功能、打包、UI、VR、移动端</span>
+                    <span class="skill-category">编程语言</span>
+                    <span>C++ / JavaScript / TypeScript / Lua / Python</span>
+                    <span class="skill-category">AI</span>
+                    <span>强化学习、PyTorch、Impala集群训练、gRPC Server</span>
+                </div>
+            </section>
+
+            <section>
+                <h2>工作经历</h2>
+
+                <div class="job">
+                    <div class="job-header">
+                        <h3>创梦天地 · 中台AI项目组 — 数据工程师</h3>
+                        <span class="job-meta">2025.3 - 至今 | 深圳</span>
+                    </div>
+
+                    <h4>核心项目</h4>
+                    <ul>
+                        <li><strong>枪王模式（Gun Master）</strong>：实现上下文、导航、技能逻辑，支持武器动态切换；完成多张地图测试与优化，AI 平均击杀效率提升至 13 分钟完成整局。</li>
+                        <li><strong>推车模式（Payload）</strong>：实现剧本等级调整与防守巡逻优化，完成多张地图数据采集与集成；编写数据可视化工具，提升调优效率。</li>
+                        <li><strong>爆破模式（Bomb Planting）</strong>：独立完成核心剧本开发，修复瞄准与射击逻辑异常，完成上线测试。</li>
+                        <li><strong>团队乱斗/热区模式</strong>：重构角色技能逻辑至面向对象架构，减少冗余代码，提升角色开发效率 30%+。</li>
+                    </ul>
+
+                    <h4>AI研发与优化</h4>
+                    <ul>
+                        <li>优化投掷模型奖励函数，支持高抛投掷、快速出手等策略，解决局部最优问题。</li>
+                        <li>完成战斗、导航、投掷模型训练，适配新地图与复杂场景。</li>
+                    </ul>
+
+                    <h4>工具与平台建设</h4>
+                    <ul>
+                        <li><strong>UE4 自动化采点插件</strong>：支持随机点/掩体点采集、凸包优化与可视化操作，提升采集效率 50%+。</li>
+                        <li><strong>point2covers 系统</strong>：替代传统 cover_view，实现高精度掩体点规划，AI 战斗策略显著增强。</li>
+                        <li><strong>Unity 路线规划工具</strong>：开发并撰写技术文档，提升地图规划与团队协作效率。</li>
+                    </ul>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <h3>创梦天地 · 卡拉彼丘项目组 — UE客户端工程师</h3>
+                        <span class="job-meta">2024.7 - 2025.3 | 深圳</span>
+                    </div>
+
+                    <h4>UI 设计与逻辑开发</h4>
+                    <ul>
+                        <li>负责主角信息界面与捏脸系统 UI 设计与实现。</li>
+                        <li>使用 GAS 实现新手引导流程（跳过逻辑、HUD 特效、视频播放、自适应指引、高亮遮罩等）。</li>
+                        <li>开发并适配爆破模式引导关 UI 界面与动效。</li>
+                        <li>推进宿舍/休息室系统与活动模块开发与优化。</li>
+                    </ul>
+
+                    <h4>场景与视觉表现</h4>
+                    <ul>
+                        <li>实现角色信息场景动画、粒子、摄像机序列控制。</li>
+                        <li>完成捏脸系统镜头切换与序列逻辑。</li>
+                        <li>构建区域切换与时间变化的镜头后处理与粒子特效。</li>
+                    </ul>
+
+                    <h4>次世代家园系统</h4>
+                    <ul>
+                        <li>使用 DynamicMesh 实现曲面墙、楼梯建模。</li>
+                        <li>设计平面挖洞算法与合法碰撞检测。</li>
+                    </ul>
+
+                    <h4>跨平台与性能优化</h4>
+                    <ul>
+                        <li>解决安卓/Mac 打包兼容问题。</li>
+                        <li>开发策划专用编辑器功能与自定义 Detail 面板。</li>
+                        <li>优化跨关卡复制粘贴引用关系，扩展低版本 UE 对 UWidget 异步编辑的支持。</li>
+                    </ul>
+
+                    <h4>多人协作地图编辑</h4>
+                    <ul>
+                        <li>实现地图对象信息数据库存储。</li>
+                        <li>支持多人实时协同编辑，保证引用关系正确。</li>
+                    </ul>
+
+                    <h4>AI 强化学习训练插件开发</h4>
+                    <ul>
+                        <li>搭建 UE 端 Python 与 C++ 通讯机制，实现游戏引擎与训练框架交互。</li>
+                        <li>将 UE 游戏环境转化为可训练环境，支持强化学习实验。</li>
+                        <li>使用 PyTorch + Stable Baselines3 进行训练，提升智能体表现。</li>
+                    </ul>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <h3>完美世界 · 星云项目组 — UE客户端工程师</h3>
+                        <span class="job-meta">2023.6 - 2024.6 | 北京</span>
+                    </div>
+                    <ul>
+                        <li>参与 UI/局内局外系统开发与 BUG 修复（计时、层级显示、房间跳转、剧情流程等）。</li>
+                        <li>与服务器协作优化通信协议与性能。</li>
+                        <li>完成 UI 动效与音效联调。</li>
+                        <li>实现客户端日志埋点，支持漏斗分析与用户行为统计。</li>
+                    </ul>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <h3>字节跳动 · PICO — 实习生</h3>
+                        <span class="job-meta">2022.7 - 2023.1 | 北京</span>
+                    </div>
+                    <ul>
+                        <li><strong>VR游戏优化与移植</strong>：负责 VR 游戏在 PICO 设备上的性能优化与移植，涵盖 Gameplay、光照、材质等方面的优化；完成 PC 版本向安卓平台的打包（apk/obb配置）与资源重新安排；重写输入接口与 UI，适配 VR 设备交互体验。</li>
+                        <li><strong>平台SDK接入</strong>：完成平台成就、排行榜、云存档、语音等功能的 SDK 集成。</li>
+                        <li><strong>技术支持自动化</strong>：使用 Python 编写爬虫收集 PICO 网站文档数据，基于 ChatGPT 微调训练自动回复机器人。</li>
+                        <li><strong>VR硬件新功能适配</strong>：参与眼球追踪、表情识别等 PICO 硬件新功能的 UE Demo 实现。</li>
+                        <li><strong>游戏项目本地化</strong>：负责移植项目的本地化流程，实现语言切换 UI 与逻辑。</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>论文发表</h2>
+                <ul class="publications">
+                    <li><em>A Survey of Markov Model in Reinforcement Learning</em> — <span class="publication-venue">ICAIIC 2022</span></li>
+                    <li><em>A RL Sampling Optimization Method Based on Training Value</em> — <span class="publication-venue">ICITDA 2023</span></li>
+                    <li><em>An Approach to Optimize Replay Buffer in Value-Based Reinforcement Learning</em> — <span class="publication-venue">SoSE'23</span></li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>亮点</h2>
+                <div class="highlights">
+                    <ul>
+                        <li>主导并完成<strong>两个核心模式 AI 研发与上线</strong>（推车、枪王模式）</li>
+                        <li>开发<strong>通用工具链与插件</strong>，显著提升团队效率</li>
+                        <li>兼顾 <strong>AI 训练与游戏逻辑设计</strong>，大幅增强 AI 对复杂场景的适应与表现力</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
