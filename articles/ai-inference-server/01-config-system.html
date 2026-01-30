@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置系统 - 游戏AI推理服务设计</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        article code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.9em; }
+        article pre { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 0.85em; line-height: 1.5; }
+        article pre code { background: none; padding: 0; color: inherit; }
+        article table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        article th, article td { border: 1px solid #ecf0f1; padding: 10px; text-align: left; }
+        article th { background: #f8f9fa; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        .nav-links a:hover { text-decoration: underline; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/resume.html">简历</a></li>
+            <li><a href="/articles/">文章</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/ai-inference-server/">游戏AI推理服务</a> <span>/</span>
+            配置系统
+        </div>
+
+        <article>
+            <h1>配置系统</h1>
+            <div class="article-meta">
+                <span class="tag">配置管理</span>
+                <span class="tag">热更新</span>
+                <span class="tag">双缓冲</span>
+            </div>
+
+            <h2>1. 概述</h2>
+            <p>配置系统支持两种配置模式：</p>
+            <ul>
+                <li><strong>静态配置</strong>：启动时从本地文件加载，不支持运行时更新</li>
+                <li><strong>热更新配置</strong>：从配置中心加载，支持运行时动态更新</li>
+            </ul>
+            <p>核心特性：</p>
+            <ul>
+                <li>双缓冲机制实现无锁读取</li>
+                <li>配置中心集成支持配置推送</li>
+                <li>宏驱动的自动注册</li>
+            </ul>
+
+            <h2>2. ConfigManager 设计</h2>
+
+            <h3>2.1 类结构</h3>
+            <pre><code>class ConfigManager {
+  MAKE_SINGLETON(ConfigManager);
+
+ public:
+  using ReloadFunc = std::function&lt;void(const YAML::Node&)&gt;;
+
+  struct ModuleConfig {
+    std::string name_;      // 模块名（YAML 中的 key）
+    ReloadFunc func_;       // 配置更新回调函数
+  };
+
+  // 初始化：连接配置中心、加载配置
+  bool Initialize();
+
+  // 注册热更新配置
+  bool RegisterReloadableConfig(const std::string& file_name,
+                                const std::string& module_name,
+                                ReloadFunc func);
+
+  // 注册静态配置
+  bool RegisterStaticConfig(const std::string& file_name,
+                            const std::string& module_name,
+                            ReloadFunc func);
+
+ private:
+  // 按文件名组织的模块注册表
+  std::unordered_map&lt;std::string, std::vector&lt;ModuleConfig&gt;&gt; reloadable_modules_by_file_;
+  std::unordered_map&lt;std::string, std::vector&lt;ModuleConfig&gt;&gt; static_modules_by_file_;
+
+  std::mutex update_mutex_;  // 更新互斥锁
+};</code></pre>
+
+            <h3>2.2 单例模式实现</h3>
+            <pre><code>#define MAKE_SINGLETON(ClassName)                  \
+ public:                                           \
+  ClassName(const ClassName&) = delete;            \
+  ClassName& operator=(const ClassName&) = delete; \
+  ClassName(ClassName&&) = delete;                 \
+  ClassName& operator=(ClassName&&) = delete;      \
+                                                   \
+ protected:                                        \
+  ClassName() = default;                           \
+  ~ClassName() = default;                          \
+                                                   \
+ public:                                           \
+  static ClassName* GetInstance() {                \
+    static ClassName instance;  // C++11 Magic Statics，线程安全 \
+    return &instance;                              \
+  }</code></pre>
+
+            <h2>3. 静态配置 vs 热更新配置</h2>
+            <table>
+                <tr><th>特性</th><th>静态配置</th><th>热更新配置</th></tr>
+                <tr><td>加载时机</td><td>启动时</td><td>启动时 + 运行时</td></tr>
+                <tr><td>数据源</td><td>本地文件</td><td>配置中心</td></tr>
+                <tr><td>更新方式</td><td>重启服务</td><td>配置推送</td></tr>
+                <tr><td>线程安全</td><td>无需特殊处理</td><td>双缓冲机制</td></tr>
+                <tr><td>典型用途</td><td>模型路径、OBJ 配置</td><td>日志级别、游戏参数</td></tr>
+            </table>
+
+            <h3>3.1 注册宏定义</h3>
+            <pre><code>// 注册热更新配置
+#define REGISTER_RELOADABLE_CONFIG(file_name, module_name, ReloadFunc)        \
+  static bool reloadable_config_##module_name =                               \
+      ConfigManager::GetInstance()->RegisterReloadableConfig(                 \
+          file_name, #module_name, [](const YAML::Node& node) { ReloadFunc(node); });
+
+// 注册静态配置
+#define REGISTER_STATIC_CONFIG(module_name, ReloadFunc)                       \
+  static bool static_config_##module_name =                                   \
+      ConfigManager::GetInstance()->RegisterStaticConfig(                     \
+          kStaticConfigPath, #module_name,
+          [](const YAML::Node& node) { ReloadFunc(node); });</code></pre>
+
+            <h3>3.2 使用示例</h3>
+            <pre><code>// 热更新配置
+REGISTER_RELOADABLE_CONFIG("server.yaml", log, [](const YAML::Node& node) {
+  // 1. 获取可写的配置对象
+  auto& conf = LoggerConfig::Writable();
+
+  // 2. 从 YAML 解析
+  conf = node.as&lt;LoggerConfig&gt;();
+
+  // 3. 切换为活跃配置
+  LoggerConfig::SwitchActive();
+});
+
+// 静态配置
+REGISTER_STATIC_CONFIG(model, [](const YAML::Node& config) {
+  ModelConfig::GetInstance()->Initialize(config);
+});</code></pre>
+
+            <h2>4. EnableDoubleStore 双缓冲机制</h2>
+
+            <h3>4.1 设计目标</h3>
+            <ul>
+                <li><strong>无锁读取</strong>：读线程不需要获取锁</li>
+                <li><strong>原子切换</strong>：写完成后瞬间切换</li>
+                <li><strong>引用计数</strong>：确保安全释放</li>
+            </ul>
+
+            <h3>4.2 类结构</h3>
+            <pre><code>template &lt;typename TStore&gt;
+class EnableDoubleStore {
+ public:
+  // 获取可写的缓冲区（非活跃的那个）
+  static TStore& Writable() { return double_.Writable(); }
+
+  // 切换活跃缓冲区
+  static void SwitchActive() { double_.SwitchActive(); }
+
+  // 获取活跃缓冲区的共享指针
+  static Shared Readable() { return double_.Readable(); }
+
+ private:
+  static DoubleStore&lt;TStore&gt; double_;
+};</code></pre>
+
+            <h3>4.3 DoubleStore 实现</h3>
+            <pre><code>template &lt;typename TStore&gt;
+class DoubleStore {
+ public:
+  // 获取可写缓冲区（自旋等待引用计数为 0）
+  TStore& Writable() {
+    size_t idx_spare = active_first_otherwise_second_ ? 1 : 0;
+
+    while (stores_[idx_spare].refcnt_ > 0) {
+      std::this_thread::sleep_for(1ms);  // 等待读者释放
+    }
+
+    stores_[idx_spare].store_ = TStore{};  // 清空
+    return stores_[idx_spare].store_;
+  }
+
+  // 切换活跃缓冲区
+  void SwitchActive() {
+    active_first_otherwise_second_ = !active_first_otherwise_second_;
+  }
+
+  // 获取可读缓冲区（原子增加引用计数）
+  Shared Readable() {
+    size_t idx_active = 0;
+
+    for (;;) {
+      idx_active = active_first_otherwise_second_ ? 0 : 1;
+      ++stores_[idx_active].refcnt_;  // 增加引用计数
+
+      // 检查切换竞态
+      if (idx_active == (active_first_otherwise_second_ ? 0 : 1)) {
+        break;
+      } else {
+        --stores_[idx_active].refcnt_;  // 回退并重试
+      }
+    }
+
+    Shared holder;
+    holder.p_store_ = &stores_[idx_active].store_;
+    holder.p_refcnt_ = &stores_[idx_active].refcnt_;
+    return holder;
+  }
+
+ private:
+  std::atomic_bool active_first_otherwise_second_;
+  InnerStore stores_[2];  // 两个缓冲区
+};</code></pre>
+
+            <h3>4.4 使用示例</h3>
+            <pre><code>// 配置类定义
+class LoggerConfig : public EnableDoubleStore&lt;LoggerConfig&gt; {
+ public:
+  uint16_t Level() const { return level_; }
+  std::string Pattern() const { return pattern_; }
+
+ private:
+  uint16_t level_;
+  std::string pattern_;
+};
+
+// 写入流程（在配置更新回调中）
+auto& conf = LoggerConfig::Writable();  // 获取非活跃缓冲区
+conf.SetLevel(newLevel);                 // 更新
+conf.SetPattern(newPattern);
+LoggerConfig::SwitchActive();            // 原子切换
+
+// 读取流程（在任意读线程中）
+auto readable = LoggerConfig::Readable();  // 获取活跃缓冲区
+uint16_t level = readable->Level();        // 安全读取
+// readable 析构时自动减少引用计数</code></pre>
+
+            <h2>5. 配置更新流程</h2>
+            <pre><code>配置中心                    ConfigListener          ConfigManager
+     │                           │                          │
+     │ ──────配置变更推送────────>│                          │
+     │                           │                          │
+     │                      receiveConfigInfo()              │
+     │                           │─────UpdateConfig()───────>│
+     │                           │                     lock_guard(mutex)
+     │                           │                     YAML::Load(content)
+     │                           │                     遍历所有回调函数
+     │                           │                     module.func_(node)
+     │                           │                          │
+     │                           │  <─────返回ok────────────│</code></pre>
+
+            <h2>6. 配置文件结构示例</h2>
+            <pre><code># server.yaml
+global:
+  spdlog:
+    queue_size: 8192
+    thread_num: 2
+    flush_interval: 3
+
+log:
+  level: 1
+  pattern: "[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v"
+  file_size: 104857600
+  file_num: 10
+
+metric:
+  enable: true
+  port: 10188
+
+server:
+  port: 50051
+  worker_thread_num: 8
+  keepalive_time: 10000
+  keepalive_timeout: 20000
+
+game:
+  default_level: 5
+
+model:
+  registers:
+    - context: "battle_4v4"
+      path: "./config/model/battle_4v4"
+      models: [0, 1, 2, 5, 10, 11, 12]
+
+rule:
+  stages:
+    - name: "pre"
+      contexts:
+        - name: "battle_4v4"
+          modes:
+            - id: 0
+              rules: ["safe_nav", "auto_reload"]</code></pre>
+
+            <h2>7. YAML 工具函数</h2>
+            <pre><code>namespace YAML {
+
+// 安全的 YAML 解析（支持链式访问）
+template &lt;typename T, typename... Keys&gt;
+std::optional&lt;T&gt; SafeAs(const YAML::Node& node, const Keys&... keys) {
+  YAML::Node current = YAML::Clone(node);
+
+  for (const auto& key : std::initializer_list&lt;std::string&gt;{keys...}) {
+    if (!current.IsMap() || !current[key].IsDefined()) {
+      return std::nullopt;
+    }
+    current = current[key];
+  }
+
+  try {
+    return current.as&lt;T&gt;();
+  } catch (const YAML::BadConversion&) {
+    return std::nullopt;
+  }
+}
+
+}  // namespace YAML
+
+// 使用示例
+auto level = YAML::SafeAs&lt;uint16_t&gt;(node, "level").value_or(1);
+auto port = YAML::SafeAs&lt;uint16_t&gt;(node, "service", "port").value_or(8080);
+auto ids = YAML::SafeAs&lt;std::vector&lt;int&gt;&gt;(node, "models").value_or({});</code></pre>
+
+            <h2>8. 配置系统流程图</h2>
+            <pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                       应用启动                                        │
+└────────────────────────────┬────────────────────────────────────────┘
+                             │
+                             ▼
+        ┌────────────────────────────────────────┐
+        │ ConfigManager::GetInstance()->Initialize()
+        └────────────────────┬───────────────────┘
+                             │
+              ┌──────────────┴──────────────┐
+              │                             │
+              ▼                             ▼
+    ┌──────────────────────┐    ┌──────────────────────┐
+    │ 初始化配置中心客户端  │    │ 收集已注册的模块      │
+    │ (通过环境变量配置)     │    │ (REGISTER_* 宏)      │
+    └──────────────────────┘    └──────────────────────┘
+              │
+              ▼
+    ┌──────────────────────────────────┐
+    │ 注册配置监听器                    │
+    └──────────────────────┬───────────┘
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+              ▼                         ▼
+    ┌─────────────────────┐   ┌────────────────────┐
+    │  加载热更新配置     │   │   加载静态配置     │
+    └─────────────────────┘   └────────────────────┘
+              │                         │
+              └────────────┬────────────┘
+                           │
+                           ▼
+                  ┌──────────────────────┐
+                  │ UpdateConfig()       │
+                  │ 1. YAML::Load()      │
+                  │ 2. lock_guard()      │
+                  │ 3. 遍历回调函数       │
+                  │ 4. Writable()        │
+                  │ 5. SwitchActive()    │
+                  └──────────────────────┘</code></pre>
+
+            <h2>9. 扩展点：添加新配置模块</h2>
+            <pre><code>// 1. 创建配置类
+class MyConfig : public EnableDoubleStore&lt;MyConfig&gt; {
+ public:
+  int Value() const { return value_; }
+  void SetValue(int value) { value_ = value; }
+ private:
+  int value_;
+};
+
+// 2. 注册配置
+REGISTER_RELOADABLE_CONFIG("server.yaml", my_module, [](const YAML::Node& node) {
+  auto& conf = MyConfig::Writable();
+  conf.SetValue(YAML::SafeAs&lt;int&gt;(node, "value").value_or(0));
+  MyConfig::SwitchActive();
+});
+
+// 3. 在 YAML 中添加配置
+// my_module:
+//   value: 42
+
+// 4. 使用配置
+auto conf = MyConfig::Readable();
+int value = conf->Value();</code></pre>
+
+            <div class="nav-links">
+                <a href="00-architecture-overview.html">← 上一篇: 架构概述</a>
+                <a href="02-grpc-service.html">下一篇: gRPC服务层 →</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

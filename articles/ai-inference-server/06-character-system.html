@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色系统 - 游戏AI推理服务设计</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        article code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.9em; }
+        article pre { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 0.85em; line-height: 1.5; }
+        article pre code { background: none; padding: 0; color: inherit; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav><ul><li><a href="/">首页</a></li><li><a href="/resume.html">简历</a></li><li><a href="/articles/">文章</a></li></ul></nav>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/ai-inference-server/">游戏AI推理服务</a> <span>/</span>
+            角色系统
+        </div>
+        <article>
+            <h1>角色系统</h1>
+            <div class="article-meta">
+                <span class="tag">技能检查</span>
+                <span class="tag">继承模式</span>
+                <span class="tag">工厂模式</span>
+            </div>
+
+            <h2>1. 概述</h2>
+            <p>角色系统负责管理游戏中每个英雄角色的特定逻辑，包括技能检查、技能使用决策、模型选择等。系统采用继承和工厂模式，支持25+个独特角色实现。</p>
+
+            <h2>2. 架构图</h2>
+            <pre><code>┌─────────────────────────────────────────────────────────────┐
+│                      CharacterFactory                        │
+│                   (ClassFactory&lt;CharacterBase&gt;)              │
+└─────────────────────────────────┬───────────────────────────┘
+                                  │ 创建
+                                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       CharacterBase                          │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  virtual MatchType CheckQ(BaseContext*)             │   │
+│  │  virtual MatchType CheckQDouble(BaseContext*)       │   │
+│  │  virtual MatchType CheckC(BaseContext*)             │   │
+│  │  virtual MatchType CheckCDouble(BaseContext*)       │   │
+│  │  virtual MatchType CheckX(BaseContext*)             │   │
+│  │  virtual bool SelectModel(BaseContext*)             │   │
+│  │  virtual bool SelectSupply(BaseContext*)            │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────┬───────────────────────────┘
+                                  │ 继承
+        ┌─────────────────────────┼─────────────────────────┐
+        ▼                         ▼                         ▼
+┌───────────────┐        ┌───────────────┐         ┌───────────────┐
+│  Character A  │        │  Character B  │         │  Character C  │
+├───────────────┤        ├───────────────┤         ├───────────────┤
+│ CheckQ()      │        │ CheckQ()      │         │ CheckQ()      │
+│ CheckC()      │        │ CheckC()      │         │ CheckC()      │
+│ CheckX()      │        │ CheckX()      │         │ CheckX()      │
+└───────────────┘        └───────────────┘         └───────────────┘</code></pre>
+
+            <h2>3. 技能类型枚举</h2>
+            <pre><code>enum SkillCheckType {
+  None = 0,
+  Q,          // Q技能
+  QDouble,    // Q双击技能
+  X,          // X终极技能
+  C,          // C技能
+  CDouble,    // C双击技能
+};</code></pre>
+
+            <h2>4. CharacterBase 基类</h2>
+            <pre><code>class CharacterBase {
+ public:
+  CharacterBase() {};
+
+  // 游戏模式相关检查
+  virtual MatchType CheckGameModeSkill(BaseContext* ctx, const GameModeType& game_mode);
+  virtual bool SelectSupply(BaseContext* ctx);
+  virtual bool UpdateTarget(BaseContext* ctx);
+
+  // 技能检查接口 - 子类重写实现角色特定逻辑
+  virtual MatchType CheckX(BaseContext* ctx);
+  virtual MatchType CheckQ(BaseContext* ctx);
+  virtual MatchType CheckQDouble(BaseContext* ctx);
+  virtual MatchType CheckC(BaseContext* ctx);
+  virtual MatchType CheckCDouble(BaseContext* ctx);
+
+  // 规则检查
+  virtual MatchType CheckPreRule(BaseContext* ctx);
+  virtual MatchType CheckPostRule(BaseContext* ctx);
+
+  // 模型选择
+  virtual bool SelectModel(BaseContext* ctx);
+
+  // 通用技能使用辅助函数
+  MatchType StandFocusUseSkill(BaseContext* ctx, Vector target, int min_hold = 0,
+                               SkillType skill_type = SkillType::Q_SKILL);
+  bool HasSetRightSkillTarget(BaseContext* ctx);
+
+ protected:
+  // 技能函数映射表
+  const std::unordered_map&lt;SkillCheckType, std::function&lt;MatchType(CharacterBase*, BaseContext*)&gt;&gt; skillMap = {
+      {SkillCheckType::Q, &CharacterBase::CheckQ},
+      {SkillCheckType::QDouble, &CharacterBase::CheckQDouble},
+      {SkillCheckType::C, &CharacterBase::CheckC},
+      {SkillCheckType::X, &CharacterBase::CheckX},
+      {SkillCheckType::CDouble, &CharacterBase::CheckCDouble},
+  };
+
+  // 获取游戏模式对应的技能检查数组
+  virtual std::vector&lt;SkillCheckType&gt; GetGameModeSkillChecks(const GameModeType& game_mode);
+
+  // 获取检查技能的权重，权重越大，越先检查
+  virtual float GetSkillCheckWeight(const SkillCheckType& skill_check_type);
+};</code></pre>
+
+            <h2>5. 技能检查流程</h2>
+            <pre><code>┌──────────────────────────────────────────────────────────────┐
+│                    CheckGameModeSkill()                       │
+└─────────────────────────────┬────────────────────────────────┘
+                              │
+                              ▼
+┌──────────────────────────────────────────────────────────────┐
+│              GetGameModeSkillChecks(game_mode)                │
+│              返回: [Q, C, X, QDouble, CDouble]                │
+└─────────────────────────────┬────────────────────────────────┘
+                              │
+                              ▼
+┌──────────────────────────────────────────────────────────────┐
+│           按 GetSkillCheckWeight() 排序技能列表               │
+└─────────────────────────────┬────────────────────────────────┘
+                              │
+                              ▼
+              ┌───────────────────────────────┐
+              │  遍历技能列表                  │
+              └───────────────┬───────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+  ┌──────────┐          ┌──────────┐          ┌──────────┐
+  │ CheckQ() │          │ CheckC() │          │ CheckX() │
+  └────┬─────┘          └────┬─────┘          └────┬─────┘
+       │                     │                     │
+       ▼                     ▼                     ▼
+┌─────────────┐       ┌─────────────┐       ┌─────────────┐
+│ MatchType:: │       │ MatchType:: │       │ MatchType:: │
+│ MATCH/NONE  │       │ MATCH/NONE  │       │ MATCH/NONE  │
+└─────────────┘       └─────────────┘       └─────────────┘</code></pre>
+
+            <h2>6. 角色实现示例</h2>
+            <pre><code>class SupportCharacter : public CharacterBase {
+ public:
+  SupportCharacter() = default;
+
+  // 重写Q技能检查
+  MatchType CheckQ(BaseContext* ctx) override {
+    // 检查Q技能CD
+    if (!ctx->BotState().m_state.m_skillInfo.m_qSkill.m_isReady) {
+      return MatchType::NONE;
+    }
+
+    // 检查是否有合适目标
+    auto& enemies = ctx->getEnemies();
+    if (enemies.empty()) {
+      return MatchType::NONE;
+    }
+
+    // 获取预设的投掷点位
+    auto& lineups = DATA_MANAGER()->GetCharacterQLineups(ctx->GetMapId());
+    // ... 选择最优投掷点
+
+    return MatchType::MATCH;
+  }
+
+  // 重写C技能检查
+  MatchType CheckC(BaseContext* ctx) override {
+    // C技能逻辑
+    // ...
+    return MatchType::NONE;
+  }
+
+  // 重写X终极技能检查
+  MatchType CheckX(BaseContext* ctx) override {
+    // 检查终极技能是否就绪
+    if (!ctx->BotState().m_state.m_skillInfo.m_xSkill.m_isReady) {
+      return MatchType::NONE;
+    }
+
+    // 检查使用条件
+    // ...
+    return MatchType::MATCH;
+  }
+};
+
+// 工厂注册
+REGISTER_CLASS(CharacterBase, SupportCharacter, "support");</code></pre>
+
+            <h2>7. 技能权重机制</h2>
+            <pre><code>// 不同角色可重写此方法返回不同权重
+float CharacterBase::GetSkillCheckWeight(const SkillCheckType& skill_check_type) {
+  // 默认权重
+  switch (skill_check_type) {
+    case SkillCheckType::X:
+      return 100.0f;  // 终极技能优先级最高
+    case SkillCheckType::Q:
+      return 50.0f;
+    case SkillCheckType::C:
+      return 40.0f;
+    case SkillCheckType::QDouble:
+      return 30.0f;
+    case SkillCheckType::CDouble:
+      return 20.0f;
+    default:
+      return 0.0f;
+  }
+}
+
+// CheckGameModeSkill 中的排序逻辑
+std::vector&lt;SkillCheckType&gt; skills = GetGameModeSkillChecks(game_mode);
+
+// 按权重降序排序
+std::sort(skills.begin(), skills.end(), [this](auto& a, auto& b) {
+  return GetSkillCheckWeight(a) > GetSkillCheckWeight(b);
+});
+
+// 依次检查
+for (auto& skill : skills) {
+  auto it = skillMap.find(skill);
+  if (it != skillMap.end()) {
+    MatchType result = it->second(this, ctx);
+    if (result == MatchType::MATCH) {
+      return result;
+    }
+  }
+}</code></pre>
+
+            <h2>8. 通用投掷技能检查</h2>
+            <pre><code>MatchType CharacterBase::CheckUniversalThrowQSkill(
+    BaseContext* ctx,
+    int skill_id,
+    float thresNearEnemyDist,
+    float minusZ,
+    int thresLastActiveCFrame) {
+
+  // 1. 检查技能CD
+  auto& skill = ctx->BotState().m_state.m_skillInfo.m_qSkill;
+  if (!skill.m_isReady) return MatchType::NONE;
+
+  // 2. 检查最近敌人距离
+  auto& nearestEnemy = ctx->getNearestEnemy();
+  if (nearestEnemy.first &lt; thresNearEnemyDist) {
+    return MatchType::NONE;  // 敌人太近，不使用投掷物
+  }
+
+  // 3. 检查上次使用间隔
+  if (ctx->FrameNum() - ctx->GetKeepActiveQFrame() &lt; thresLastActiveCFrame) {
+    return MatchType::NONE;
+  }
+
+  // 4. 设置技能目标并返回匹配
+  // ctx->GetAction()->SetSkillTarget(...)
+
+  return MatchType::MATCH;
+}</code></pre>
+
+            <h2>9. 与其他系统的交互</h2>
+            <pre><code>// 与规则系统交互
+class RuleManager {
+  // 调用角色的规则检查
+  character->CheckPreRule(ctx);
+  character->CheckPostRule(ctx);
+};
+
+// 与数据系统交互
+auto& qLineups = DATA_MANAGER()->GetCharacterQLineups(mapId);
+auto& xLineups = DATA_MANAGER()->GetCharacterXLineups(mapId);
+auto& cLineups = DATA_MANAGER()->GetCharacterCLineups(mapId);
+
+// 与上下文系统交互
+const auto& state = ctx->BotState();
+auto& enemies = ctx->getEnemies();
+ctx->AppendAction(skillAction);</code></pre>
+
+            <h2>10. 扩展点：添加新角色</h2>
+            <pre><code>// 1. 创建角色头文件
+class NewCharacter : public CharacterBase {
+ public:
+  NewCharacter() = default;
+
+  MatchType CheckQ(BaseContext* ctx) override;
+  MatchType CheckC(BaseContext* ctx) override;
+  MatchType CheckX(BaseContext* ctx) override;
+
+ private:
+  // 角色特有成员
+};
+
+// 2. 实现角色逻辑
+MatchType NewCharacter::CheckQ(BaseContext* ctx) {
+  // 实现Q技能逻辑
+  return MatchType::NONE;
+}
+
+// 3. 注册到工厂
+REGISTER_CLASS(CharacterBase, NewCharacter, "new_character");
+
+// 4. 添加技能配置数据（如需要）</code></pre>
+
+            <div class="nav-links">
+                <a href="05-action-system.html">← 上一篇: 动作系统</a>
+                <a href="07-context-system.html">下一篇: 上下文系统 →</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

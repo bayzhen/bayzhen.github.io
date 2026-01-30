@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D渲染系统 - 游戏AI推理服务设计</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        article code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.9em; }
+        article pre { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 0.85em; line-height: 1.5; }
+        article pre code { background: none; padding: 0; color: inherit; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav><ul><li><a href="/">首页</a></li><li><a href="/resume.html">简历</a></li><li><a href="/articles/">文章</a></li></ul></nav>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/ai-inference-server/">游戏AI推理服务</a> <span>/</span>
+            3D渲染系统
+        </div>
+        <article>
+            <h1>3D渲染系统</h1>
+            <div class="article-meta">
+                <span class="tag">OSMesa</span>
+                <span class="tag">深度图</span>
+                <span class="tag">BVH射线追踪</span>
+            </div>
+
+            <h2>1. 概述</h2>
+            <p>3D渲染系统提供离屏渲染能力，用于生成深度图和执行射线追踪(LineTrace)。系统使用OSMesa进行离屏OpenGL渲染，支持多线程并发渲染，生成的深度信息用于AI决策（如视野判断、障碍物检测）。</p>
+
+            <h2>2. 架构图</h2>
+            <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                        ObjManager                                │
+│                     (Singleton Pattern)                          │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │    obj_renders_: unordered_map&lt;int, shared_ptr&lt;ObjRender&gt;&gt;  ││
+│  │  ┌───────────────────────────────────────────────────────┐ ││
+│  │  │  MapID → ObjRender                                    │ ││
+│  │  │  ┌─────────────────────────────────────────────────┐ │ ││
+│  │  │  │ 1001 (MAP_A)  → ObjRender{mesh, textures}       │ │ ││
+│  │  │  │ 1002 (MAP_B)  → ObjRender{mesh, textures}       │ │ ││
+│  │  │  │ ...           → ...                             │ │ ││
+│  │  │  └─────────────────────────────────────────────────┘ │ ││
+│  │  └───────────────────────────────────────────────────────┘ ││
+│  └─────────────────────────────────────────────────────────────┘│
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │  thread_local ObjContext obj_context_                       ││
+│  │  每个线程独立的OpenGL上下文                                   ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+                              │
+            ┌─────────────────┴─────────────────┐
+            ▼                                   ▼
+┌───────────────────────┐           ┌───────────────────────┐
+│      ObjRender        │           │      ObjContext       │
+├───────────────────────┤           ├───────────────────────┤
+│ 地图3D网格数据        │           │ OSMesa上下文          │
+│ 顶点/纹理缓冲        │           │ 帧缓冲                │
+│ 渲染方法             │           │ 深度缓冲              │
+└───────────────────────┘           └───────────────────────┘</code></pre>
+
+            <h2>3. 核心类设计</h2>
+            <h3>ObjManager 单例</h3>
+            <pre><code>class ObjManager {
+  MAKE_SINGLETON(ObjManager);
+
+ public:
+  // 初始化管理器
+  bool Initialize();
+
+  // 初始化渲染上下文 (每个线程调用一次)
+  bool InitializeRenderContext();
+
+  // 渲染深度图
+  bool Render(int32_t map_id,
+              float min_z, float max_z,
+              const BotInfo& bot,
+              std::vector&lt;float&gt;& depth_result,
+              int buffer_size,
+              int width, int height);
+
+  // 射线追踪
+  bool LineTrace(int32_t map_id,
+                 const BotInfo& bot,
+                 std::vector&lt;float&gt;& bot_result);
+
+ private:
+  // 线程本地存储的渲染上下文
+  static thread_local std::unique_ptr&lt;ObjContext&gt; obj_context_;
+
+  // 地图渲染器映射
+  std::unordered_map&lt;int32_t, std::shared_ptr&lt;ObjRender&gt;&gt; obj_renders_;
+
+  // 渲染器访问互斥锁
+  std::mutex render_mutex_;
+};</code></pre>
+
+            <h3>ObjContext 渲染上下文</h3>
+            <pre><code>class ObjContext {
+ public:
+  ObjContext();
+  ~ObjContext();
+
+  // 初始化OSMesa上下文
+  bool Initialize(int width, int height);
+
+  // 绑定上下文
+  bool MakeCurrent();
+
+  // 获取深度缓冲
+  float* GetDepthBuffer() { return depth_buffer_.data(); }
+
+  // 获取帧缓冲
+  unsigned char* GetFrameBuffer() { return frame_buffer_.data(); }
+
+ private:
+  OSMesaContext mesa_context_;
+  std::vector&lt;unsigned char&gt; frame_buffer_;
+  std::vector&lt;float&gt; depth_buffer_;
+  int width_;
+  int height_;
+};</code></pre>
+
+            <h3>ObjRender 地图渲染器</h3>
+            <pre><code>class ObjRender {
+ public:
+  // 加载地图模型
+  bool LoadModel(const std::string& objPath);
+
+  // 渲染深度图
+  bool RenderDepth(const CameraParams& camera,
+                   float min_z, float max_z,
+                   std::vector&lt;float&gt;& depth_result,
+                   int width, int height);
+
+  // 执行射线追踪
+  bool LineTrace(const Vector& origin,
+                 const Vector& direction,
+                 float max_distance,
+                 HitResult& result);
+
+  // 批量射线追踪
+  bool BatchLineTrace(const std::vector&lt;Ray&gt;& rays,
+                      std::vector&lt;HitResult&gt;& results);
+
+ private:
+  // OpenGL 对象
+  GLuint vao_;           // 顶点数组对象
+  GLuint vbo_;           // 顶点缓冲对象
+  GLuint ebo_;           // 索引缓冲对象
+  GLuint shader_;        // 着色器程序
+
+  // 网格数据
+  std::vector&lt;Vertex&gt; vertices_;
+  std::vector&lt;uint32_t&gt; indices_;
+
+  // BVH 加速结构 (用于射线追踪)
+  std::unique_ptr&lt;BVHTree&gt; bvh_tree_;
+};</code></pre>
+
+            <h2>4. 深度图渲染</h2>
+            <h3>渲染流程</h3>
+            <pre><code>Render(map_id, min_z, max_z, bot, depth_result, ...)
+    │
+    ├──► 获取/创建线程本地 ObjContext
+    │    └── InitializeRenderContext()
+    │
+    ├──► 获取地图 ObjRender
+    │    └── obj_renders_[map_id]
+    │
+    ├──► 设置相机参数
+    │    ├── 位置: bot.position
+    │    ├── 朝向: bot.rotation
+    │    └── FOV: bot.fov
+    │
+    ├──► OSMesa 渲染
+    │    ├── glClear(GL_DEPTH_BUFFER_BIT)
+    │    ├── glMatrixMode(GL_PROJECTION)
+    │    ├── gluPerspective(fov, aspect, near, far)
+    │    ├── glMatrixMode(GL_MODELVIEW)
+    │    ├── gluLookAt(...)
+    │    └── DrawMesh()
+    │
+    ├──► 读取深度缓冲
+    │    └── glReadPixels(GL_DEPTH_COMPONENT)
+    │
+    └──► 归一化深度值
+         └── depth = (depth - min_z) / (max_z - min_z)</code></pre>
+
+            <h3>深度图生成代码</h3>
+            <pre><code>bool ObjRender::RenderDepth(
+    const CameraParams& camera,
+    float min_z, float max_z,
+    std::vector&lt;float&gt;& depth_result,
+    int width, int height) {
+
+  // 设置投影矩阵
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(camera.fov, (float)width / height, min_z, max_z);
+
+  // 设置视图矩阵
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  gluLookAt(
+      camera.position.x, camera.position.y, camera.position.z,
+      camera.target.x, camera.target.y, camera.target.z,
+      camera.up.x, camera.up.y, camera.up.z
+  );
+
+  // 清除缓冲
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  // 渲染场景
+  glBindVertexArray(vao_);
+  glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
+  glBindVertexArray(0);
+
+  // 读取深度缓冲
+  depth_result.resize(width * height);
+  glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_FLOAT,
+               depth_result.data());
+
+  // 归一化深度值
+  for (float& d : depth_result) {
+    d = min_z + d * (max_z - min_z);
+  }
+
+  return true;
+}</code></pre>
+
+            <h3>深度图用途</h3>
+            <pre><code>深度图 (16x16 示例)
+┌────────────────────────────────────────┐
+│ 1.0 1.0 0.8 0.5 0.5 0.8 1.0 1.0 ... │  远
+│ 1.0 0.8 0.3 0.2 0.2 0.3 0.8 1.0 ... │
+│ 0.8 0.3 0.1 0.1 0.1 0.1 0.3 0.8 ... │  障碍物
+│ 0.5 0.2 0.1 ███ ███ 0.1 0.2 0.5 ... │  (近)
+│ ...                                    │
+└────────────────────────────────────────┘
+
+用途:
+1. 障碍物检测 - 深度值突变表示障碍物边缘
+2. 可通行性判断 - 低深度值区域为障碍
+3. 掩体识别 - 局部低深度值区域
+4. 视野范围计算 - 深度值范围确定可视距离</code></pre>
+
+            <h2>5. 射线追踪 (LineTrace)</h2>
+            <h3>BVH 加速结构</h3>
+            <pre><code>BVH Tree (Bounding Volume Hierarchy)
+              ┌─────────────────────┐
+              │     Root AABB       │
+              │  包围整个场景        │
+              └──────────┬──────────┘
+                         │
+           ┌─────────────┴─────────────┐
+           ▼                           ▼
+    ┌──────────────┐            ┌──────────────┐
+    │  Left AABB   │            │  Right AABB  │
+    │  场景左半部分 │            │  场景右半部分 │
+    └──────┬───────┘            └──────┬───────┘
+           │                           │
+      ┌────┴────┐                 ┌────┴────┐
+      ▼         ▼                 ▼         ▼
+   [Tri1-5] [Tri6-10]         [Tri11-15] [Tri16-20]
+   (叶节点)  (叶节点)          (叶节点)   (叶节点)</code></pre>
+
+            <h3>射线追踪实现</h3>
+            <pre><code>bool ObjRender::LineTrace(
+    const Vector& origin,
+    const Vector& direction,
+    float max_distance,
+    HitResult& result) {
+
+  // 构建射线
+  Ray ray;
+  ray.origin = origin;
+  ray.direction = glm::normalize(direction);
+  ray.t_min = 0.001f;  // 避免自相交
+  ray.t_max = max_distance;
+
+  // BVH 遍历
+  float closest_t = max_distance;
+  bool hit = false;
+
+  std::stack&lt;BVHNode*&gt; stack;
+  stack.push(bvh_tree_->GetRoot());
+
+  while (!stack.empty()) {
+    BVHNode* node = stack.top();
+    stack.pop();
+
+    // AABB 相交测试
+    if (!ray.IntersectsAABB(node->aabb)) {
+      continue;
+    }
+
+    if (node->IsLeaf()) {
+      // 测试叶节点中的三角形
+      for (int i = node->first_prim; i &lt; node->first_prim + node->prim_count; ++i) {
+        float t, u, v;
+        if (RayTriangleIntersect(ray, triangles_[i], t, u, v)) {
+          if (t &lt; closest_t) {
+            closest_t = t;
+            hit = true;
+            result.point = ray.origin + ray.direction * t;
+            result.distance = t;
+            result.normal = triangles_[i].normal;
+          }
+        }
+      }
+    } else {
+      // 递归遍历子节点
+      stack.push(node->left);
+      stack.push(node->right);
+    }
+  }
+
+  return hit;
+}</code></pre>
+
+            <h3>批量射线追踪</h3>
+            <pre><code>bool ObjRender::BatchLineTrace(
+    const std::vector&lt;Ray&gt;& rays,
+    std::vector&lt;HitResult&gt;& results) {
+
+  results.resize(rays.size());
+
+  // 并行处理多条射线
+  #pragma omp parallel for
+  for (size_t i = 0; i &lt; rays.size(); ++i) {
+    HitResult hit;
+    if (LineTrace(rays[i].origin, rays[i].direction,
+                  rays[i].t_max, hit)) {
+      results[i] = hit;
+    } else {
+      results[i].distance = -1;  // 未命中标记
+    }
+  }
+
+  return true;
+}</code></pre>
+
+            <h2>6. OSMesa 集成</h2>
+            <h3>上下文初始化</h3>
+            <pre><code>bool ObjContext::Initialize(int width, int height) {
+  width_ = width;
+  height_ = height;
+
+  // 创建 OSMesa 上下文
+  mesa_context_ = OSMesaCreateContextExt(
+      OSMESA_RGBA,   // 颜色格式
+      24,            // 深度位数
+      8,             // 模板位数
+      0,             // 累积缓冲位数
+      nullptr        // 共享上下文
+  );
+
+  if (!mesa_context_) {
+    LOG_ERROR("Failed to create OSMesa context");
+    return false;
+  }
+
+  // 分配帧缓冲
+  frame_buffer_.resize(width * height * 4);
+  depth_buffer_.resize(width * height);
+
+  // 绑定上下文
+  if (!OSMesaMakeCurrent(mesa_context_,
+                         frame_buffer_.data(),
+                         GL_UNSIGNED_BYTE,
+                         width, height)) {
+    LOG_ERROR("Failed to make OSMesa context current");
+    return false;
+  }
+
+  // 初始化 OpenGL 状态
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glClearDepth(1.0);
+
+  return true;
+}</code></pre>
+
+            <h3>线程安全</h3>
+            <pre><code>// 线程本地存储确保每个线程有独立的上下文
+static thread_local std::unique_ptr&lt;ObjContext&gt; obj_context_;
+
+bool ObjManager::InitializeRenderContext() {
+  if (!obj_context_) {
+    obj_context_ = std::make_unique&lt;ObjContext&gt;();
+    if (!obj_context_->Initialize(DEFAULT_WIDTH, DEFAULT_HEIGHT)) {
+      LOG_ERROR("Failed to initialize render context");
+      return false;
+    }
+  }
+  return true;
+}</code></pre>
+
+            <h2>7. 模型加载</h2>
+            <pre><code>bool ObjRender::LoadModel(const std::string& objPath) {
+  std::ifstream file(objPath);
+  if (!file.is_open()) {
+    LOG_ERROR("Failed to open model file: {}", objPath);
+    return false;
+  }
+
+  std::string line;
+  while (std::getline(file, line)) {
+    std::istringstream iss(line);
+    std::string prefix;
+    iss >> prefix;
+
+    if (prefix == "v") {
+      // 顶点
+      Vertex v;
+      iss >> v.position.x >> v.position.y >> v.position.z;
+      vertices_.push_back(v);
+    }
+    else if (prefix == "f") {
+      // 面 (三角形)
+      int v1, v2, v3;
+      iss >> v1 >> v2 >> v3;
+      indices_.push_back(v1 - 1);
+      indices_.push_back(v2 - 1);
+      indices_.push_back(v3 - 1);
+    }
+  }
+
+  // 创建 OpenGL 缓冲
+  CreateBuffers();
+
+  // 构建 BVH
+  BuildBVH();
+
+  return true;
+}</code></pre>
+
+            <h2>8. 与其他系统的交互</h2>
+            <h3>与特征提取系统</h3>
+            <pre><code>// 深度特征提取
+class DepthFeature : public FeatureBase {
+  bool ExtractFeatures(BaseContext* context,
+                       std::vector&lt;float&gt;& features,
+                       const std::vector&lt;FeatureCell&gt;& cells) override {
+
+    // 获取深度图数据
+    std::vector&lt;float&gt; depthData;
+    context->GetTraceInfo(TraceType::TRACE_DEPTH, depthData, "depth");
+
+    // 下采样或直接使用
+    for (const auto& cell : cells) {
+      for (size_t i = 0; i &lt; cell.size_; ++i) {
+        float depth = i &lt; depthData.size() ? depthData[i] : 0.0f;
+        features.push_back(depth / cell.norm_);
+      }
+    }
+
+    return true;
+  }
+};</code></pre>
+
+            <h3>与规则系统</h3>
+            <pre><code>// 视野检查规则
+class LineOfSightRule : public BaseRule {
+  MatchType Match(BaseContext* ctx) override {
+    auto& target = ctx->GetTarget();
+    if (!target.m_player) return MatchType::NONE;
+
+    // 执行射线追踪
+    HitResult hit;
+    bool blocked = ObjManager::GetInstance().LineTrace(
+        ctx->BotState().m_state.m_position,
+        target.m_player->m_state.m_position - ctx->BotState().m_state.m_position,
+        hit
+    );
+
+    if (blocked && hit.distance &lt; target.m_focusDist) {
+      // 视线被遮挡
+      return MatchType::NONE;
+    }
+
+    return MatchType::MATCH;
+  }
+};</code></pre>
+
+            <h2>9. 性能优化</h2>
+            <h3>多线程渲染</h3>
+            <pre><code>// 并行渲染多个代理的深度图
+void RenderBatch(const std::vector&lt;AgentInfo&gt;& agents) {
+  #pragma omp parallel for
+  for (size_t i = 0; i &lt; agents.size(); ++i) {
+    // 每个线程使用独立的上下文
+    ObjManager::GetInstance().InitializeRenderContext();
+
+    std::vector&lt;float&gt; depth;
+    ObjManager::GetInstance().Render(
+        agents[i].map_id,
+        agents[i].min_z, agents[i].max_z,
+        agents[i].bot_info,
+        depth,
+        buffer_size,
+        width, height
+    );
+
+    // 存储结果
+    agents[i].depth_result = std::move(depth);
+  }
+}</code></pre>
+
+            <h2>10. 扩展点：添加新地图模型</h2>
+            <pre><code>// 1. 准备模型文件
+models/
+└── new_map/
+    ├── map.obj        # 主模型
+    ├── map.mtl        # 材质文件
+    └── textures/      # 纹理目录
+
+// 2. 注册渲染器
+bool ObjManager::Initialize() {
+  // ... 现有地图
+
+  // 添加新地图
+  auto newMapRender = std::make_shared&lt;ObjRender&gt;();
+  if (newMapRender->LoadModel("models/new_map/map.obj")) {
+    obj_renders_[(int)MapID::NEW_MAP] = newMapRender;
+  }
+
+  return true;
+}</code></pre>
+
+            <div class="nav-links">
+                <a href="10-pathfinding.html">&larr; 上一篇: 寻路系统</a>
+                <a href="index.html">返回目录 &rarr;</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上下文系统 - 游戏AI推理服务设计</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        article code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.9em; }
+        article pre { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 0.85em; line-height: 1.5; }
+        article pre code { background: none; padding: 0; color: inherit; }
+        article table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9em; }
+        article th, article td { border: 1px solid #ecf0f1; padding: 8px; text-align: left; }
+        article th { background: #f8f9fa; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav><ul><li><a href="/">首页</a></li><li><a href="/resume.html">简历</a></li><li><a href="/articles/">文章</a></li></ul></nav>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/ai-inference-server/">游戏AI推理服务</a> <span>/</span>
+            上下文系统
+        </div>
+        <article>
+            <h1>上下文系统</h1>
+            <div class="article-meta">
+                <span class="tag">状态管理</span>
+                <span class="tag">敌人追踪</span>
+                <span class="tag">掩体系统</span>
+            </div>
+
+            <h2>1. 概述</h2>
+            <p>上下文系统是核心状态管理组件，负责维护每个AI代理在一帧内的完整游戏状态。<code>BaseContext</code> 是所有游戏模式上下文的基类，提供了统一的状态访问接口和生命周期管理。</p>
+
+            <h2>2. 架构图</h2>
+            <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                        PredictExecutor                          │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │ 创建/管理
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                         BaseContext                              │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     生命周期管理                          │   │
+│  │  BeginIter() ──► 处理帧 ──► EndIter()                   │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     状态数据                             │   │
+│  │  m_agentState     - 当前代理状态                        │   │
+│  │  m_allyStates     - 队友状态列表                        │   │
+│  │  m_enemies        - 敌人列表(按距离排序)                 │   │
+│  │  m_action         - 输出动作                            │   │
+│  │  m_target         - 目标信息                            │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │ 继承
+        ┌─────────────────────┼─────────────────────────────┐
+        ▼                     ▼                             ▼
+┌───────────────┐    ┌───────────────┐            ┌───────────────┐
+│ BombContext   │    │ HotZoneContext│            │ TeamContext   │
+│   (爆破模式)   │    │  (热区模式)    │            │  (团队模式)    │
+└───────────────┘    └───────────────┘            └───────────────┘</code></pre>
+
+            <h2>3. 生命周期管理</h2>
+            <h3>BeginIter - 帧开始</h3>
+            <pre><code>BeginIter()
+    │
+    ├──► 保存代理状态 (m_agentState)
+    │
+    ├──► 保存队友状态 (m_allyStates)
+    │
+    ├──► 处理敌人列表
+    │    ├── 按距离排序敌人
+    │    ├── 过滤死亡敌人
+    │    └── 更新历史敌人记录
+    │
+    ├──► 处理声音感知
+    │    ├── 子弹飞行声音
+    │    └── 伤害源定位
+    │
+    ├──► 计算掩体点
+    │    └── CalcNiceCoverPoints()
+    │
+    └──► 更新帧计数器</code></pre>
+
+            <h3>EndIter - 帧结束</h3>
+            <pre><code>EndIter()
+    │
+    ├──► 保存当前帧状态到历史
+    │    ├── m_lastHp
+    │    ├── m_lastShield
+    │    └── m_lastAliveState
+    │
+    ├──► 更新帧计数器
+    │
+    └──► 清理临时数据</code></pre>
+
+            <h2>4. BaseContext 主要成员</h2>
+            <pre><code>class BaseContext {
+ public:
+  // ============ 生命周期 ============
+  void BeginIter(...);
+  void EndIter();
+
+  // ============ 帧信息 ============
+  int FrameNum() const { return m_frameNum; }
+
+  // ============ 代理状态 ============
+  AgentStatePtr GetState() const { return m_agentState; }
+  const BotState& BotState() const { return m_agentState->m_state; }
+
+  // ============ 敌人信息 ============
+  const std::vector&lt;std::pair&lt;float, const NearbyPlayer*&gt;&gt;& getEnemies() const;
+  const std::pair&lt;float, const NearbyPlayer*&gt;& getNearestEnemy();
+  int GetAliveEnemyNum();
+  const NearbyPlayer* GetAimEnemy(bool alive = false);
+
+  // ============ 历史敌人 ============
+  const std::pair&lt;int, const NearbyPlayer*&gt;& getHistoryEnemy();
+
+  // ============ 声音感知 ============
+  const std::vector&lt;std::pair&lt;float, const SenseState*&gt;&gt;& getSounds();
+  const std::pair&lt;int, Vector&gt;& GetLastBulletFlySound();
+  const std::pair&lt;int, Vector&gt;& GetLastDamageSource();
+
+  // ============ 掩体系统 ============
+  void CalcNiceCoverPoints();
+  const std::vector&lt;CoverPoint&gt;& GetCoverPoints();
+  bool IsCovered();
+
+  // ============ 动作管理 ============
+  AgentActionPtr GetAction() const { return m_action; }
+  void AppendAction(ActionPtr action);
+  void RemoveAction(const ActionType type, std::string src);
+  bool HasAction(const ActionType type);
+
+  // ============ 战斗状态 ============
+  virtual int LastFireFrameNum() const;
+  virtual float LastHp() const;
+  virtual float LastShield() const;
+  virtual bool HasAliveEnemy() const;
+
+ protected:
+  AgentStatePtr m_agentState;
+  std::vector&lt;AgentStatePtr&gt; m_allyStates;
+  std::vector&lt;std::pair&lt;float, const NearbyPlayer*&gt;&gt; m_enemies;
+  AgentActionPtr m_action;
+  int m_frameNum;
+};</code></pre>
+
+            <h2>5. 游戏模式上下文</h2>
+            <table>
+                <tr><th>模式</th><th>类名</th><th>说明</th></tr>
+                <tr><td>爆破</td><td>BombContext</td><td>攻防爆破模式</td></tr>
+                <tr><td>热区争夺</td><td>HotZoneContext</td><td>区域控制模式</td></tr>
+                <tr><td>团队竞技</td><td>TeamContext</td><td>团队对抗模式</td></tr>
+                <tr><td>推车</td><td>PayloadContext</td><td>推车护送模式</td></tr>
+                <tr><td>刀战</td><td>KnifeFightContext</td><td>近战模式</td></tr>
+            </table>
+
+            <h2>6. 敌人追踪系统</h2>
+            <pre><code>敌人原始列表
+      │
+      ▼
+┌─────────────────────────────────────┐
+│     过滤: 移除死亡/无效敌人          │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│     计算: 与自己的3D距离             │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│     排序: 按距离升序                 │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│  存储: m_enemies, m_nearestEnemy    │
+└─────────────────────────────────────┘</code></pre>
+
+            <h2>7. 掩体系统</h2>
+            <pre><code>struct CoverPoint {
+  Vector m_position;      // 掩体位置
+  float m_angle;          // 面向角度
+  float m_distance;       // 与代理距离
+  int m_coverType;        // 掩体类型
+  bool m_isLowCover;      // 是否低矮掩体
+};
+
+// 掩体状态机
+          ┌──────────────────┐
+          │  COVER_NONE = 0  │
+          │    (无掩体)       │
+          └────────┬─────────┘
+                   │ 接近掩体
+                   ▼
+          ┌──────────────────┐
+          │ COVER_SEEKING=1  │
+          │   (寻找掩体)      │
+          └────────┬─────────┘
+                   │ 到达掩体
+                   ▼
+          ┌──────────────────┐
+          │ COVER_BEHIND=2   │
+          │   (在掩体后)      │
+          └────────┬─────────┘
+                   │ 探头射击
+                   ▼
+          ┌──────────────────┐
+          │ COVER_PEEKING=3  │
+          │    (探头中)       │
+          └──────────────────┘</code></pre>
+
+            <h2>8. 声音感知系统</h2>
+            <pre><code>声音感知
+    │
+    ├──► 子弹飞行声
+    │    └── 判断方向，准备反击
+    │
+    ├──► 脚步声
+    │    └── 预警敌人接近
+    │
+    ├──► 技能声音
+    │    └── 躲避或准备应对
+    │
+    └──► 伤害来源
+         └── 定位攻击者位置</code></pre>
+
+            <h2>9. 与其他系统的交互</h2>
+            <pre><code>// 与特征提取系统
+class FeatureExtractor {
+  bool Extract(BaseContext* ctx, std::vector&lt;float&gt;& features) {
+    auto& state = ctx->BotState();
+    auto& enemies = ctx->getEnemies();
+    // ... 提取特征
+  }
+};
+
+// 与规则系统
+class SomeRule : public BaseRule {
+  MatchType Match(BaseContext* ctx) override {
+    if (ctx->getEnemies().empty()) {
+      return MatchType::NONE;
+    }
+    // ... 规则逻辑
+  }
+};
+
+// 与动作系统
+class ActionBattle : public ActionBase {
+  void Encode(BaseContext* ctx, std::vector&lt;float&gt;& actions) override {
+    auto& target = ctx->GetTarget();
+    // ... 编码战斗动作
+  }
+};</code></pre>
+
+            <h2>10. 扩展点：添加新游戏模式</h2>
+            <pre><code>// 1. 创建上下文类
+class NewModeContext : public BaseContext {
+ public:
+  // 模式特有方法
+  virtual void SetModeSpecificState(...);
+  virtual int GetModeSpecificData();
+
+ protected:
+  int m_modeSpecificData;
+};
+
+// 工厂注册
+REGISTER_CLASS(BaseContext, NewModeContext, "new_mode");
+
+// 2. 重写生命周期方法
+void NewModeContext::BeginIter(...) {
+  BaseContext::BeginIter(...);
+  // 模式特有初始化
+  InitModeSpecificData();
+}
+
+void NewModeContext::EndIter() {
+  // 模式特有清理
+  CleanupModeSpecificData();
+  BaseContext::EndIter();
+}</code></pre>
+
+            <div class="nav-links">
+                <a href="06-character-system.html">← 上一篇: 角色系统</a>
+                <a href="08-data-management.html">下一篇: 数据管理系统 →</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>特征提取系统 - 游戏AI推理服务设计</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        article code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.9em; }
+        article pre { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 0.85em; line-height: 1.5; }
+        article pre code { background: none; padding: 0; color: inherit; }
+        article table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9em; }
+        article th, article td { border: 1px solid #ecf0f1; padding: 8px; text-align: left; }
+        article th { background: #f8f9fa; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav><ul><li><a href="/">首页</a></li><li><a href="/resume.html">简历</a></li><li><a href="/articles/">文章</a></li></ul></nav>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/ai-inference-server/">游戏AI推理服务</a> <span>/</span>
+            特征提取系统
+        </div>
+        <article>
+            <h1>特征提取系统</h1>
+            <div class="article-meta">
+                <span class="tag">特征工程</span>
+                <span class="tag">归一化</span>
+                <span class="tag">动态复制因子</span>
+            </div>
+
+            <h2>1. 概述</h2>
+            <p>特征提取系统负责将游戏状态转换为神经网络可以处理的浮点数向量。<code>FeatureManager</code> 协调多个特征提取器，根据配置文件动态组织特征维度，支持归一化处理和动态复制因子。</p>
+
+            <h2>2. 架构图</h2>
+            <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                        FeatureManager                            │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                  m_featureMap                            │   │
+│  │  vector&lt;pair&lt;string, FeatureBase*&gt;&gt;                      │   │
+│  │  ┌──────────────────────────────────────────────────┐   │   │
+│  │  │ "state"    → StateFeature                        │   │   │
+│  │  │ "enemy"    → EnemyFeature                        │   │   │
+│  │  │ "weapon"   → WeaponFeature                       │   │   │
+│  │  │ "skill"    → SkillFeature                        │   │   │
+│  │  │ "depth"    → DepthFeature                        │   │   │
+│  │  │ ...        → ...                                 │   │   │
+│  │  └──────────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                m_featureConfigs                          │   │
+│  │  vector&lt;pair&lt;string, vector&lt;FeatureCell&gt;&gt;&gt;               │   │
+│  │  定义每类特征的子特征及其归一化参数                         │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                  featureDim_s                            │   │
+│  │  vector&lt;pair&lt;string, int&gt;&gt;                               │   │
+│  │  记录每类特征的输出维度                                    │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ 提取特征
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        BaseContext                               │
+│                    (游戏状态数据源)                               │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+            <h2>3. 核心类设计</h2>
+            <h3>FeatureManager</h3>
+            <pre><code>class FeatureManager {
+ public:
+  FeatureManager() = default;
+  virtual ~FeatureManager() = default;
+
+  // 初始化，加载配置文件
+  bool Init(const std::string& config);
+
+  // 提取特征向量
+  bool getFeatures(BaseContext* context, std::vector&lt;float&gt;& feature);
+
+  // 获取总特征维度
+  int totalFeatureSize() { return featureSize_; }
+
+ private:
+  // 特征提取器映射 (名称 → 提取器实例)
+  std::vector&lt;std::pair&lt;std::string, FeatureBase*&gt;&gt; m_featureMap;
+
+  // 特征配置 (名称 → 子特征列表)
+  std::vector&lt;std::pair&lt;std::string, std::vector&lt;FeatureCell&gt;&gt;&gt; m_featureConfigs;
+
+  // 每类特征的维度记录
+  std::vector&lt;std::pair&lt;std::string, int&gt;&gt; featureDim_s;
+
+  // 总特征维度
+  int featureSize_;
+};</code></pre>
+
+            <h3>FeatureBase 基类</h3>
+            <pre><code>class FeatureBase {
+ public:
+  FeatureBase() {
+    AddFunc("padding", &FeatureBase::Padding);
+  };
+  virtual ~FeatureBase() = default;
+
+  // 初始化，接收配置参数
+  virtual void Init(std::map&lt;std::string, std::string&gt; params) = 0;
+
+  // 提取特征
+  virtual bool ExtractFeatures(BaseContext* context,
+                               std::vector&lt;float&gt;& features,
+                               const std::vector&lt;FeatureCell&gt;& cell) = 0;
+
+  // 设置特征维度
+  void SetFeatureDim(int dim) { featureDim_ = dim; }
+
+  // 填充零值
+  void Padding(BaseContext* ctx, std::vector&lt;float&gt;& fs, const FeatureCell& cell) {
+    fs.resize(fs.size() + cell.size_, 0);
+  }
+
+  // 函数指针类型
+  using Func = void (FeatureBase::*)(BaseContext* context,
+                                     std::vector&lt;float&gt;& features,
+                                     const FeatureCell& cell);
+
+  // 添加子特征提取函数
+  void AddFunc(std::string name, Func func) { funcMap_[name] = func; }
+
+ protected:
+  std::map&lt;std::string, Func&gt; funcMap_;
+  int featureDim_ = 0;
+};
+
+// 注册子特征函数的宏
+#define REGISTER_FEATURE_FUNC(name, func) \
+  AddFunc(name, static_cast&lt;Func&gt;(func));</code></pre>
+
+            <h3>FeatureCell 配置单元</h3>
+            <pre><code>class FeatureCell {
+ public:
+  FeatureCell() = default;
+  FeatureCell(std::string name, size_t size, float norm)
+      : name_(name), size_(size), norm_(norm) {}
+
+ public:
+  std::string name_;    // 子特征名称
+  size_t size_ = 0;     // 特征维度
+  float norm_ = 1;      // 归一化系数
+};</code></pre>
+
+            <h2>4. 特征提取流程</h2>
+            <pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                      getFeatures()                               │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│     遍历 m_featureMap 中的所有特征提取器                          │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        ▼                     ▼                     ▼
+┌───────────────┐     ┌───────────────┐     ┌───────────────┐
+│ StateFeature  │     │ EnemyFeature  │     │ DepthFeature  │
+│ Extract()     │     │ Extract()     │     │ Extract()     │
+└───────┬───────┘     └───────┬───────┘     └───────┬───────┘
+        │                     │                     │
+        ▼                     ▼                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              遍历对应的 FeatureCell 配置                          │
+│              调用注册的子特征函数                                 │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    应用归一化 (/ norm_)                          │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│               追加到输出向量 features                             │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+            <h2>5. 特征提取器类型</h2>
+            <table>
+                <tr><th>提取器</th><th>类名</th><th>说明</th></tr>
+                <tr><td>状态特征</td><td>StateFeature</td><td>代理基础状态 (位置、血量、护盾等)</td></tr>
+                <tr><td>敌人特征</td><td>EnemyFeature</td><td>敌人信息 (位置、距离、状态)</td></tr>
+                <tr><td>队友特征</td><td>AllyFeature</td><td>队友信息</td></tr>
+                <tr><td>武器特征</td><td>WeaponFeature</td><td>武器状态 (弹药、类型等)</td></tr>
+                <tr><td>技能特征</td><td>SkillFeature</td><td>技能状态 (CD、就绪状态)</td></tr>
+                <tr><td>深度特征</td><td>DepthFeature</td><td>深度图数据</td></tr>
+                <tr><td>射线特征</td><td>LineTraceFeature</td><td>射线追踪结果</td></tr>
+                <tr><td>声音特征</td><td>SoundFeature</td><td>声音感知数据</td></tr>
+                <tr><td>补给特征</td><td>SupplyFeature</td><td>补给点状态</td></tr>
+                <tr><td>模式特征</td><td>ModeFeature</td><td>游戏模式特定数据</td></tr>
+            </table>
+
+            <h2>6. 特征提取器实现示例</h2>
+            <pre><code>// 状态特征提取器
+class StateFeature : public FeatureBase {
+ public:
+  StateFeature() {
+    // 注册子特征函数
+    REGISTER_FEATURE_FUNC("position", &StateFeature::ExtractPosition);
+    REGISTER_FEATURE_FUNC("rotation", &StateFeature::ExtractRotation);
+    REGISTER_FEATURE_FUNC("health", &StateFeature::ExtractHealth);
+    REGISTER_FEATURE_FUNC("shield", &StateFeature::ExtractShield);
+    REGISTER_FEATURE_FUNC("velocity", &StateFeature::ExtractVelocity);
+  }
+
+  bool ExtractFeatures(BaseContext* context,
+                       std::vector&lt;float&gt;& features,
+                       const std::vector&lt;FeatureCell&gt;& cells) override {
+    for (const auto& cell : cells) {
+      auto it = funcMap_.find(cell.name_);
+      if (it != funcMap_.end()) {
+        (this->*(it->second))(context, features, cell);
+      }
+    }
+    return true;
+  }
+
+ private:
+  void ExtractPosition(BaseContext* ctx, std::vector&lt;float&gt;& fs,
+                       const FeatureCell& cell) {
+    const auto& pos = ctx->BotState().m_state.m_position;
+    fs.push_back(pos.x / cell.norm_);
+    fs.push_back(pos.y / cell.norm_);
+    fs.push_back(pos.z / cell.norm_);
+  }
+
+  void ExtractHealth(BaseContext* ctx, std::vector&lt;float&gt;& fs,
+                     const FeatureCell& cell) {
+    float hp = ctx->BotState().m_state.m_health;
+    fs.push_back(hp / cell.norm_);
+  }
+};
+
+// 工厂注册
+REGISTER_CLASS(FeatureBase, StateFeature, "state");</code></pre>
+
+            <h2>7. 动态复制因子</h2>
+            <p>对于可变数量的实体（如敌人、队友），使用动态复制因子来固定特征维度：</p>
+            <pre><code>配置: enemy_info, size=35, norm=10000.0
+基础维度: 7 (每个敌人)
+复制因子: 35 / 7 = 5
+
+实际敌人数 = 3:
+  Enemy[0] → [f0, f1, f2, f3, f4, f5, f6]
+  Enemy[1] → [f7, f8, f9, f10, f11, f12, f13]
+  Enemy[2] → [f14, f15, f16, f17, f18, f19, f20]
+  Padding  → [0, 0, 0, 0, 0, 0, 0]
+  Padding  → [0, 0, 0, 0, 0, 0, 0]
+
+输出维度始终为 35</code></pre>
+
+            <h3>实现代码</h3>
+            <pre><code>bool EnemyFeature::ExtractFeatures(BaseContext* context,
+                                   std::vector&lt;float&gt;& features,
+                                   const std::vector&lt;FeatureCell&gt;& cells) {
+  const auto& enemies = context->getEnemies();
+
+  for (const auto& cell : cells) {
+    // 计算复制因子
+    int replicateFactor = cell.size_ / BASE_ENEMY_DIM;
+
+    for (int i = 0; i &lt; replicateFactor; ++i) {
+      if (i &lt; static_cast&lt;int&gt;(enemies.size())) {
+        // 提取真实敌人特征
+        ExtractSingleEnemy(context, features, enemies[i], cell);
+      } else {
+        // 填充零值
+        for (int j = 0; j &lt; BASE_ENEMY_DIM; ++j) {
+          features.push_back(0.0f);
+        }
+      }
+    }
+  }
+  return true;
+}</code></pre>
+
+            <h2>8. 归一化处理</h2>
+            <pre><code>// 位置归一化 (除以地图尺度)
+void ExtractPosition(BaseContext* ctx, std::vector&lt;float&gt;& fs,
+                     const FeatureCell& cell) {
+  const auto& pos = ctx->BotState().m_state.m_position;
+  fs.push_back(pos.x / cell.norm_);  // norm_ = 10000.0
+  fs.push_back(pos.y / cell.norm_);
+  fs.push_back(pos.z / cell.norm_);
+}
+
+// 角度归一化 (除以180度)
+void ExtractRotation(BaseContext* ctx, std::vector&lt;float&gt;& fs,
+                     const FeatureCell& cell) {
+  float yaw = ctx->BotState().m_state.m_rotation.yaw;
+  float pitch = ctx->BotState().m_state.m_rotation.pitch;
+  fs.push_back(yaw / cell.norm_);    // norm_ = 180.0
+  fs.push_back(pitch / cell.norm_);
+}
+
+// 百分比归一化 (0-1范围)
+void ExtractHealth(BaseContext* ctx, std::vector&lt;float&gt;& fs,
+                   const FeatureCell& cell) {
+  float hp = ctx->BotState().m_state.m_health;
+  fs.push_back(hp / cell.norm_);     // norm_ = 100.0
+}</code></pre>
+
+            <h2>9. 配置文件示例</h2>
+            <pre><code># config/feature_config.yaml
+features:
+  - name: state
+    class: StateFeature
+    params:
+      max_enemies: 5
+    cells:
+      - name: position
+        size: 3
+        norm: 10000.0
+      - name: rotation
+        size: 2
+        norm: 180.0
+      - name: health
+        size: 1
+        norm: 100.0
+      - name: shield
+        size: 1
+        norm: 100.0
+
+  - name: enemy
+    class: EnemyFeature
+    params:
+      max_enemies: 5
+    cells:
+      - name: enemy_info
+        size: 35   # 5 enemies * 7 features
+        norm: 10000.0
+
+  - name: depth
+    class: DepthFeature
+    cells:
+      - name: depth_map
+        size: 256   # 16x16 深度图
+        norm: 1000.0</code></pre>
+
+            <h2>10. 扩展点：添加新特征提取器</h2>
+            <pre><code>// 1. 创建特征类
+class NewFeature : public FeatureBase {
+ public:
+  NewFeature() {
+    REGISTER_FEATURE_FUNC("sub_feature_1", &NewFeature::ExtractSubFeature1);
+    REGISTER_FEATURE_FUNC("sub_feature_2", &NewFeature::ExtractSubFeature2);
+  }
+
+  void Init(std::map&lt;std::string, std::string&gt; params) override {
+    if (params.count("param1")) {
+      param1_ = std::stoi(params["param1"]);
+    }
+  }
+
+  bool ExtractFeatures(BaseContext* context,
+                       std::vector&lt;float&gt;& features,
+                       const std::vector&lt;FeatureCell&gt;& cells) override {
+    for (const auto& cell : cells) {
+      auto it = funcMap_.find(cell.name_);
+      if (it != funcMap_.end()) {
+        (this->*(it->second))(context, features, cell);
+      }
+    }
+    return true;
+  }
+
+ private:
+  void ExtractSubFeature1(BaseContext* ctx, std::vector&lt;float&gt;& fs,
+                          const FeatureCell& cell) {
+    // 实现子特征提取
+  }
+
+  int param1_ = 0;
+};
+
+// 2. 工厂注册
+REGISTER_CLASS(FeatureBase, NewFeature, "new_feature");
+
+// 3. 添加配置
+// config/feature_config.yaml
+features:
+  - name: new_feature
+    class: NewFeature
+    params:
+      param1: 10
+    cells:
+      - name: sub_feature_1
+        size: 5
+        norm: 1.0</code></pre>
+
+            <div class="nav-links">
+                <a href="08-data-management.html">&larr; 上一篇: 数据管理系统</a>
+                <a href="10-pathfinding.html">下一篇: 寻路系统 &rarr;</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>
