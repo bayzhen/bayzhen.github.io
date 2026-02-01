@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hooks自动化 - 陈栢成</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        article code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.9em; }
+        article pre { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; }
+        article pre code { background: none; padding: 0; color: inherit; }
+        article blockquote { border-left: 4px solid #9b59b6; padding-left: 20px; margin: 20px 0; color: #555; font-style: italic; }
+        article a { color: #3498db; text-decoration: none; }
+        article a:hover { text-decoration: underline; }
+        article table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        article th, article td { border: 1px solid #ecf0f1; padding: 12px; text-align: left; }
+        article th { background: #f8f9fa; font-weight: 600; }
+        .note { background: #e8f4f8; border-left: 4px solid #3498db; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .warning { background: #fdf2e9; border-left: 4px solid #e67e22; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        .nav-links a:hover { text-decoration: underline; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/resume.html">简历</a></li>
+            <li><a href="/articles/">文章</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/claude-code/">Claude Code教程</a> <span>/</span>
+            Hooks自动化
+        </div>
+
+        <article>
+            <h1>Hooks：让Claude自动遵守规矩</h1>
+            <div class="article-meta">
+                <span class="tag">高级</span>
+                <span class="tag">7-10分钟</span>
+            </div>
+
+            <h2>开场</h2>
+            <p>你有没有这种烦恼：</p>
+            <ul>
+                <li>Claude写完代码，你还得手动跑一次Prettier</li>
+                <li>它有时候会执行危险命令，你得盯着</li>
+                <li>每次改完文件，你还得手动跑测试</li>
+            </ul>
+            <p>如果这些都能<strong>自动化</strong>呢？</p>
+            <p>这就是<strong>Hooks</strong>——Claude Code的自动化触发器。</p>
+
+            <h2>Hooks是什么？</h2>
+            <p>简单说：<strong>在特定时机，自动执行你定义的脚本</strong>。</p>
+            <p>就像Git的pre-commit hook，但覆盖Claude的整个工作流程。</p>
+
+            <h2>Hook事件类型</h2>
+            <table>
+                <tr><th>事件</th><th>触发时机</th><th>典型用途</th></tr>
+                <tr><td><code>PreToolUse</code></td><td>执行工具<strong>前</strong></td><td>拦截、验证、阻止危险操作</td></tr>
+                <tr><td><code>PostToolUse</code></td><td>执行工具<strong>后</strong></td><td>格式化、测试、日志</td></tr>
+                <tr><td><code>UserPromptSubmit</code></td><td>提交prompt时</td><td>注入上下文</td></tr>
+                <tr><td><code>Stop</code></td><td>Claude完成响应时</td><td>验证结果、自动提交</td></tr>
+                <tr><td><code>SessionStart</code></td><td>会话开始时</td><td>加载项目上下文</td></tr>
+            </table>
+            <p>最常用的是 <code>PreToolUse</code>（事前拦截）和 <code>PostToolUse</code>（事后处理）。</p>
+
+            <h2>实战例子1：自动格式化代码</h2>
+            <p>每次Claude编辑文件后，自动运行Prettier：</p>
+            <pre><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx prettier --write ."
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+            <p>效果：Claude改完文件 → 自动格式化 → 代码风格永远一致。</p>
+
+            <h2>实战例子2：阻止危险命令</h2>
+            <p>在执行bash命令前，检查是否危险：</p>
+            <pre><code>{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/validate-command.sh"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+            <p><code>validate-command.sh</code>：</p>
+            <pre><code>#!/bin/bash
+cmd=$(jq -r '.tool_input.command')
+
+# 检查危险命令
+if [[ "$cmd" == *"rm -rf /"* ]]; then
+  echo "危险操作已阻止！" >&2
+  exit 2  # 退出码2 = 阻止执行
+fi
+
+exit 0  # 退出码0 = 允许执行</code></pre>
+            <p>效果：Claude要删根目录？<strong>直接拦截</strong>，并告诉它为什么不行。</p>
+
+            <h2>实战例子3：自动运行测试</h2>
+            <p>每次改代码后，自动跑测试：</p>
+            <pre><code>{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm test -- --reporter=dot"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+            <p>效果：Claude改完代码 → 自动跑测试 → 立刻知道有没有搞坏东西。</p>
+
+            <h2>实战例子4：PR前必须通过测试</h2>
+            <pre><code>{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__github__create_pull_request",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/pre-pr-check.sh"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+            <p>效果：测试没过？<strong>不让创建PR</strong>。</p>
+
+            <h2>退出码的含义</h2>
+            <p>这是Hooks最重要的概念：</p>
+            <table>
+                <tr><th>退出码</th><th>含义</th></tr>
+                <tr><td><code>0</code></td><td>允许继续</td></tr>
+                <tr><td><code>1</code></td><td>出错，但继续</td></tr>
+                <tr><td><code>2</code></td><td><strong>阻止操作</strong></td></tr>
+            </table>
+            <div class="note">
+                <strong>退出码2是最有用的</strong>——它不仅阻止操作，还把你的错误消息发送给Claude。Claude会看到你的消息，然后尝试修正。这是一个<strong>自动的反馈循环</strong>。
+            </div>
+
+            <h2>配置方式</h2>
+            <h3>方式1：交互式（推荐新手）</h3>
+            <pre><code>/hooks</code></pre>
+            <p>跟着界面操作就行。</p>
+
+            <h3>方式2：手动编辑</h3>
+            <ul>
+                <li>全局配置：<code>~/.claude/settings.json</code></li>
+                <li>项目配置：<code>.claude/settings.json</code></li>
+            </ul>
+
+            <h2>完整配置示例</h2>
+            <pre><code>{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./scripts/validate-command.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx prettier --write ."
+          },
+          {
+            "type": "command",
+            "command": "npm run lint"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm test"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+            <h2>注意事项</h2>
+            <div class="warning">
+                <ol>
+                    <li><strong>别太频繁</strong>：每个Hook都会执行，太多会拖慢速度</li>
+                    <li><strong>精确匹配</strong>：用matcher精确指定触发条件</li>
+                    <li><strong>测试脚本</strong>：先手动测试你的脚本再配置</li>
+                </ol>
+            </div>
+
+            <h2>小结</h2>
+            <p>Hooks让Claude变得<strong>可控、可预测</strong>：</p>
+            <ul>
+                <li>危险操作 → 自动拦截</li>
+                <li>写完代码 → 自动格式化</li>
+                <li>每次改动 → 自动测试</li>
+            </ul>
+            <p>再也不用人工盯着了。</p>
+            <p>下一集，我们聊<strong>Slash Commands</strong>和<strong>工作流整合</strong>——把所有这些功能组合成高效的开发流程。</p>
+
+            <div class="nav-links">
+                <a href="/articles/claude-code/06-subagents.html">← 上一篇：Subagents分身术</a>
+                <a href="/articles/claude-code/08-slash-commands.html">下一篇：Slash Commands →</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

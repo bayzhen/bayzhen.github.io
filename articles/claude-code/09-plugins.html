@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plugins与团队协作 - 陈栢成</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        article code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.9em; }
+        article pre { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; }
+        article pre code { background: none; padding: 0; color: inherit; }
+        article blockquote { border-left: 4px solid #9b59b6; padding-left: 20px; margin: 20px 0; color: #555; font-style: italic; }
+        article a { color: #3498db; text-decoration: none; }
+        article a:hover { text-decoration: underline; }
+        article table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        article th, article td { border: 1px solid #ecf0f1; padding: 12px; text-align: left; }
+        article th { background: #f8f9fa; font-weight: 600; }
+        .summary-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; margin: 30px 0; }
+        .summary-box h2 { color: white; border-bottom: none; margin-top: 0; }
+        .summary-box ul { margin-left: 20px; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        .nav-links a:hover { text-decoration: underline; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/resume.html">简历</a></li>
+            <li><a href="/articles/">文章</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/claude-code/">Claude Code教程</a> <span>/</span>
+            Plugins与团队协作
+        </div>
+
+        <article>
+            <h1>Plugins：打包分享你的超能力</h1>
+            <div class="article-meta">
+                <span class="tag">高级</span>
+                <span class="tag">7-10分钟</span>
+            </div>
+
+            <h2>开场</h2>
+            <p>这个系列的最后一集。</p>
+            <p>前面我们学了Skills、Subagents、Hooks、Commands...</p>
+            <p>但有个问题：这些配置都在你自己电脑上。</p>
+            <p><strong>怎么分享给团队？</strong></p>
+            <p>答案是<strong>Plugins</strong>——把一切打包成可分享的能力包。</p>
+
+            <h2>Plugins是什么？</h2>
+            <p>一个Plugin可以包含：</p>
+            <ul>
+                <li>多个Skills</li>
+                <li>多个Subagents</li>
+                <li>多个Slash Commands</li>
+                <li>多个Hooks</li>
+                <li>MCP服务器配置</li>
+            </ul>
+            <p>安装一个Plugin，就获得了<strong>整套能力</strong>。</p>
+            <p>就像npm包，但是给Claude Code用的。</p>
+
+            <h2>安装Plugin</h2>
+            <pre><code># 安装
+/plugins install typescript-lsp
+
+# 列出已安装
+/plugins list
+
+# 更新
+/plugins update
+
+# 卸载
+/plugins remove typescript-lsp</code></pre>
+            <p>安装后，Plugin里的所有功能自动生效：</p>
+            <ul>
+                <li>Skills会按需加载</li>
+                <li>Commands可以直接 <code>/xxx</code> 调用</li>
+                <li>Hooks自动注册</li>
+            </ul>
+
+            <h2>社区资源</h2>
+            <p>想找更多？去这个仓库：</p>
+            <p><strong><a href="https://github.com/hesreallyhim/awesome-claude-code" target="_blank">awesome-claude-code</a></strong></p>
+            <p>里面有：</p>
+            <ul>
+                <li>Skills集合</li>
+                <li>Hook配方</li>
+                <li>Subagent模板</li>
+                <li>完整工作流配置</li>
+            </ul>
+            <p>都是社区贡献的，可以直接用或者作为参考。</p>
+
+            <h2>团队协作最佳实践</h2>
+            <h3>1. 统一的CLAUDE.md</h3>
+            <p>把项目规范、技术栈、开发流程都写进去：</p>
+            <pre><code># 项目说明
+
+## 技术栈
+- 前端：React + TypeScript
+- 后端：Go + PostgreSQL
+
+## 开发规范
+- ESLint + Prettier
+- Conventional Commits
+- 分支命名：feature/xxx, fix/xxx
+
+## 常用命令
+npm run dev    # 开发
+npm run test   # 测试
+npm run build  # 构建</code></pre>
+            <p>提交到Git，每个人都用同一份。</p>
+
+            <h3>2. 项目级Skills</h3>
+            <p>把团队的最佳实践写成Skills：</p>
+            <pre><code>.claude/skills/
+├── api-standards/SKILL.md
+├── react-patterns/SKILL.md
+└── testing-guide/SKILL.md</code></pre>
+            <p>提交到Git，新人加入自动获得团队知识。</p>
+
+            <h3>3. 共享Hooks</h3>
+            <p>统一的质量门禁：</p>
+            <pre><code>{
+  "hooks": {
+    "PreToolUse": [...],
+    "PostToolUse": [...]
+  }
+}</code></pre>
+            <p><code>.claude/settings.json</code> 提交到Git。</p>
+
+            <h3>4. GitHub Action自动化</h3>
+            <pre><code>name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: "审查这个PR，重点检查安全问题"</code></pre>
+            <p>每个PR自动获得Claude的审查。</p>
+
+            <h2>完整团队配置示例</h2>
+            <pre><code>my-project/
+├── CLAUDE.md                      # 项目说明
+├── .claude/
+│   ├── settings.json              # Hooks配置
+│   ├── commands/
+│   │   ├── review.md
+│   │   ├── test-this.md
+│   │   └── deploy.md
+│   ├── skills/
+│   │   ├── api-standards/SKILL.md
+│   │   └── react-patterns/SKILL.md
+│   └── agents/
+│       ├── code-reviewer.md
+│       └── architect.md
+├── .github/
+│   └── workflows/
+│       └── claude-review.yml      # PR自动审查
+└── ...</code></pre>
+            <p>全部提交到Git。新人clone项目，立刻获得完整的AI辅助开发环境。</p>
+
+            <div class="summary-box">
+                <h2>系列总结</h2>
+                <p>这个系列我们学了：</p>
+                <ol>
+                    <li><strong>入门</strong>：安装、基础操作</li>
+                    <li><strong>三种模式</strong>：正常、计划、危险</li>
+                    <li><strong>效率技巧</strong>：10个实用技巧</li>
+                    <li><strong>MCP</strong>：连接外部服务</li>
+                    <li><strong>Skills</strong>：按需加载知识</li>
+                    <li><strong>Subagents</strong>：分身处理重任务</li>
+                    <li><strong>Hooks</strong>：自动化触发器</li>
+                    <li><strong>Commands</strong>：快捷指令</li>
+                    <li><strong>Plugins</strong>：打包分享</li>
+                </ol>
+            </div>
+
+            <h2>核心心法</h2>
+            <blockquote>
+                Claude Code不是要取代程序员，而是把程序员从繁琐的工作中解放出来。
+            </blockquote>
+            <p>以前我们是「写代码的人」，现在我们是「指挥写代码的人」。</p>
+            <p>重复性的工作、枯燥的样板代码、凌晨三点的debug——都可以交给它了。</p>
+            <p>你负责<strong>思考</strong>，它负责<strong>执行</strong>。</p>
+
+            <h2>最后的话</h2>
+            <p>记住一句话：</p>
+            <blockquote><strong>Always Be Clauding.</strong></blockquote>
+            <p>这个工具会越来越强，学会用它，就是学会了一种新的工作方式。</p>
+
+            <h2>快速参考</h2>
+            <h3>核心文件位置</h3>
+            <table>
+                <tr><th>文件</th><th>用途</th></tr>
+                <tr><td><code>CLAUDE.md</code></td><td>项目说明</td></tr>
+                <tr><td><code>.claude/settings.json</code></td><td>Hooks配置</td></tr>
+                <tr><td><code>.claude/commands/</code></td><td>快捷命令</td></tr>
+                <tr><td><code>.claude/skills/</code></td><td>技能包</td></tr>
+                <tr><td><code>.claude/agents/</code></td><td>Subagents</td></tr>
+            </table>
+
+            <h3>常用命令</h3>
+            <table>
+                <tr><th>命令</th><th>说明</th></tr>
+                <tr><td><code>/help</code></td><td>帮助</td></tr>
+                <tr><td><code>/clear</code></td><td>清空对话</td></tr>
+                <tr><td><code>/hooks</code></td><td>配置Hooks</td></tr>
+                <tr><td><code>/agents</code></td><td>管理Subagents</td></tr>
+                <tr><td><code>/plugins</code></td><td>管理插件</td></tr>
+            </table>
+
+            <h3>社区资源</h3>
+            <ul>
+                <li>官方文档：<a href="https://code.claude.com/docs" target="_blank">https://code.claude.com/docs</a></li>
+                <li>awesome-claude-code：<a href="https://github.com/hesreallyhim/awesome-claude-code" target="_blank">https://github.com/hesreallyhim/awesome-claude-code</a></li>
+            </ul>
+
+            <div class="nav-links">
+                <a href="/articles/claude-code/08-slash-commands.html">← 上一篇：Slash Commands</a>
+                <a href="/articles/claude-code/">返回目录</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>
