@@ -1,0 +1,11 @@
+{
+  "name": "bayzhen-blog",
+  "version": "1.0.0",
+  "description": "Personal technical blog",
+  "scripts": {
+    "build": "node scripts/build-index.js"
+  },
+  "devDependencies": {
+    "cheerio": "^1.0.0"
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "generated": "2026-02-02T04:43:06.950Z",
+  "series": [
+    {
+      "id": "claude-code",
+      "title": "Claude Code教程",
+      "description": "AI编程助手完全指南",
+      "order": 1,
+      "sections": [
+        {
+          "name": "入门篇",
+          "levels": [
+            "beginner"
+          ]
+        },
+        {
+          "name": "进阶篇",
+          "levels": [
+            "intermediate"
+          ]
+        },
+        {
+          "name": "高级篇",
+          "levels": [
+            "advanced"
+          ]
+        }
+      ],
+      "articles": [
+        {
+          "file": "01-getting-started.html",
+          "path": "/articles/claude-code/01-getting-started.html",
+          "title": "快速入门",
+          "description": "安装、启动、基础操作，3分钟上手AI编程助手",
+          "level": "beginner",
+          "tags": [
+            "入门",
+            "3-5分钟"
+          ]
+        },
+        {
+          "file": "02-work-modes.html",
+          "path": "/articles/claude-code/02-work-modes.html",
+          "title": "三种工作模式",
+          "description": "正常模式、计划模式、危险模式——选对模式，效率翻倍",
+          "level": "beginner",
+          "tags": [
+            "入门",
+            "5-7分钟"
+          ]
+        },
+        {
+          "file": "03-efficiency-tips.html",
+          "path": "/articles/claude-code/03-efficiency-tips.html",
+          "title": "效率技巧",
+          "description": "10个让效率翻倍的实用技巧，从入门到真香",
+          "level": "beginner",
+          "tags": [
+            "入门",
+            "8-10分钟"
+          ]
+        },
+        {
+          "file": "04-mcp.html",
+          "path": "/articles/claude-code/04-mcp.html",
+          "title": "MCP插件系统",
+          "description": "给Claude Code装外挂，连接数据库、GitHub、浏览器等外部服务",
+          "level": "intermediate",
+          "tags": [
+            "进阶",
+            "5-7分钟"
+          ]
+        },
+        {
+          "file": "05-skills.html",
+          "path": "/articles/claude-code/05-skills.html",
+          "title": "Skills技能系统",
+          "description": "让Claude按需下载技能，像黑客帝国的Neo一样",
+          "level": "intermediate",
+          "tags": [
+            "进阶",
+            "5-7分钟"
+          ]
+        },
+        {
+          "file": "06-subagents.html",
+          "path": "/articles/claude-code/06-subagents.html",
+          "title": "Subagents分身术",
+          "description": "上下文隔离，让Claude同时处理多个任务而不乱套",
+          "level": "intermediate",
+          "tags": [
+            "进阶",
+            "5-7分钟"
+          ]
+        },
+        {
+          "file": "07-hooks.html",
+          "path": "/articles/claude-code/07-hooks.html",
+          "title": "Hooks自动化",
+          "description": "自动化触发器，让Claude自动遵守规矩",
+          "level": "advanced",
+          "tags": [
+            "高级",
+            "7-10分钟"
+          ]
+        },
+        {
+          "file": "08-slash-commands.html",
+          "path": "/articles/claude-code/08-slash-commands.html",
+          "title": "Slash Commands快捷指令",
+          "description": "一键触发工作流，把常用prompt存成快捷命令",
+          "level": "advanced",
+          "tags": [
+            "高级",
+            "5-7分钟"
+          ]
+        },
+        {
+          "file": "09-plugins.html",
+          "path": "/articles/claude-code/09-plugins.html",
+          "title": "Plugins与团队协作",
+          "description": "打包分享你的超能力，团队协作最佳实践",
+          "level": "advanced",
+          "tags": [
+            "高级",
+            "7-10分钟"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ai-inference-server",
+      "title": "游戏AI推理服务",
+      "description": "系统架构、推理引擎、特征提取",
+      "order": 2,
+      "sections": [
+        {
+          "name": "全部文章",
+          "levels": [
+            "intermediate",
+            "advanced"
+          ]
+        }
+      ],
+      "articles": [
+        {
+          "file": "00-architecture-overview.html",
+          "path": "/articles/ai-inference-server/00-architecture-overview.html",
+          "title": "架构概述",
+          "description": "整体系统架构、请求处理管道、核心设计模式与扩展点",
+          "level": "intermediate",
+          "tags": [
+            "架构",
+            "系统设计"
+          ]
+        },
+        {
+          "file": "01-config-system.html",
+          "path": "/articles/ai-inference-server/01-config-system.html",
+          "title": "配置系统",
+          "description": "双缓冲机制、NACOS集成、热更新配置与静态配置管理",
+          "level": "intermediate",
+          "tags": [
+            "配置",
+            "热更新"
+          ]
+        },
+        {
+          "file": "02-grpc-service.html",
+          "path": "/articles/ai-inference-server/02-grpc-service.html",
+          "title": "gRPC服务层",
+          "description": "异步服务器、多CompletionQueue并发、Protobuf Arena优化",
+          "level": "advanced",
+          "tags": [
+            "gRPC",
+            "并发"
+          ]
+        },
+        {
+          "file": "03-model-inference.html",
+          "path": "/articles/ai-inference-server/03-model-inference.html",
+          "title": "模型推理系统",
+          "description": "ONNX Runtime集成、LSTM状态管理、多模型动态选择",
+          "level": "advanced",
+          "tags": [
+            "ONNX",
+            "推理"
+          ]
+        },
+        {
+          "file": "04-rule-system.html",
+          "path": "/articles/ai-inference-server/04-rule-system.html",
+          "title": "规则系统",
+          "description": "前置/后置规则、链式执行、工厂模式与规则注册",
+          "level": "intermediate",
+          "tags": [
+            "规则引擎",
+            "设计模式"
+          ]
+        },
+        {
+          "file": "05-action-system.html",
+          "path": "/articles/ai-inference-server/05-action-system.html",
+          "title": "动作系统",
+          "description": "多任务学习架构、Encode/Decode机制、动作掩码约束",
+          "level": "advanced",
+          "tags": [
+            "动作空间",
+            "多任务学习"
+          ]
+        },
+        {
+          "file": "06-character-system.html",
+          "path": "/articles/ai-inference-server/06-character-system.html",
+          "title": "角色系统",
+          "description": "角色技能检查、继承与工厂模式、技能权重机制",
+          "level": "intermediate",
+          "tags": [
+            "角色",
+            "技能系统"
+          ]
+        },
+        {
+          "file": "07-context-system.html",
+          "path": "/articles/ai-inference-server/07-context-system.html",
+          "title": "上下文系统",
+          "description": "游戏状态管理、敌人追踪、掩体系统、声音感知",
+          "level": "intermediate",
+          "tags": [
+            "上下文",
+            "状态管理"
+          ]
+        },
+        {
+          "file": "08-data-management.html",
+          "path": "/articles/ai-inference-server/08-data-management.html",
+          "title": "数据管理系统",
+          "description": "地图资源、战略点位、空间索引、角色技能配置",
+          "level": "intermediate",
+          "tags": [
+            "数据管理",
+            "空间索引"
+          ]
+        },
+        {
+          "file": "09-feature-extraction.html",
+          "path": "/articles/ai-inference-server/09-feature-extraction.html",
+          "title": "特征提取系统",
+          "description": "特征管理器、归一化处理、动态复制因子",
+          "level": "advanced",
+          "tags": [
+            "特征工程",
+            "归一化"
+          ]
+        },
+        {
+          "file": "10-pathfinding.html",
+          "path": "/articles/ai-inference-server/10-pathfinding.html",
+          "title": "寻路系统",
+          "description": "战略图路径规划、DFS/BFS搜索、势力计算",
+          "level": "advanced",
+          "tags": [
+            "寻路",
+            "图算法"
+          ]
+        },
+        {
+          "file": "11-3d-rendering.html",
+          "path": "/articles/ai-inference-server/11-3d-rendering.html",
+          "title": "3D渲染系统",
+          "description": "OSMesa离屏渲染、深度图生成、BVH射线追踪",
+          "level": "advanced",
+          "tags": [
+            "渲染",
+            "射线追踪"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unreal-engine",
+      "title": "虚幻引擎",
+      "description": "UE开发、编辑器扩展、UI系统",
+      "order": 3,
+      "sections": [
+        {
+          "name": "入门篇",
+          "levels": [
+            "beginner"
+          ]
+        },
+        {
+          "name": "进阶篇",
+          "levels": [
+            "intermediate"
+          ]
+        },
+        {
+          "name": "高级篇",
+          "levels": [
+            "advanced"
+          ]
+        }
+      ],
+      "articles": [
+        {
+          "file": "getting-started.html",
+          "path": "/articles/unreal-engine/getting-started.html",
+          "title": "虚幻引擎开发入门指南",
+          "description": "从零开始搭建UE开发环境，了解项目结构与基础概念",
+          "level": "beginner",
+          "tags": [
+            "入门",
+            "UE5"
+          ]
+        }
+      ]
+    }
+  ]
+}

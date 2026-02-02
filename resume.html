@@ -210,6 +210,25 @@
             margin-left: 20px;
         }
 
+        .resume-actions {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            padding: 10px 25px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+
+        .download-btn:hover {
+            background: #2980b9;
+        }
+
         @media (max-width: 600px) {
             .resume {
                 padding: 30px 20px;
@@ -236,6 +255,39 @@
                 margin-top: 10px;
             }
         }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+
+            nav, .resume-actions {
+                display: none !important;
+            }
+
+            body {
+                background: #fff;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .resume {
+                box-shadow: none;
+                padding: 0;
+            }
+
+            .job, section {
+                page-break-inside: avoid;
+            }
+
+            a {
+                color: #333;
+                text-decoration: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -247,6 +299,9 @@
         </ul>
     </nav>
     <div class="container">
+        <div class="resume-actions">
+            <button class="download-btn" onclick="window.print()">下载 PDF</button>
+        </div>
         <div class="resume">
             <header>
                 <h1>陈栢成</h1>
