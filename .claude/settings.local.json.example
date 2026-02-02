@@ -1,0 +1,14 @@
+{
+  "_comment": "这是本地配置示例，复制为 settings.local.json 使用",
+  "_comment2": "settings.local.json 会被 gitignore，用于个人偏好设置",
+
+  "permissions": {
+    "allow": [
+      "Bash(code *)"
+    ]
+  },
+
+  "env": {
+    "EDITOR": "code"
+  }
+}
