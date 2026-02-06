@@ -34,18 +34,18 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Write",
-        "command": "node -e \"const p=process.env.CLAUDE_FILE_PATH; if(p && p.includes('Docs/')) { console.log('blocked: Docs目录是源文档，不应直接修改'); process.exit(1); }\""
+        "matcher": {"tools": ["Write"]},
+        "hooks": [{"type": "command", "command": "node -e \"const p=process.env.CLAUDE_FILE_PATH; if(p && p.includes('Docs/')) { console.log('blocked: Docs目录是源文档，不应直接修改'); process.exit(1); }\""}]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Write",
-        "command": "node -e \"const p=process.env.CLAUDE_FILE_PATH; if(p && p.endsWith('.html')) { console.log('提示: HTML文件已创建/修改，记得检查链接和导航'); }\""
+        "matcher": {"tools": ["Write"]},
+        "hooks": [{"type": "command", "command": "node -e \"const p=process.env.CLAUDE_FILE_PATH; if(p && p.endsWith('.html')) { console.log('提示: HTML文件已创建/修改，记得检查链接和导航'); }\""}]
       },
       {
-        "matcher": "Edit",
-        "command": "node -e \"const p=process.env.CLAUDE_FILE_PATH; if(p && p.endsWith('.html')) { console.log('提示: HTML文件已修改，建议本地预览确认效果'); }\""
+        "matcher": {"tools": ["Edit"]},
+        "hooks": [{"type": "command", "command": "node -e \"const p=process.env.CLAUDE_FILE_PATH; if(p && p.endsWith('.html')) { console.log('提示: HTML文件已修改，建议本地预览确认效果'); }\""}]
       }
     ]
   }
