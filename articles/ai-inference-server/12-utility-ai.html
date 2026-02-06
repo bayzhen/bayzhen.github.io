@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="article:title" content="Utility AI决策系统">
+    <meta name="article:description" content="基于效用评分的无状态AI行为决策、响应曲线、YAML配置热更新">
+    <meta name="article:level" content="intermediate">
+    <meta name="article:tags" content="Utility AI,决策系统,热更新">
+    <title>Utility AI决策系统 - 游戏AI推理服务设计</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        article code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.9em; }
+        article pre { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 0.85em; line-height: 1.5; }
+        article pre code { background: none; padding: 0; color: inherit; }
+        article table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.9em; }
+        article th, article td { border: 1px solid #ecf0f1; padding: 8px; text-align: left; }
+        article th { background: #f8f9fa; }
+        article blockquote { border-left: 4px solid #3498db; padding: 10px 20px; margin: 20px 0; background: #f8f9fa; color: #555; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav><ul><li><a href="/">首页</a></li><li><a href="/resume.html">简历</a></li><li><a href="/articles/">文章</a></li></ul></nav>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/ai-inference-server/">游戏AI推理服务</a> <span>/</span>
+            Utility AI决策系统
+        </div>
+        <article>
+            <h1>Utility AI决策系统</h1>
+            <div class="article-meta">
+                <span class="tag">Utility AI</span>
+                <span class="tag">决策系统</span>
+                <span class="tag">热更新</span>
+            </div>
+
+            <h2>1. 背景与动机</h2>
+            <p>AIServer 为数十个角色提供 AI 推理服务。此前角色的技能决策逻辑全部硬编码在 C++ 代码中，存在以下问题：</p>
+            <ul>
+                <li>每次调整 AI 行为都需要改代码、编译、部署，迭代周期长</li>
+                <li>行为逻辑散落在各角色文件中，格式不统一，维护成本高</li>
+                <li>调试需要手动在代码中插入日志，排查效率低</li>
+                <li>策划无法直接参与 AI 行为调优，开发人员成为唯一瓶颈</li>
+            </ul>
+
+            <h3>为什么不用状态机/行为树？</h3>
+            <p>我们的服务器使用负载均衡，请求可能被路由到任意节点。状态机和行为树都是有状态的方案——需要在每帧请求的 <code>extend_info</code> 中携带完整状态信息，每帧反序列化、重建状态树再序列化回去，在网络负载和计算性能上都不划算。</p>
+            <p><strong>Utility AI 天然无状态</strong>——每帧仅依赖当前游戏状态进行评估，完美契合负载均衡架构。</p>
+
+            <h2>2. 什么是 Utility AI</h2>
+            <p>Utility AI 是一种基于效用评分的 AI 决策方法。核心思想：</p>
+            <blockquote>列出所有候选行为 &rarr; 对每个行为打分 &rarr; 选择得分最高的行为执行</blockquote>
+            <pre><code>┌──────────────────────────────────────────────────────────┐
+│                   当前游戏状态（一帧）                      │
+│  敌人距离=25  生命值=80%  X技能就绪  熊能量=60  ...       │
+└─────────────────────┬────────────────────────────────────┘
+                      │
+                      ▼
+        ┌─────────────────────────────┐
+        │   Utility Evaluator 评估器   │
+        │                             │
+        │  释放X技能:  0.85  &larr; 最高   │
+        │  进入熊控制: 0.72           │
+        │  使用C技能:  0.45           │
+        │  交给模型:   0.30           │
+        └─────────────────────────────┘
+                      │
+                      ▼
+              执行「释放X技能」</code></pre>
+
+            <h3>打分机制</h3>
+            <p>每个行为由多个<strong>因素（Factor）</strong>组合计算得分。每个因素 = 输入值 &times; 响应曲线 &times; 运算符：</p>
+            <pre><code>行为得分 = f1(input1) ○1 f2(input2) ○2 f3(input3) ...
+
+其中：
+  inputN  = 游戏状态值（如敌人距离、血量百分比）
+  fN      = 响应曲线（将输入映射到 [0,1] 的效用值）
+  ○N      = 运算符（SET / ADD / MULTIPLY / MIN / MAX）</code></pre>
+
+            <h2>3. 响应曲线</h2>
+            <p>系统内置 7 种曲线类型，覆盖常见的决策场景：</p>
+            <table>
+                <tr><th>曲线类型</th><th>公式</th><th>适用场景</th></tr>
+                <tr><td><strong>CONSTANT</strong></td><td>y = c</td><td>基准分、开关</td></tr>
+                <tr><td><strong>LINEAR</strong></td><td>y = kx + b (clamp[0,1])</td><td>线性关系（距离越近越好等）</td></tr>
+                <tr><td><strong>LINEAR_DECAY</strong></td><td>y = 1 - x/max</td><td>线性衰减（血量越低越紧急等）</td></tr>
+                <tr><td><strong>STEP</strong></td><td>y = x &ge; t ? high : low</td><td>门槛判断（技能是否就绪）</td></tr>
+                <tr><td><strong>INVERSE</strong></td><td>y = 1/(1+kx)</td><td>快速递减（距离远了急剧下降）</td></tr>
+                <tr><td><strong>SIGMOID</strong></td><td>y = 1/(1+e^(-k(x-m)))</td><td>S形过渡（平滑门槛）</td></tr>
+                <tr><td><strong>PIECEWISE</strong></td><td>分段线性插值</td><td>自定义任意形状的响应</td></tr>
+            </table>
+
+            <h2>4. 模块架构</h2>
+            <pre><code>src/core/utility/
+├── utility_types.h              # 数据结构定义（曲线、因素、行为、行为集）
+├── utility_curve.h/cc           # 7种响应曲线的计算实现
+├── utility_evaluator.h/cc       # 核心评估器（行为集选择 + 打分 + 日志生成）
+├── utility_config.h/cc          # 配置管理器（NACOS热更 + YAML解析）
+└── providers/
+    └── yiweite_utility_provider.h/cc   # 伊维特角色：输入值计算 + 行为执行</code></pre>
+
+            <h3>类图</h3>
+            <pre><code>                UtilityConfigManager (Singleton)
+                ┌───────────────────────────┐
+                │ + GetEvaluator(character)  │
+                │ + LoadFromYaml(node)       │
+                │ - evaluators_: map&lt;id, ev&gt; │
+                └──────────┬────────────────┘
+                           │ 管理
+                           ▼
+                UtilityEvaluator (per character)
+                ┌───────────────────────────────┐
+                │ + LoadConfig(config)           │
+                │ + SelectBehaviorSet(checker)   │
+                │ + Evaluate(set_id, provider)   │──&gt; UtilityCurve::Evaluate()
+                │ + EvaluateBehavior(behavior)   │
+                │ - GenerateLogDetail()          │
+                └───────────────────────────────┘
+                           ▲
+                           │ 调用
+                YiWeiTeUtilityProvider
+                ┌──────────────────────────────────┐
+                │ + CreateInputProvider(ctx)        │
+                │ + CreateConditionChecker(ctx)     │
+                │ + ExecuteBehavior(ctx, behavior)  │
+                │ - GetNearestEnemyDistance(ctx)    │
+                │ - GetHealthPercent(ctx)           │
+                │ - ...22+ 输入值计算函数           │
+                └──────────────────────────────────┘</code></pre>
+
+            <h2>5. 请求处理流程</h2>
+            <pre><code>gRPC 请求进入
+    │
+    ▼
+PredictExecutor &rarr; Character.CheckGameModeSkill()
+    │
+    ▼
+┌─────────────────────────────────────────────────────┐
+│ 1. 获取评估器                                         │
+│    evaluator = UTILITY_CONFIG_MANAGER()              │
+│                  -&gt;GetEvaluator("yiweite")           │
+│                                                      │
+│ 2. 选择行为集                                         │
+│    condition_checker 检查当前状态                      │
+│    &rarr; "is_manipulating_bear" ? &rarr; bear_control 行为集   │
+│    &rarr; "is_x_skill_active"   ? &rarr; x_skill_wait 行为集   │
+│    &rarr; "default"             ? &rarr; normal 行为集          │
+│                                                      │
+│ 3. 评估所有候选行为并打分                               │
+│    input_provider 提供游戏状态值                       │
+│    &rarr; 每个行为 &times; 每个因素 &times; 响应曲线 &rarr; 效用分数         │
+│    &rarr; 选出最高分行为                                    │
+│                                                      │
+│ 4. 执行选中的行为                                      │
+│    ExecuteBehavior(ctx, "use_x_skill")               │
+│                                                      │
+│ 5. 自动输出评估日志（无需手动埋点）                      │
+└─────────────────────────────────────────────────────┘</code></pre>
+
+            <h2>6. YAML 配置与热更新</h2>
+            <p>行为逻辑通过 YAML 配置定义，部署在 NACOS 配置中心，支持零停机热更新：</p>
+            <pre><code>NACOS 配置中心
+    │  utility_yiweite.yaml 变更推送
+    ▼
+UtilityConfigManager.LoadFromYaml()
+    │  解析 YAML &rarr; CharacterUtilityConfig
+    ▼
+UtilityEvaluator.LoadConfig()  &larr; mutex 保护，线程安全
+    │
+    ▼
+下一帧请求即使用新配置（零停机）</code></pre>
+
+            <h3>配置示例</h3>
+            <pre><code>version: "1.0"
+character: "yiweite"
+
+# 行为集选择器：按顺序检查条件，命中第一个满足的条件后选择对应行为集
+behavior_set_selector:
+  - condition: "is_manipulating_bear"     # 正在操控熊？
+    set: "bear_control_behaviors"
+  - condition: "is_x_skill_active"        # X技能释放中？
+    set: "x_skill_wait_behaviors"
+  - condition: "default"                  # 默认
+    set: "normal_behaviors"
+
+# 行为集定义
+behavior_sets:
+  normal_behaviors:
+    behaviors:
+      - id: "use_x_skill"
+        factors:
+          - input: "x_skill_ready"          # X技能是否就绪
+            op: "set"
+            curve:
+              type: "step"                  # 门槛判断：就绪=1，未就绪=0
+              threshold: 0.5
+              high: 1.0
+              low: 0.0
+          - input: "nearest_enemy_distance"
+            op: "multiply"
+            curve:
+              type: "inverse"               # 距离越远分数越低
+              k: 0.1
+
+      - id: "enter_bear_control"
+        factors:
+          - input: "has_bear"
+            op: "set"
+            curve:
+              type: "step"
+              threshold: 0.5
+              high: 1.0
+              low: 0.0
+          - input: "bear_energy"
+            op: "multiply"
+            curve:
+              type: "linear"
+              k: 0.01
+              b: 0.0
+
+      - id: "hosted_by_model"               # 兜底：交给模型控制
+        factors:
+          - input: "constant_one"
+            op: "set"
+            curve:
+              type: "constant"
+              value: 0.3                    # 基准分 0.3，其它行为更优时让步</code></pre>
+
+            <p>配置要点：</p>
+            <ul>
+                <li><code>behavior_set_selector</code>：条件选择器，按顺序匹配，命中后进入对应行为集</li>
+                <li>每个行为由多个 <code>factors</code> 组合打分</li>
+                <li><code>op</code> 运算符：<code>set</code>（赋值）、<code>add</code>（加）、<code>multiply</code>（乘）、<code>min</code>、<code>max</code></li>
+                <li><code>curve</code> 响应曲线：定义输入值到效用分数的映射函数</li>
+            </ul>
+
+            <h2>7. 自动化调试日志</h2>
+            <p>Utility AI 模块自动生成详细的评估日志，无需手动埋点：</p>
+            <pre><code>[yiweite utility] set: normal_behaviors
+[yiweite utility] selected: use_x_skill
+[yiweite utility] details:
+  use_x_skill*=0.85(=x_skill_ready:1.00, *nearest_enemy_distance:0.85);
+  enter_bear_control=0.48(=has_bear:1.00, *bear_energy:0.48);
+  hosted_by_model=0.30(=constant_one:0.30)</code></pre>
+            <p>日志格式解读：</p>
+            <ul>
+                <li><code>行为名*</code> &mdash; 带 <code>*</code> 标记的是最终选中的行为</li>
+                <li><code>=0.85</code> &mdash; 该行为的最终效用得分</li>
+                <li>括号内为各因素明细：<code>=</code> SET / <code>+</code> ADD / <code>*</code> MULTIPLY / <code>&lt;</code> MIN / <code>&gt;</code> MAX</li>
+            </ul>
+
+            <table>
+                <tr><th></th><th>硬编码方式</th><th>Utility AI</th></tr>
+                <tr><td>添加日志</td><td>手动插入 LOG 语句</td><td>自动输出，零额外代码</td></tr>
+                <tr><td>日志内容</td><td>碎片化，需多处拼凑</td><td>完整评估公式+数值</td></tr>
+                <tr><td>定位问题</td><td>逐段排查代码逻辑</td><td>直接看哪个因素分数异常</td></tr>
+                <tr><td>开关控制</td><td>改代码重编译</td><td>日志级别控制即可</td></tr>
+            </table>
+
+            <h2>8. 实现概览：伊维特角色</h2>
+            <p>伊维特是第一个接入 Utility AI 的角色，作为可行性验证。</p>
+
+            <h3>已实现的输入值（22项）</h3>
+            <table>
+                <tr><th>分类</th><th>输入值</th><th>说明</th></tr>
+                <tr><td>通用</td><td><code>nearest_enemy_distance</code></td><td>最近敌人距离</td></tr>
+                <tr><td>通用</td><td><code>health_percent</code></td><td>生命值百分比</td></tr>
+                <tr><td>通用</td><td><code>is_safe</code></td><td>是否安全（10帧无伤且敌人远）</td></tr>
+                <tr><td>通用</td><td><code>in_battle</code></td><td>是否在战斗中</td></tr>
+                <tr><td>技能</td><td><code>x/q/c_skill_ready</code></td><td>技能就绪状态</td></tr>
+                <tr><td>伊维特</td><td><code>has_bear</code> / <code>bear_energy</code></td><td>熊相关状态</td></tr>
+                <tr><td>伊维特</td><td><code>is_manipulating_bear</code></td><td>是否在操控熊</td></tr>
+                <tr><td>伊维特</td><td><code>bear_target_distance</code></td><td>熊到目标距离</td></tr>
+            </table>
+            <p>其中「通用」类输入值可直接复用到其他角色，无需重复开发。</p>
+
+            <h3>已实现的行为（14项）</h3>
+            <table>
+                <tr><th>行为集</th><th>行为</th><th>说明</th></tr>
+                <tr><td>普通</td><td><code>use_x_skill</code> / <code>use_c_skill</code></td><td>释放技能</td></tr>
+                <tr><td>普通</td><td><code>raise_bear</code> / <code>throw_bear</code></td><td>召唤/投掷熊</td></tr>
+                <tr><td>普通</td><td><code>enter_bear_control</code></td><td>进入熊控制</td></tr>
+                <tr><td>普通</td><td><code>hosted_by_model</code></td><td>兜底：交给模型控制</td></tr>
+                <tr><td>熊控制</td><td><code>bear_charge</code> / <code>bear_throw_snowball</code></td><td>熊攻击行为</td></tr>
+                <tr><td>熊控制</td><td><code>exit_bear_control</code></td><td>退出熊控制</td></tr>
+                <tr><td>等待</td><td><code>wait_x_skill</code> / <code>cancel_skill</code></td><td>等待/取消技能释放</td></tr>
+            </table>
+
+            <h2>9. 优势总结</h2>
+            <table>
+                <tr><th>维度</th><th>硬编码方式</th><th>Utility AI</th></tr>
+                <tr><td>迭代速度</td><td>改代码 &rarr; 编译 &rarr; 部署（分钟级）</td><td>改 YAML &rarr; 推送 &rarr; 生效（秒级）</td></tr>
+                <tr><td>状态管理</td><td>需要跨节点同步状态</td><td>天然无状态，适配负载均衡</td></tr>
+                <tr><td>行为管理</td><td>散落在各角色 .cc 文件中</td><td>统一 YAML 配置，标准化管理</td></tr>
+                <tr><td>调试效率</td><td>手动插入日志，碎片化</td><td>自动输出完整评估公式和数值</td></tr>
+                <tr><td>协作模式</td><td>开发人员是唯一瓶颈</td><td>策划可参与配置调优</td></tr>
+                <tr><td>版本管理</td><td>混在业务代码中</td><td>YAML 纳入 Git / CI/CD，可追溯回滚</td></tr>
+            </table>
+
+            <h2>10. 扩展与推广路径</h2>
+            <p>系统设计充分考虑了可扩展性：</p>
+            <ul>
+                <li><strong>新增曲线类型</strong>：在 <code>UtilityCurve</code> 中添加一种计算函数</li>
+                <li><strong>新增输入值</strong>：在 Provider 中添加一个取值函数</li>
+                <li><strong>新增角色</strong>：新建 Provider + YAML 配置，核心评估器完全复用</li>
+            </ul>
+
+            <p>推广路径：</p>
+            <ol>
+                <li><strong>阶段1</strong>（已完成）：伊维特单角色验证</li>
+                <li><strong>阶段2</strong>：推广到 3-5 个角色，完善通用输入值库</li>
+                <li><strong>阶段3</strong>：通用 Provider 基类 + 模板配置，降低新角色接入成本</li>
+                <li><strong>阶段4</strong>：可视化编辑器，策划可直接调参</li>
+                <li><strong>阶段5</strong>：YAML 配置纳入 CI/CD，多环境管理</li>
+                <li><strong>阶段6</strong>：全角色覆盖</li>
+            </ol>
+
+            <div class="nav-links">
+                <a href="11-3d-rendering.html">&larr; 上一篇: 3D渲染系统</a>
+                <a href="index.html">返回目录 &rarr;</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>
