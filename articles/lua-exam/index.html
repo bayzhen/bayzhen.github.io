@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lua 模拟面试考试 - 陈栢成</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        nav {
+            background: #2c3e50;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        nav a:hover { color: #3498db; }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* ===== Screen visibility ===== */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* ===== Start Screen ===== */
+        .start-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .start-header h1 {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .start-header p {
+            color: #7f8c8d;
+        }
+
+        .config-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .config-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .option-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            padding: 10px 22px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .option-btn:hover { border-color: #3498db; color: #3498db; }
+        .option-btn.selected { border-color: #3498db; background: #3498db; color: #fff; }
+
+        .start-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .start-btn:hover { background: #2980b9; }
+
+        .history-section {
+            margin-top: 40px;
+        }
+
+        .history-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .history-table th, .history-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .history-table th {
+            background: #2c3e50;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .history-table td { font-size: 0.9em; }
+
+        .history-empty {
+            text-align: center;
+            padding: 30px;
+            color: #95a5a6;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .wrong-book-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background 0.2s;
+        }
+
+        .wrong-book-btn:hover { background: #c0392b; }
+
+        /* ===== Exam Screen ===== */
+        .exam-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .exam-progress {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .exam-timer {
+            font-weight: 600;
+            color: #e74c3c;
+            font-size: 1.1em;
+        }
+
+        .exam-timer.hidden { display: none; }
+
+        .exam-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .exam-actions button {
+            padding: 6px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .exam-actions button:hover { border-color: #3498db; color: #3498db; }
+        .exam-actions button.flagged { border-color: #f39c12; color: #f39c12; background: #fef9e7; }
+
+        .submit-exam-btn {
+            background: #e74c3c !important;
+            color: #fff !important;
+            border-color: #e74c3c !important;
+        }
+
+        .submit-exam-btn:hover { background: #c0392b !important; }
+
+        .question-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            min-height: 300px;
+        }
+
+        .question-chapter {
+            display: inline-block;
+            background: #ecf0f1;
+            color: #7f8c8d;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-bottom: 12px;
+        }
+
+        .question-type {
+            display: inline-block;
+            background: #3498db;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-bottom: 12px;
+            margin-left: 6px;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .question-text code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        .question-text pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 12px 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .question-text pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .choices {
+            list-style: none;
+        }
+
+        .choice-item {
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .choice-item:hover { border-color: #3498db; background: #f8f9fa; }
+        .choice-item.selected { border-color: #3498db; background: #ebf5fb; }
+
+        .choice-item code {
+            background: #f0f0f0;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 0.9em;
+        }
+
+        .fill-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: "SFMono-Regular", Consolas, monospace;
+            transition: border-color 0.2s;
+        }
+
+        .fill-input:focus { border-color: #3498db; outline: none; }
+
+        .tf-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .tf-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .tf-btn:hover { border-color: #3498db; }
+        .tf-btn.selected { border-color: #3498db; background: #ebf5fb; color: #3498db; }
+
+        .exam-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .exam-nav button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .prev-btn { background: #ecf0f1; color: #2c3e50; }
+        .prev-btn:hover { background: #ddd; }
+        .next-btn { background: #3498db; color: #fff; }
+        .next-btn:hover { background: #2980b9; }
+
+        /* Question map */
+        .question-map {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .question-map h4 { color: #2c3e50; margin-bottom: 10px; font-size: 0.9em; }
+
+        .map-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .map-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid #ecf0f1;
+            background: #fff;
+            color: #7f8c8d;
+            transition: all 0.2s;
+        }
+
+        .map-dot:hover { border-color: #3498db; }
+        .map-dot.current { border-color: #3498db; background: #3498db; color: #fff; }
+        .map-dot.answered { background: #d5f5e3; border-color: #27ae60; color: #27ae60; }
+        .map-dot.flagged { border-color: #f39c12; background: #fef9e7; color: #f39c12; }
+        .map-dot.answered.flagged { background: #fef9e7; border-color: #f39c12; color: #f39c12; }
+
+        /* ===== Result Screen ===== */
+        .result-header {
+            text-align: center;
+            background: #fff;
+            border-radius: 10px;
+            padding: 40px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .result-header h1 { color: #2c3e50; margin-bottom: 5px; }
+
+        .score-display {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .score-display.high { color: #27ae60; }
+        .score-display.mid { color: #f39c12; }
+        .score-display.low { color: #e74c3c; }
+
+        .result-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #7f8c8d;
+        }
+
+        /* Chapter stats bars */
+        .chapter-stats {
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .chapter-stats h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .chapter-bar {
+            margin-bottom: 12px;
+        }
+
+        .chapter-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+        }
+
+        .chapter-bar-label span:first-child { color: #2c3e50; }
+        .chapter-bar-label span:last-child { color: #7f8c8d; }
+
+        .chapter-bar-track {
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .chapter-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .weakness-hint {
+            background: #fef9e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 25px;
+        }
+
+        .weakness-hint h4 { color: #f39c12; margin-bottom: 8px; }
+        .weakness-hint p { color: #7f8c8d; font-size: 0.9em; }
+
+        /* Review section */
+        .review-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .review-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .review-card.wrong { border-left-color: #e74c3c; }
+
+        .review-q {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+
+        .review-q pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            font-size: 0.85em;
+            overflow-x: auto;
+        }
+
+        .review-answer {
+            font-size: 0.9em;
+            margin-bottom: 4px;
+        }
+
+        .review-answer.yours { color: #e74c3c; }
+        .review-answer.correct { color: #27ae60; }
+
+        .review-explain {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            color: #555;
+            margin-top: 10px;
+            line-height: 1.7;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .result-actions button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .retry-btn { background: #3498db; color: #fff; }
+        .retry-btn:hover { background: #2980b9; }
+        .back-btn { background: #ecf0f1; color: #2c3e50; }
+        .back-btn:hover { background: #ddd; }
+
+        .review-filter {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .filter-btn:hover { border-color: #3498db; color: #3498db; }
+        .filter-btn.active { background: #3498db; color: #fff; border-color: #3498db; }
+
+        .clear-history-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 14px;
+            background: #fff;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+        }
+
+        .clear-history-btn:hover { background: #e74c3c; color: #fff; }
+
+        @media (max-width: 600px) {
+            .start-header h1 { font-size: 1.6em; }
+            .question-card { padding: 20px; }
+            .exam-topbar { padding: 10px 14px; }
+            .option-group { gap: 8px; }
+            .option-btn { padding: 8px 16px; font-size: 0.85em; }
+            .result-stats { gap: 15px; }
+            .score-display { font-size: 2.5em; }
+            .exam-nav button { padding: 10px 20px; }
+            .tf-group { gap: 10px; }
+            .map-dot { width: 28px; height: 28px; font-size: 0.7em; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/resume.html">简历</a></li>
+            <li><a href="/articles/">文章</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== START SCREEN ===== -->
+    <div id="startScreen" class="screen active">
+        <div class="container">
+            <div class="start-header">
+                <h1>Lua 模拟面试考试</h1>
+                <p>面向腾讯洛克王国 UE 客户端岗位 | 覆盖 13 个核心章节 | 共 42 道题</p>
+            </div>
+
+            <div class="config-card">
+                <h3>选择题量</h3>
+                <div class="option-group" id="countGroup">
+                    <button class="option-btn selected" data-value="15">15 题（快速）</button>
+                    <button class="option-btn" data-value="25">25 题（标准）</button>
+                    <button class="option-btn" data-value="0">全部 42 题</button>
+                </div>
+            </div>
+
+            <div class="config-card">
+                <h3>计时设置</h3>
+                <div class="option-group" id="timerGroup">
+                    <button class="option-btn selected" data-value="0">不计时</button>
+                    <button class="option-btn" data-value="30">30 分钟</button>
+                    <button class="option-btn" data-value="45">45 分钟</button>
+                    <button class="option-btn" data-value="60">60 分钟</button>
+                </div>
+            </div>
+
+            <div class="config-card">
+                <h3>出题模式</h3>
+                <div class="option-group" id="modeGroup">
+                    <button class="option-btn selected" data-value="random">随机出题</button>
+                    <button class="option-btn" data-value="order">顺序出题</button>
+                    <button class="option-btn" data-value="wrong">错题重练</button>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startExam()">开始考试</button>
+
+            <div class="history-section">
+                <h3>历史记录</h3>
+                <div id="historyArea"></div>
+                <button class="wrong-book-btn" onclick="startWrongBook()" id="wrongBookBtn" style="display:none">
+                    错题本 (<span id="wrongCount">0</span> 题)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== EXAM SCREEN ===== -->
+    <div id="examScreen" class="screen">
+        <div class="container">
+            <div class="exam-topbar">
+                <span class="exam-progress" id="examProgress">1 / 15</span>
+                <span class="exam-timer hidden" id="examTimer">30:00</span>
+                <div class="exam-actions">
+                    <button onclick="toggleFlag()" id="flagBtn">标记</button>
+                    <button class="submit-exam-btn" onclick="confirmSubmit()">交卷</button>
+                </div>
+            </div>
+
+            <div class="question-map" id="questionMap">
+                <h4>答题卡</h4>
+                <div class="map-grid" id="mapGrid"></div>
+            </div>
+
+            <div class="question-card" id="questionCard"></div>
+
+            <div class="exam-nav">
+                <button class="prev-btn" onclick="prevQuestion()">上一题</button>
+                <button class="next-btn" onclick="nextQuestion()" id="nextBtn">下一题</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RESULT SCREEN ===== -->
+    <div id="resultScreen" class="screen">
+        <div class="container">
+            <div class="result-header">
+                <h1>考试结果</h1>
+                <div class="score-display" id="scoreDisplay">0%</div>
+                <div class="result-stats" id="resultStats"></div>
+            </div>
+
+            <div id="weaknessArea"></div>
+
+            <div class="chapter-stats" id="chapterStats">
+                <h3>章节正确率</h3>
+                <div id="chapterBars"></div>
+            </div>
+
+            <div class="review-section">
+                <h3>逐题回顾</h3>
+                <div class="review-filter" id="reviewFilter">
+                    <button class="filter-btn active" data-filter="all" onclick="filterReview('all',this)">全部</button>
+                    <button class="filter-btn" data-filter="wrong" onclick="filterReview('wrong',this)">答错</button>
+                    <button class="filter-btn" data-filter="correct" onclick="filterReview('correct',this)">答对</button>
+                </div>
+                <div id="reviewArea"></div>
+            </div>
+
+            <div class="result-actions">
+                <button class="retry-btn" onclick="retryExam()">再考一次</button>
+                <button class="back-btn" onclick="goHome()">返回首页</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===== QUESTION BANK =====
+const QUESTIONS = [
+// --- Ch1: 基础类型 ---
+{
+    id:1, chapter:"基础类型", type:"single",
+    text:"Lua 共有几种基础数据类型？",
+    choices:["6 种","7 种","8 种","9 种"],
+    answer:2,
+    explain:"Lua 有 8 种基础类型：nil、boolean、number、string、table、function、userdata、thread。"
+},
+{
+    id:2, chapter:"基础类型", type:"judge",
+    text:"在 Lua 5.1 中，number 类型区分了 integer 和 float 两种子类型。",
+    answer:false,
+    explain:"Lua 5.1（含 LuaJIT）的 number 只有 double 一种。从 Lua 5.3 开始才区分 integer（64位整数）和 float。"
+},
+{
+    id:3, chapter:"基础类型", type:"single",
+    text:"以下关于 Lua string 的说法，错误的是：",
+    choices:[
+        "string 是不可变的",
+        "短字符串会进行字符串驻留（hash 去重）",
+        "可以通过索引修改字符串中的某个字符",
+        "string 是 8 种基础类型之一"
+    ],
+    answer:2,
+    explain:"Lua 的 string 是不可变的（immutable），不能通过索引修改某个字符。要修改需创建新字符串。"
+},
+
+// --- Ch2: table ---
+{
+    id:4, chapter:"table", type:"single",
+    text:"Lua table 的数组部分索引从几开始？",
+    choices:["0","1","取决于实现","-1"],
+    answer:1,
+    explain:"Lua table 的数组部分是 1-indexed，即从 1 开始。这是 Lua 的惯例。"
+},
+{
+    id:5, chapter:"table", type:"code",
+    text:'以下代码输出什么？\n<pre><code>local t = {10, 20, nil, 40}\nprint(#t)</code></pre>',
+    answer:["4","2"],
+    explain:"当 table 存在 nil 空洞时，# 运算符行为未定义。可能返回 4（找到 t[5]==nil）或 2（找到 t[3]==nil）。实际结果取决于实现，这正是面试要考察的 # 运算符陷阱。答 4 或 2 均可。"
+},
+{
+    id:6, chapter:"table", type:"single",
+    text:"关于 table 扩容，下列说法正确的是：",
+    choices:[
+        "数组部分和哈希部分都是 1.5 倍扩容",
+        "数组部分 2 倍扩容，哈希部分不扩容",
+        "数组部分 2 倍扩容，哈希部分 2 倍 rehash",
+        "table 不会自动扩容，需手动 resize"
+    ],
+    answer:2,
+    explain:"Lua table 的数组部分按 2 倍扩容，哈希部分也按 2 倍进行 rehash。可以通过预分配来减少扩容开销。"
+},
+
+// --- Ch3: Metatable ---
+{
+    id:7, chapter:"Metatable", type:"single",
+    text:'当访问 table 中不存在的 key 时，会触发哪个元方法？',
+    choices:["__newindex","__index","__call","__tostring"],
+    answer:1,
+    explain:"__index 在读取不存在的 key 时触发。__newindex 是写入不存在的 key 时触发。"
+},
+{
+    id:8, chapter:"Metatable", type:"single",
+    text:"<code>rawget</code> 和 <code>rawset</code> 的作用是什么？",
+    choices:[
+        "比普通读写更快的优化版本",
+        "绕过元表直接操作 table",
+        "只能用于 userdata",
+        "用于读写全局变量"
+    ],
+    answer:1,
+    explain:"rawget/rawset 绕过元表（metatable）直接操作 table，常用于 __newindex 元方法内避免死循环。"
+},
+{
+    id:9, chapter:"Metatable", type:"code",
+    text:'以下代码输出什么？\n<pre><code>local t = setmetatable({}, {\n    __index = function(self, k)\n        return k .. "!"\n    end\n})\nprint(t.hello)</code></pre>',
+    answer:["hello!"],
+    explain:"t 中没有 hello 这个 key，触发 __index 元方法。该函数接收 table 和 key，返回 key .. \"!\"，即 \"hello!\"。"
+},
+{
+    id:10, chapter:"Metatable", type:"judge",
+    text:"<code>__gc</code> 元方法在 Lua 5.1 中可以用于普通 table。",
+    answer:false,
+    explain:"在 Lua 5.1 中，__gc 仅对 full userdata 有效。从 Lua 5.2 开始，table 也支持 __gc 元方法。"
+},
+{
+    id:11, chapter:"Metatable", type:"single",
+    text:"<code>__index</code> 的查找链顺序是？",
+    choices:[
+        "元表 -> table 自身 -> nil",
+        "table 自身 -> mt.__index（若是 table 则递归）-> nil",
+        "全局表 -> table 自身 -> 元表",
+        "table 自身 -> nil（不递归）"
+    ],
+    answer:1,
+    explain:"先查 table 自身，没有则查元表的 __index。如果 __index 是一个 table，会递归地在该 table 上重复此过程，直到找到值或返回 nil。"
+},
+
+// --- Ch4: OOP ---
+{
+    id:12, chapter:"OOP", type:"code",
+    text:'以下代码输出什么？\n<pre><code>local Base = {}\nBase.__index = Base\nfunction Base:new(o)\n    o = o or {}\n    setmetatable(o, self)\n    self.__index = self\n    return o\nend\nfunction Base:speak() print("base") end\n\nlocal Child = Base:new()\nfunction Child:speak() print("child") end\n\nlocal obj = Child:new()\nobj:speak()</code></pre>',
+    answer:["child"],
+    explain:"obj 的元表是 Child，Child 上定义了 speak 方法，所以输出 \"child\"。这是 Lua 基于原型链的 OOP 模式。"
+},
+{
+    id:13, chapter:"OOP", type:"fill",
+    text:'Lua 中 <code>obj:foo(x)</code> 是哪个调用的语法糖？请填写等价形式。',
+    answer:["obj.foo(obj, x)","obj.foo(obj,x)"],
+    explain:": 语法糖会自动将调用者作为第一个参数传入。obj:foo(x) 等价于 obj.foo(obj, x)。"
+},
+{
+    id:14, chapter:"OOP", type:"single",
+    text:"Lua OOP 中，继承链的核心机制是：",
+    choices:[
+        "class 关键字",
+        "prototype 属性",
+        "__index 元方法链",
+        "extends 语法"
+    ],
+    answer:2,
+    explain:"Lua 没有 class 关键字。OOP 继承通过 __index 元方法链实现：obj -> Child -> Base 形成原型链。"
+},
+
+// --- Ch5: 闭包/Upvalue ---
+{
+    id:15, chapter:"闭包/Upvalue", type:"code",
+    text:'以下代码输出什么？\n<pre><code>function counter()\n    local n = 0\n    return function()\n        n = n + 1\n        return n\n    end\nend\nlocal c = counter()\nprint(c())\nprint(c())</code></pre>',
+    answer:["1\n2","1 2"],
+    explain:"闭包捕获了 upvalue n。每次调用 c()，n 递增。第一次返回 1，第二次返回 2。"
+},
+{
+    id:16, chapter:"闭包/Upvalue", type:"fill",
+    text:"闭包的定义是：函数 + ______ 引用。",
+    answer:["upvalue","Upvalue","up value"],
+    explain:"闭包 = 函数 + upvalue 引用。upvalue 是闭包捕获的外层函数的局部变量。"
+},
+{
+    id:17, chapter:"闭包/Upvalue", type:"judge",
+    text:"当闭包从创建它的函数中逃逸后，其 upvalue 会从栈上迁移到堆上。",
+    answer:true,
+    explain:"upvalue 初始在栈上。当闭包逃逸（外层函数返回）后，upvalue 被 close（关闭），迁移到堆上，这样闭包仍可访问。"
+},
+
+// --- Ch6: 协程 ---
+{
+    id:18, chapter:"协程", type:"code",
+    text:'以下代码中 r1 和 r2 的值分别是什么？\n<pre><code>local co = coroutine.create(function(a)\n    local b = coroutine.yield(a + 1)\n    return b + 2\nend)\nlocal ok, r1 = coroutine.resume(co, 10)\nlocal ok, r2 = coroutine.resume(co, 20)</code></pre>',
+    answer:["11, 22","11,22","r1=11, r2=22","r1=11,r2=22"],
+    explain:"第一次 resume 传入 10，协程执行到 yield(10+1)，r1=11。第二次 resume 传入 20，20 成为 yield 的返回值赋给 b，return 20+2，r2=22。"
+},
+{
+    id:19, chapter:"协程", type:"single",
+    text:"Lua 协程与操作系统线程的关键区别是：",
+    choices:[
+        "协程更快",
+        "协程是抢占式的",
+        "协程是协作式的，需手动 yield，无竞态",
+        "协程可以利用多核 CPU"
+    ],
+    answer:2,
+    explain:"Lua 协程是协作式（cooperative）的，需要手动 yield 让出执行权。它运行在单线程上，没有竞态条件。线程是抢占式的。"
+},
+{
+    id:20, chapter:"协程", type:"single",
+    text:"<code>coroutine.wrap(f)</code> 返回什么？",
+    choices:[
+        "一个协程对象",
+        "一个函数，调用即 resume",
+        "一个 thread 类型",
+        "一个 userdata"
+    ],
+    answer:1,
+    explain:"coroutine.wrap 返回一个函数。每次调用该函数等同于 resume 协程，更方便使用。"
+},
+
+// --- Ch7: GC ---
+{
+    id:21, chapter:"GC", type:"single",
+    text:"Lua 5.1 的 GC 使用什么算法？",
+    choices:[
+        "引用计数",
+        "分代 GC",
+        "增量式 mark-and-sweep + 三色标记",
+        "复制式 GC"
+    ],
+    answer:2,
+    explain:"Lua 5.1 使用增量式 mark-and-sweep 算法，配合三色标记法（白、灰、黑）。Lua 5.2+ 才引入分代 GC。"
+},
+{
+    id:22, chapter:"GC", type:"single",
+    text:"三色标记法中，灰色对象表示：",
+    choices:[
+        "已被标记为垃圾",
+        "自身已标记，但子对象尚未遍历",
+        "存活且子对象也已标记完成",
+        "正在被使用"
+    ],
+    answer:1,
+    explain:"灰色 = 自身已标记（存活），但子对象还未遍历。黑色 = 自身和子对象都已标记。白色 = 未扫描，标记结束后仍白则为垃圾。"
+},
+{
+    id:23, chapter:"GC", type:"fill",
+    text:'增量 GC 期间，黑色对象引用了白色对象时需触发 ______ 机制来维护三色不变式。',
+    answer:["写屏障","write barrier","Write Barrier","写屏障（write barrier）"],
+    explain:"写屏障（write barrier）在黑色对象引用白色对象时触发，将黑色回退为灰色（back barrier）或白色前推为灰色（forward barrier），以保证三色不变式。"
+},
+{
+    id:24, chapter:"GC", type:"judge",
+    text:"Lua 5.1 已经支持分代 GC（generational GC）。",
+    answer:false,
+    explain:"Lua 5.1 只有增量式 mark-and-sweep。分代 GC（young/old 两代）从 Lua 5.2 开始引入。"
+},
+{
+    id:25, chapter:"GC", type:"single",
+    text:'<code>collectgarbage("setpause", 100)</code> 的作用是：',
+    choices:[
+        "暂停 GC 100 秒",
+        "设置下一轮 GC 启动的内存增长百分比阈值",
+        "设置每次 GC 步进的速率",
+        "强制执行一次完整 GC"
+    ],
+    answer:1,
+    explain:"setpause 设置下一轮 GC 启动的阈值：内存使用量增长到当前的多少百分比时启动新一轮 GC。100 表示增长 100%（翻倍）时启动。"
+},
+
+// --- Ch8: C API ---
+{
+    id:26, chapter:"C API", type:"single",
+    text:"Lua C API 中，栈索引 -1 表示：",
+    choices:["栈底","栈顶","无效索引","第一个参数"],
+    answer:1,
+    explain:"正索引从栈底(1)开始，负索引从栈顶(-1)开始。-1 就是栈顶元素。"
+},
+{
+    id:27, chapter:"C API", type:"fill",
+    text:'在 C API 中调用 Lua 函数，<code>lua_pcall(L, 1, 1, 0)</code> 的三个数字参数分别表示：____个参数、____个返回值、____（错误处理函数位置）。',
+    answer:["1, 1, 0","1,1,0","1个参数, 1个返回值, 0"],
+    explain:"lua_pcall(L, nargs, nresults, errfunc)：1个参数，1个返回值，0表示无自定义错误处理函数。"
+},
+{
+    id:28, chapter:"C API", type:"single",
+    text:"full userdata 和 light userdata 的区别，下列说法正确的是：",
+    choices:[
+        "两者都受 GC 管理",
+        "full userdata 受 GC 管理且有独立 metatable，light userdata 仅一个 void* 不受 GC",
+        "light userdata 比 full userdata 功能更强大",
+        "两者没有本质区别"
+    ],
+    answer:1,
+    explain:"full userdata 是 Lua 管理的内存块，有独立 metatable，受 GC 管理。light userdata 仅是一个 void* 指针，无 metatable，不被 GC 管理。"
+},
+{
+    id:29, chapter:"C API", type:"code",
+    text:'以下 C API 代码中，<code>luaL_ref(L, LUA_REGISTRYINDEX)</code> 的作用是什么？\n<pre><code>lua_pushvalue(L, -1);\nint ref = luaL_ref(L, LUA_REGISTRYINDEX);</code></pre>',
+    answer:["在注册表中创建引用","创建引用","在registry中创建引用"],
+    explain:"luaL_ref 将栈顶元素弹出并在指定 table（这里是注册表 LUA_REGISTRYINDEX）中创建一个整数引用。可通过 lua_rawgeti 取回，luaL_unref 释放。"
+},
+
+// --- Ch9: LuaJIT vs PUC ---
+{
+    id:30, chapter:"LuaJIT", type:"single",
+    text:"LuaJIT 相比 PUC Lua 5.1 的性能提升大约是：",
+    choices:["2-3 倍","5-8 倍","10-50 倍","100+ 倍"],
+    answer:2,
+    explain:"LuaJIT 通过 JIT 编译到机器码，性能通常比 PUC Lua 解释执行快 10-50 倍。"
+},
+{
+    id:31, chapter:"LuaJIT", type:"single",
+    text:"LuaJIT 的 GC 管理内存上限约为：",
+    choices:["256MB","512MB","1GB","2GB"],
+    answer:3,
+    explain:"LuaJIT 2.1 的 GC 管理内存限制约为 2GB，这是一个已知限制。PUC Lua 在 64 位系统上无此限制。"
+},
+{
+    id:32, chapter:"LuaJIT", type:"judge",
+    text:"LuaJIT 的 FFI 允许直接调用 C 函数而无需通过 Lua C API。",
+    answer:true,
+    explain:"LuaJIT 的 FFI（Foreign Function Interface）可以直接调用 C 函数和访问 C 数据结构，无需编写 C API 绑定代码，性能也更好。"
+},
+
+// --- Ch10: 热更新 ---
+{
+    id:33, chapter:"热更新", type:"code",
+    text:'以下热更新代码的核心原理是什么？\n<pre><code>function hotfix(modname)\n    package.loaded[modname] = nil\n    require(modname)\nend</code></pre>',
+    answer:["替换package.loaded中的模块缓存","清缓存后重新加载","清除模块缓存重新require","清缓存重新加载"],
+    explain:"热更新的核心是：先清除 package.loaded 中的模块缓存，然后重新 require 加载新版本模块代码。"
+},
+{
+    id:34, chapter:"热更新", type:"single",
+    text:"Lua 热更新的常见难点不包括：",
+    choices:[
+        "旧闭包的 upvalue 不会自动更新",
+        "已创建对象的 metatable 指向旧模块",
+        "require 无法加载 .lua 文件",
+        "通常只替换函数体，保留数据 table"
+    ],
+    answer:2,
+    explain:"require 可以正常加载 .lua 文件，这不是热更新的难点。真正的难点是旧闭包的 upvalue 不更新、旧对象的 metatable 指向旧模块等。"
+},
+{
+    id:35, chapter:"热更新", type:"judge",
+    text:"热更新后，旧闭包持有的 upvalue 会自动指向新模块中的变量。",
+    answer:false,
+    explain:"旧闭包持有的 upvalue 不会自动更新，仍然引用旧的变量。需要手动遍历替换函数引用，这是热更新的一大难点。"
+},
+
+// --- Ch11: Lua+UE ---
+{
+    id:36, chapter:"Lua+UE", type:"single",
+    text:"UnLua 绑定 UE 的核心原理是：",
+    choices:[
+        "手动为每个类编写绑定代码",
+        "利用 UE 反射系统自动导出到 Lua",
+        "通过代码生成工具预处理",
+        "直接修改 UE 引擎源码"
+    ],
+    answer:1,
+    explain:"UnLua 利用 UE 反射系统（UClass/UFunction/UProperty）自动将 C++ 类和函数导出到 Lua，无需手动编写绑定。"
+},
+{
+    id:37, chapter:"Lua+UE", type:"single",
+    text:"在 UE+Lua 开发中，以下哪项不是常见的性能注意事项？",
+    choices:[
+        "避免在 Tick 中高频跨语言调用",
+        "大量小对象传递用 struct 而非逐字段传",
+        "Delegate 绑定 Lua 函数要注意 Unbind 防泄漏",
+        "Lua 代码必须编译为 C++ 才能运行"
+    ],
+    answer:3,
+    explain:"Lua 代码不需要编译为 C++，它通过解释器/JIT 运行。其他三项都是 UE+Lua 开发中常见的性能注意事项。"
+},
+{
+    id:38, chapter:"Lua+UE", type:"judge",
+    text:"UObject 被 UE GC 回收后，Lua 侧仍持有引用会导致野指针问题。",
+    answer:true,
+    explain:"这是 UE+Lua 集成的常见坑。UObject 生命周期由 UE GC 管理，如果 C++ 侧已回收但 Lua 侧仍持有引用，访问会导致野指针。需要做判空处理。"
+},
+
+// --- Ch12: 性能优化 ---
+{
+    id:39, chapter:"性能优化", type:"single",
+    text:"以下哪种字符串拼接方式在循环中性能最好？",
+    choices:[
+        "用 .. 运算符逐个拼接",
+        "用 string.format 逐个拼接",
+        "先存入 table 再用 table.concat",
+        "以上性能一样"
+    ],
+    answer:2,
+    explain:"table.concat 是 O(n) 的，比在循环中用 .. 拼接（会产生大量中间字符串，O(n^2)）快得多。这是 Lua 性能优化的经典技巧。"
+},
+{
+    id:40, chapter:"性能优化", type:"judge",
+    text:"将频繁使用的全局函数 local 化（如 <code>local insert = table.insert</code>）可以提升性能。",
+    answer:true,
+    explain:"local 变量访问比全局变量快，因为全局变量需要在 _G 表中做哈希查找，而 local 变量直接通过栈索引访问。在热路径中效果明显。"
+},
+
+// --- Ch13: Weak Table ---
+{
+    id:41, chapter:"Weak Table", type:"fill",
+    text:'设置弱值引用表的元表模式字符串是 <code>__mode = "______"</code>。',
+    answer:["v"],
+    explain:"__mode = \"v\" 表示弱值（weak value），value 没有其他引用时可被 GC 回收。\"k\" 是弱键，\"kv\" 是键值都弱。"
+},
+{
+    id:42, chapter:"Weak Table", type:"single",
+    text:"Weak table 的典型用途不包括：",
+    choices:[
+        "对象缓存（避免阻止 GC 回收）",
+        "观察者注册（防止泄漏）",
+        "代替普通数组存储数据",
+        "实现 memoize 缓存"
+    ],
+    answer:2,
+    explain:"Weak table 不适合代替普通数组存储数据，因为元素可能随时被 GC 回收。它的典型用途是对象缓存、观察者模式（防泄漏）、memoize 缓存等。"
+}
+];
+
+// ===== STATE =====
+let config = { count: 15, timer: 0, mode: 'random' };
+let exam = {
+    questions: [],
+    answers: {},    // { qIndex: userAnswer }
+    flags: new Set(),
+    current: 0,
+    startTime: 0,
+    questionTimes: {},  // { qIndex: seconds }
+    questionStartTime: 0,
+    timerInterval: null,
+    remainingSeconds: 0
+};
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+    initOptionGroups();
+    renderHistory();
+    updateWrongBookBtn();
+});
+
+function initOptionGroups() {
+    ['countGroup','timerGroup','modeGroup'].forEach(function(gid) {
+        var group = document.getElementById(gid);
+        group.querySelectorAll('.option-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                group.querySelectorAll('.option-btn').forEach(function(b) { b.classList.remove('selected'); });
+                btn.classList.add('selected');
+            });
+        });
+    });
+}
+
+function getConfig() {
+    var countBtn = document.querySelector('#countGroup .selected');
+    var timerBtn = document.querySelector('#timerGroup .selected');
+    var modeBtn = document.querySelector('#modeGroup .selected');
+    config.count = parseInt(countBtn.dataset.value);
+    config.timer = parseInt(timerBtn.dataset.value);
+    config.mode = modeBtn.dataset.value;
+}
+
+// ===== EXAM START =====
+function startExam() {
+    getConfig();
+    var pool;
+    if (config.mode === 'wrong') {
+        pool = getWrongQuestions();
+        if (pool.length === 0) {
+            alert('错题本为空，请先完成一次考试！');
+            return;
+        }
+    } else {
+        pool = QUESTIONS.slice();
+    }
+
+    if (config.mode === 'random') {
+        shuffle(pool);
+    }
+
+    var count = config.count === 0 ? pool.length : Math.min(config.count, pool.length);
+    exam.questions = pool.slice(0, count);
+    exam.answers = {};
+    exam.flags = new Set();
+    exam.current = 0;
+    exam.startTime = Date.now();
+    exam.questionTimes = {};
+    exam.questionStartTime = Date.now();
+
+    showScreen('examScreen');
+    document.getElementById('examProgress').textContent = '1 / ' + exam.questions.length;
+
+    // Timer
+    var timerEl = document.getElementById('examTimer');
+    if (config.timer > 0) {
+        exam.remainingSeconds = config.timer * 60;
+        timerEl.classList.remove('hidden');
+        updateTimerDisplay();
+        exam.timerInterval = setInterval(function() {
+            exam.remainingSeconds--;
+            updateTimerDisplay();
+            if (exam.remainingSeconds <= 0) {
+                clearInterval(exam.timerInterval);
+                submitExam();
+            }
+        }, 1000);
+    } else {
+        timerEl.classList.add('hidden');
+        if (exam.timerInterval) clearInterval(exam.timerInterval);
+    }
+
+    buildQuestionMap();
+    renderQuestion();
+}
+
+function startWrongBook() {
+    document.querySelector('#modeGroup .selected').classList.remove('selected');
+    document.querySelectorAll('#modeGroup .option-btn').forEach(function(b) {
+        if (b.dataset.value === 'wrong') b.classList.add('selected');
+    });
+    startExam();
+}
+
+function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+}
+
+// ===== SCREEN SWITCH =====
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ===== TIMER =====
+function updateTimerDisplay() {
+    var m = Math.floor(exam.remainingSeconds / 60);
+    var s = exam.remainingSeconds % 60;
+    document.getElementById('examTimer').textContent =
+        (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+
+    if (exam.remainingSeconds <= 60) {
+        document.getElementById('examTimer').style.color = '#e74c3c';
+        document.getElementById('examTimer').style.fontWeight = '700';
+    }
+}
+
+// ===== QUESTION MAP =====
+function buildQuestionMap() {
+    var grid = document.getElementById('mapGrid');
+    grid.innerHTML = '';
+    for (var i = 0; i < exam.questions.length; i++) {
+        var dot = document.createElement('div');
+        dot.className = 'map-dot';
+        dot.textContent = i + 1;
+        dot.dataset.index = i;
+        dot.addEventListener('click', function() {
+            recordQuestionTime();
+            exam.current = parseInt(this.dataset.index);
+            renderQuestion();
+            exam.questionStartTime = Date.now();
+            updateMap();
+        });
+        grid.appendChild(dot);
+    }
+    updateMap();
+}
+
+function updateMap() {
+    var dots = document.querySelectorAll('.map-dot');
+    dots.forEach(function(dot, i) {
+        dot.className = 'map-dot';
+        if (i === exam.current) dot.classList.add('current');
+        if (exam.answers[i] !== undefined && exam.answers[i] !== '') dot.classList.add('answered');
+        if (exam.flags.has(i)) dot.classList.add('flagged');
+    });
+    document.getElementById('examProgress').textContent =
+        (exam.current + 1) + ' / ' + exam.questions.length;
+}
+
+// ===== RENDER QUESTION =====
+function renderQuestion() {
+    var q = exam.questions[exam.current];
+    var card = document.getElementById('questionCard');
+    var typeLabels = { single: '单选题', code: '代码输出题', fill: '填空题', judge: '判断题' };
+
+    var html = '<span class="question-chapter">' + q.chapter + '</span>';
+    html += '<span class="question-type">' + typeLabels[q.type] + '</span>';
+    html += '<div class="question-text">' + q.text + '</div>';
+
+    if (q.type === 'single') {
+        html += '<ul class="choices">';
+        var labels = ['A', 'B', 'C', 'D'];
+        for (var i = 0; i < q.choices.length; i++) {
+            var sel = exam.answers[exam.current] === i ? ' selected' : '';
+            html += '<li class="choice-item' + sel + '" data-index="' + i +
+                '" onclick="selectChoice(' + i + ')">' +
+                '<strong>' + labels[i] + '.</strong> ' + q.choices[i] + '</li>';
+        }
+        html += '</ul>';
+    } else if (q.type === 'judge') {
+        var tSel = exam.answers[exam.current] === true ? ' selected' : '';
+        var fSel = exam.answers[exam.current] === false ? ' selected' : '';
+        html += '<div class="tf-group">';
+        html += '<button class="tf-btn' + tSel + '" onclick="selectJudge(true)">正确</button>';
+        html += '<button class="tf-btn' + fSel + '" onclick="selectJudge(false)">错误</button>';
+        html += '</div>';
+    } else if (q.type === 'code' || q.type === 'fill') {
+        var val = exam.answers[exam.current] || '';
+        html += '<input class="fill-input" type="text" placeholder="请输入你的答案" value="' +
+            escapeHtml(val) + '" oninput="saveTextAnswer(this.value)">';
+    }
+
+    card.innerHTML = html;
+
+    // Update flag button
+    var flagBtn = document.getElementById('flagBtn');
+    flagBtn.className = exam.flags.has(exam.current) ? 'flagged' : '';
+    flagBtn.textContent = exam.flags.has(exam.current) ? '已标记' : '标记';
+
+    // Update next button text
+    var nextBtn = document.getElementById('nextBtn');
+    nextBtn.textContent = exam.current === exam.questions.length - 1 ? '交卷' : '下一题';
+
+    updateMap();
+}
+
+function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ===== ANSWER HANDLERS =====
+function selectChoice(idx) {
+    exam.answers[exam.current] = idx;
+    renderQuestion();
+}
+
+function selectJudge(val) {
+    exam.answers[exam.current] = val;
+    renderQuestion();
+}
+
+function saveTextAnswer(val) {
+    exam.answers[exam.current] = val;
+    updateMap();
+}
+
+// ===== NAVIGATION =====
+function recordQuestionTime() {
+    var elapsed = (Date.now() - exam.questionStartTime) / 1000;
+    exam.questionTimes[exam.current] = (exam.questionTimes[exam.current] || 0) + elapsed;
+}
+
+function prevQuestion() {
+    if (exam.current > 0) {
+        recordQuestionTime();
+        exam.current--;
+        renderQuestion();
+        exam.questionStartTime = Date.now();
+    }
+}
+
+function nextQuestion() {
+    recordQuestionTime();
+    if (exam.current < exam.questions.length - 1) {
+        exam.current++;
+        renderQuestion();
+        exam.questionStartTime = Date.now();
+    } else {
+        confirmSubmit();
+    }
+}
+
+function toggleFlag() {
+    if (exam.flags.has(exam.current)) {
+        exam.flags.delete(exam.current);
+    } else {
+        exam.flags.add(exam.current);
+    }
+    renderQuestion();
+}
+
+// ===== SUBMIT =====
+function confirmSubmit() {
+    var unanswered = 0;
+    for (var i = 0; i < exam.questions.length; i++) {
+        if (exam.answers[i] === undefined || exam.answers[i] === '') unanswered++;
+    }
+    var msg = '确认交卷？';
+    if (unanswered > 0) msg = '还有 ' + unanswered + ' 题未作答，确认交卷？';
+    if (confirm(msg)) {
+        submitExam();
+    }
+}
+
+function submitExam() {
+    recordQuestionTime();
+    if (exam.timerInterval) clearInterval(exam.timerInterval);
+
+    var totalTime = Math.round((Date.now() - exam.startTime) / 1000);
+    var correct = 0;
+    var results = [];
+
+    for (var i = 0; i < exam.questions.length; i++) {
+        var q = exam.questions[i];
+        var userAns = exam.answers[i];
+        var isCorrect = checkAnswer(q, userAns);
+        if (isCorrect) correct++;
+        results.push({
+            question: q,
+            userAnswer: userAns,
+            isCorrect: isCorrect,
+            time: Math.round(exam.questionTimes[i] || 0)
+        });
+    }
+
+    var score = Math.round(correct / exam.questions.length * 100);
+
+    // Save history
+    saveHistory({
+        date: new Date().toLocaleString('zh-CN'),
+        total: exam.questions.length,
+        correct: correct,
+        score: score,
+        time: totalTime,
+        mode: config.mode
+    });
+
+    // Save wrong answers
+    results.forEach(function(r) {
+        if (!r.isCorrect) addWrongQuestion(r.question.id);
+        else removeWrongQuestion(r.question.id);
+    });
+
+    renderResult(results, correct, totalTime, score);
+    showScreen('resultScreen');
+}
+
+function checkAnswer(q, userAns) {
+    if (userAns === undefined || userAns === '') return false;
+
+    if (q.type === 'single') {
+        return userAns === q.answer;
+    } else if (q.type === 'judge') {
+        return userAns === q.answer;
+    } else if (q.type === 'code' || q.type === 'fill') {
+        var input = userAns.trim().toLowerCase().replace(/\s+/g,' ');
+        for (var i = 0; i < q.answer.length; i++) {
+            if (input === q.answer[i].trim().toLowerCase().replace(/\s+/g,' ')) return true;
+        }
+        return false;
+    }
+    return false;
+}
+
+// ===== RESULT RENDERING =====
+function renderResult(results, correct, totalTime, score) {
+    // Score
+    var scoreEl = document.getElementById('scoreDisplay');
+    scoreEl.textContent = score + '%';
+    scoreEl.className = 'score-display ' + (score >= 80 ? 'high' : score >= 60 ? 'mid' : 'low');
+
+    // Stats
+    var m = Math.floor(totalTime / 60);
+    var s = totalTime % 60;
+    document.getElementById('resultStats').innerHTML =
+        '<div class="stat-item"><div class="stat-value">' + correct + '/' + results.length + '</div><div class="stat-label">正确/总题</div></div>' +
+        '<div class="stat-item"><div class="stat-value">' + m + '分' + s + '秒</div><div class="stat-label">用时</div></div>' +
+        '<div class="stat-item"><div class="stat-value">' + score + '%</div><div class="stat-label">正确率</div></div>';
+
+    // Chapter stats
+    var chapterData = {};
+    results.forEach(function(r) {
+        var ch = r.question.chapter;
+        if (!chapterData[ch]) chapterData[ch] = { correct: 0, total: 0 };
+        chapterData[ch].total++;
+        if (r.isCorrect) chapterData[ch].correct++;
+    });
+
+    var barsHtml = '';
+    var weakChapters = [];
+    Object.keys(chapterData).forEach(function(ch) {
+        var d = chapterData[ch];
+        var pct = Math.round(d.correct / d.total * 100);
+        var color = pct >= 80 ? '#27ae60' : pct >= 60 ? '#f39c12' : '#e74c3c';
+        if (pct < 60) weakChapters.push(ch);
+        barsHtml += '<div class="chapter-bar">' +
+            '<div class="chapter-bar-label"><span>' + ch + '</span><span>' + d.correct + '/' + d.total + ' (' + pct + '%)</span></div>' +
+            '<div class="chapter-bar-track"><div class="chapter-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div></div>';
+    });
+    document.getElementById('chapterBars').innerHTML = barsHtml;
+
+    // Weakness hint
+    var weakArea = document.getElementById('weaknessArea');
+    if (weakChapters.length > 0) {
+        weakArea.innerHTML = '<div class="weakness-hint"><h4>薄弱环节提示</h4><p>以下章节正确率低于 60%，建议重点复习：<strong>' +
+            weakChapters.join('、') + '</strong></p></div>';
+    } else if (score === 100) {
+        weakArea.innerHTML = '<div class="weakness-hint" style="border-left-color:#27ae60;background:#eafaf1"><h4 style="color:#27ae60">完美通过！</h4><p>所有章节正确率均在 60% 以上，继续保持！</p></div>';
+    } else {
+        weakArea.innerHTML = '';
+    }
+
+    // Review cards
+    exam.reviewResults = results;
+    renderReviewCards(results, 'all');
+}
+
+function renderReviewCards(results, filter) {
+    var html = '';
+    var labels = ['A','B','C','D'];
+
+    results.forEach(function(r, i) {
+        if (filter === 'wrong' && r.isCorrect) return;
+        if (filter === 'correct' && !r.isCorrect) return;
+
+        var wrongClass = r.isCorrect ? '' : ' wrong';
+
+        html += '<div class="review-card' + wrongClass + '">';
+        html += '<div class="review-q"><strong>第 ' + (i + 1) + ' 题</strong>（' + r.question.chapter + '）<br>' + r.question.text + '</div>';
+
+        // User answer display
+        var userDisplay = '未作答';
+        var correctDisplay = '';
+
+        if (r.question.type === 'single') {
+            if (r.userAnswer !== undefined) userDisplay = labels[r.userAnswer] + '. ' + r.question.choices[r.userAnswer];
+            correctDisplay = labels[r.question.answer] + '. ' + r.question.choices[r.question.answer];
+        } else if (r.question.type === 'judge') {
+            if (r.userAnswer !== undefined) userDisplay = r.userAnswer ? '正确' : '错误';
+            correctDisplay = r.question.answer ? '正确' : '错误';
+        } else {
+            if (r.userAnswer) userDisplay = escapeHtml(r.userAnswer);
+            correctDisplay = escapeHtml(r.question.answer.join(' / '));
+        }
+
+        if (!r.isCorrect) {
+            html += '<p class="review-answer yours">你的答案：' + userDisplay + '</p>';
+        }
+        html += '<p class="review-answer correct">正确答案：' + correctDisplay + '</p>';
+
+        if (r.time) html += '<p class="review-answer" style="color:#95a5a6">用时：' + r.time + ' 秒</p>';
+
+        html += '<div class="review-explain">' + r.question.explain + '</div>';
+        html += '</div>';
+    });
+
+    if (html === '') html = '<div class="history-empty">没有符合条件的题目</div>';
+    document.getElementById('reviewArea').innerHTML = html;
+}
+
+function filterReview(filter, btn) {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    renderReviewCards(exam.reviewResults, filter);
+}
+
+// ===== LOCAL STORAGE =====
+function safeGetJSON(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+    catch(e) { return fallback; }
+}
+
+function saveHistory(record) {
+    var history = safeGetJSON('luaExamHistory', []);
+    history.unshift(record);
+    if (history.length > 20) history = history.slice(0, 20);
+    localStorage.setItem('luaExamHistory', JSON.stringify(history));
+}
+
+function renderHistory() {
+    var history = safeGetJSON('luaExamHistory', []);
+    var area = document.getElementById('historyArea');
+
+    if (history.length === 0) {
+        area.innerHTML = '<div class="history-empty">暂无考试记录，开始你的第一次考试吧！</div>';
+        return;
+    }
+
+    var modeLabels = { random: '随机', order: '顺序', wrong: '错题' };
+    var html = '<table class="history-table"><thead><tr><th>日期</th><th>模式</th><th>题数</th><th>正确</th><th>分数</th><th>用时</th></tr></thead><tbody>';
+    history.forEach(function(h) {
+        var m = Math.floor(h.time / 60);
+        var s = h.time % 60;
+        var scoreColor = h.score >= 80 ? '#27ae60' : h.score >= 60 ? '#f39c12' : '#e74c3c';
+        html += '<tr><td>' + escapeHtml(h.date) + '</td><td>' + escapeHtml(modeLabels[h.mode] || h.mode) + '</td><td>' + h.total + '</td><td>' + h.correct + '</td>' +
+            '<td style="color:' + scoreColor + ';font-weight:600">' + h.score + '%</td>' +
+            '<td>' + m + '分' + s + '秒</td></tr>';
+    });
+    html += '</tbody></table>';
+    html += '<button class="clear-history-btn" onclick="clearHistory()">清空历史记录</button>';
+    area.innerHTML = html;
+}
+
+function clearHistory() {
+    if (confirm('确认清空所有历史记录？')) {
+        localStorage.removeItem('luaExamHistory');
+        renderHistory();
+    }
+}
+
+// Wrong question book
+function getWrongQuestions() {
+    var wrongIds = safeGetJSON('luaExamWrong', []);
+    return QUESTIONS.filter(function(q) { return wrongIds.indexOf(q.id) !== -1; });
+}
+
+function addWrongQuestion(id) {
+    var wrongIds = safeGetJSON('luaExamWrong', []);
+    if (wrongIds.indexOf(id) === -1) wrongIds.push(id);
+    localStorage.setItem('luaExamWrong', JSON.stringify(wrongIds));
+}
+
+function removeWrongQuestion(id) {
+    var wrongIds = safeGetJSON('luaExamWrong', []);
+    wrongIds = wrongIds.filter(function(wid) { return wid !== id; });
+    localStorage.setItem('luaExamWrong', JSON.stringify(wrongIds));
+}
+
+function updateWrongBookBtn() {
+    var wrongIds = safeGetJSON('luaExamWrong', []);
+    var btn = document.getElementById('wrongBookBtn');
+    document.getElementById('wrongCount').textContent = wrongIds.length;
+    btn.style.display = wrongIds.length > 0 ? 'inline-block' : 'none';
+}
+
+// ===== NAV =====
+function retryExam() {
+    showScreen('startScreen');
+    renderHistory();
+    updateWrongBookBtn();
+}
+
+function goHome() {
+    showScreen('startScreen');
+    renderHistory();
+    updateWrongBookBtn();
+}
+</script>
+</body>
+</html>
