@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="article:title" content="MBRL核心框架">
+    <meta name="article:description" content="Model-Based Reinforcement Learning核心框架，包括Dyna循环、核心公式与权衡分析">
+    <meta name="article:level" content="intermediate">
+    <meta name="article:tags" content="Dyna,框架,MBRL">
+    <title>MBRL核心框架 - MBRL学习笔记</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article { background: #fff; padding: 50px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        article h1 { font-size: 2em; color: #2c3e50; margin-bottom: 15px; }
+        .article-meta { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.85em; margin-right: 5px; }
+        .tag.advanced { background: #fde8e8; color: #e74c3c; }
+        .tag.intermediate { background: #fef3e2; color: #f39c12; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #ecf0f1; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 10px; }
+        article p { margin-bottom: 15px; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        .note { background: #eaf4fc; border-left: 4px solid #3498db; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .note strong { color: #2c3e50; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; }
+        .nav-links a:hover { text-decoration: underline; }
+        .MathJax { overflow-x: auto; overflow-y: hidden; }
+        @media (max-width: 600px) { article { padding: 30px 20px; } article h1 { font-size: 1.6em; } }
+    </style>
+</head>
+<body>
+    <nav><ul><li><a href="/">首页</a></li><li><a href="/resume.html">简历</a></li><li><a href="/articles/">文章</a></li></ul></nav>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span>
+            <a href="/articles/mbrl-study-notes/">MBRL学习笔记</a> <span>/</span>
+            MBRL核心框架
+        </div>
+        <article>
+            <h1>MBRL核心框架</h1>
+            <div class="article-meta"><span class="tag intermediate">进阶</span><span class="tag">Dyna</span><span class="tag">框架</span></div>
+
+            <h2>核心直觉</h2>
+            <p>Model-based RL learns a predictive world surrogate so policy improvement can reuse data through imagination instead of paying full simulator cost for every gradient step.</p>
+
+            <h2>Dyna循环</h2>
+            <p>The Dyna loop alternates between real interaction, model fitting, and policy learning. Real transitions ground the agent in reality. Model rollouts expand coverage beyond collected trajectories. Policy updates consume both data streams, with real data acting as anchor and imagined data acting as accelerator.</p>
+
+            <p>A clean decomposition is model-learning versus policy-learning. Model-learning minimizes predictive error under replay distribution. Policy-learning maximizes expected return under the policy-induced state distribution. These distributions are different, which is why model bias appears under policy improvement.</p>
+
+            <h2>核心公式</h2>
+            <p>\[\hat{p}_\theta(s_{t+1}, r_t, c_t \mid s_t, a_t)\]</p>
+            <p>\[\pi^* = \arg\max_\pi \mathbb{E}_{\tau \sim (\pi, M)}\left[\sum_t \gamma^t r_t\right]\]</p>
+            <p>\[\tau_{\text{train}} \sim \alpha\,\mathcal{D}_{\text{real}} + (1-\alpha)\,\mathcal{D}_{\text{model}}\]</p>
+
+            <h2>何时使用学习模型</h2>
+            <p>Use a learned model when real simulation is expensive, slow, unsafe, or unavailable at scale. Use a real simulator directly when it is cheap and exact enough, because simulator rollouts have no learned-model bias. In practice, most strong systems are hybrid: real data for correction, model data for speed.</p>
+
+            <h2>核心权衡</h2>
+            <p>The core tradeoff is sample efficiency versus bias. Model-free methods usually have lower model bias but poor data efficiency. MBRL improves data efficiency by reusing dynamics structure, but long imagination horizons can amplify errors and produce unrealistic high-value artifacts.</p>
+
+            <div class="note"><strong>游戏AI实践洞察：</strong>Deploy a Dyna-style cadence with conservative imagination horizon at first, then increase model usage only when validation error and policy realism metrics are stable.</div>
+
+            <div class="nav-links">
+                <span></span>
+                <a href="/articles/mbrl-study-notes/02-world-model-formulations.html">下一篇：世界模型设计 &rarr;</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

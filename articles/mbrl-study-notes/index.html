@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于模型的强化学习学习笔记 - 陈栢成</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        .series-header { background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .series-header h1 { font-size: 2em; color: #2c3e50; margin-bottom: 10px; }
+        .series-header p { color: #7f8c8d; font-size: 1.05em; }
+        .article-list { list-style: none; }
+        .article-item { background: #fff; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; }
+        .article-item a { display: flex; align-items: center; padding: 20px 25px; text-decoration: none; color: inherit; transition: background 0.2s; }
+        .article-item a:hover { background: #f8f9fa; }
+        .article-num { font-size: 1.8em; font-weight: 700; color: #3498db; margin-right: 20px; min-width: 50px; text-align: center; }
+        .article-info h3 { color: #2c3e50; margin-bottom: 5px; font-size: 1.1em; }
+        .article-info p { color: #7f8c8d; font-size: 0.9em; margin: 0; }
+        .tag { display: inline-block; background: #ecf0f1; color: #7f8c8d; padding: 2px 8px; border-radius: 3px; font-size: 0.8em; margin-right: 5px; margin-top: 5px; }
+        .tag.advanced { background: #fde8e8; color: #e74c3c; }
+        .tag.intermediate { background: #fef3e2; color: #f39c12; }
+        @media (max-width: 600px) { .series-header { padding: 25px; } .series-header h1 { font-size: 1.6em; } .article-item a { flex-direction: column; align-items: flex-start; } .article-num { margin-bottom: 10px; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/resume.html">简历</a></li>
+            <li><a href="/articles/">文章</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">文章</a> <span>/</span> 基于模型的强化学习学习笔记
+        </div>
+        <div class="series-header">
+            <h1>基于模型的强化学习学习笔记</h1>
+            <p>Model-Based Reinforcement Learning 系统学习笔记，涵盖核心框架、世界模型、Dreamer架构演进、规划与策略优化、误差分析、不确定性、离线学习、好奇心探索与多智能体等主题。</p>
+        </div>
+        <ul class="article-list">
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/01-mbrl-core-framework.html">
+                    <span class="article-num">01</span>
+                    <div class="article-info">
+                        <h3>MBRL核心框架</h3>
+                        <p>Dyna循环、模型学习与策略学习的分解、样本效率与偏差的核心权衡</p>
+                        <div><span class="tag intermediate">进阶</span><span class="tag">Dyna</span><span class="tag">框架</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/02-world-model-formulations.html">
+                    <span class="article-num">02</span>
+                    <div class="article-info">
+                        <h3>世界模型设计</h3>
+                        <p>确定性与随机性转移、观测空间与潜空间动力学、四预测头架构</p>
+                        <div><span class="tag intermediate">进阶</span><span class="tag">世界模型</span><span class="tag">潜空间</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/03-dreamer-v1-to-v3.html">
+                    <span class="article-num">03</span>
+                    <div class="article-info">
+                        <h3>Dreamer架构：V1到V3</h3>
+                        <p>RSSM结构、世界模型训练、想象中的Actor-Critic、V3鲁棒性特性</p>
+                        <div><span class="tag advanced">高级</span><span class="tag">Dreamer</span><span class="tag">RSSM</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/04-dreamer-v4-paradigm-shift.html">
+                    <span class="article-num">04</span>
+                    <div class="article-info">
+                        <h3>Dreamer V4：范式转换</h3>
+                        <p>从RSSM到Transformer、因果标记器、大规模预训练、PMPO策略优化</p>
+                        <div><span class="tag advanced">高级</span><span class="tag">Dreamer V4</span><span class="tag">Transformer</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/05-planning-and-policy-optimization.html">
+                    <span class="article-num">05</span>
+                    <div class="article-info">
+                        <h3>规划与策略优化</h3>
+                        <p>Shooting方法、动力学反向传播、MPC与摊销策略的互补</p>
+                        <div><span class="tag intermediate">进阶</span><span class="tag">规划</span><span class="tag">MPC</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/06-compounding-error-and-exploitation.html">
+                    <span class="article-num">06</span>
+                    <div class="article-info">
+                        <h3>累积误差与模型利用</h3>
+                        <p>误差随展开深度累积、自适应视野调度、Dyna混合训练稳定化</p>
+                        <div><span class="tag intermediate">进阶</span><span class="tag">误差分析</span><span class="tag">鲁棒性</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/07-uncertainty-quantification.html">
+                    <span class="article-num">07</span>
+                    <div class="article-info">
+                        <h3>不确定性量化</h3>
+                        <p>偶然不确定性与认知不确定性、集成分歧估计、不确定性门控展开</p>
+                        <div><span class="tag intermediate">进阶</span><span class="tag">不确定性</span><span class="tag">集成</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/08-offline-data-and-world-models.html">
+                    <span class="article-num">08</span>
+                    <div class="article-info">
+                        <h3>离线数据与世界模型</h3>
+                        <p>离线自监督训练、分布偏移与保守策略、基础模型范式类比</p>
+                        <div><span class="tag intermediate">进阶</span><span class="tag">离线RL</span><span class="tag">预训练</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/09-curiosity-and-active-collection.html">
+                    <span class="article-num">09</span>
+                    <div class="article-info">
+                        <h3>好奇心与主动数据收集</h3>
+                        <p>内在动机方法（ICM、RND）、噪声电视问题、主动学习循环</p>
+                        <div><span class="tag intermediate">进阶</span><span class="tag">探索</span><span class="tag">好奇心</span></div>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/mbrl-study-notes/10-multi-agent-considerations.html">
+                    <span class="article-num">10</span>
+                    <div class="article-info">
+                        <h3>多智能体考量</h3>
+                        <p>非平稳动力学、对手建模、基于种群的训练、自博弈过拟合</p>
+                        <div><span class="tag advanced">高级</span><span class="tag">多智能体</span><span class="tag">自博弈</span></div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
