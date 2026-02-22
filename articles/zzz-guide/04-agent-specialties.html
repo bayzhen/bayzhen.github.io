@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Specialties & Roles - ZZZ Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article h1 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; }
+        .meta { color: #7f8c8d; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #e74c3c; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 12px; }
+        article p { margin-bottom: 15px; text-align: justify; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        .cn { color: #e74c3c; font-size: 0.85em; font-style: italic; }
+        .vocab { background: #fff3cd; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+        .note-box { background: #e8f4fd; border-left: 4px solid #3498db; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .note-box.warning { background: #fef9e7; border-left-color: #f39c12; }
+        .note-box.tip { background: #d5f5e3; border-left-color: #27ae60; }
+        .role-card { background: #fff; border-radius: 10px; padding: 20px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #3498db; }
+        .role-card h3 { margin-top: 0; color: #2c3e50; }
+        .role-card.attack { border-left-color: #e74c3c; }
+        .role-card.stun { border-left-color: #f39c12; }
+        .role-card.anomaly { border-left-color: #9b59b6; }
+        .role-card.support { border-left-color: #27ae60; }
+        .role-card.defense { border-left-color: #3498db; }
+        .role-card.rupture { border-left-color: #e67e22; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+        th { background: #2c3e50; color: #fff; font-weight: 500; }
+        tr:hover { background: #f8f9fa; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 30px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; padding: 10px 20px; border: 1px solid #3498db; border-radius: 5px; transition: all 0.3s; }
+        .nav-links a:hover { background: #3498db; color: #fff; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; margin-right: 5px; }
+        .tag.s { background: #f1c40f; color: #2c3e50; }
+        .tag.a { background: #9b59b6; color: #fff; }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/resume.html">Resume</a></li>
+            <li><a href="/articles/">Articles</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">Articles</a> <span>/</span>
+            <a href="/articles/zzz-guide/">ZZZ Guide</a> <span>/</span>
+            Agent Specialties
+        </div>
+
+        <article>
+            <h1>Agent Specialties & Roles <span class="cn">(角色专精与定位)</span></h1>
+            <div class="meta">Intermediate | 8-10 min read</div>
+
+            <h2>Understanding Specialties <span class="cn">(理解专精)</span></h2>
+            <p>
+                Every agent in ZZZ has a <span class="vocab">Specialty</span> <span class="cn">(专精)</span>
+                that defines <span class="cn">(定义)</span> their role in combat. There are currently
+                <strong>6 specialties</strong>, each with distinct <span class="cn">(独特的)</span>
+                strengths <span class="cn">(优势)</span> and playstyles <span class="cn">(玩法风格)</span>.
+            </p>
+
+            <div class="note-box">
+                <strong>Why Specialties Matter <span class="cn">(为什么专精重要)</span>:</strong><br>
+                - W-Engine effects only activate <span class="cn">(激活)</span> when specialty matches <span class="cn">(匹配)</span><br>
+                - Determines <span class="cn">(决定)</span> optimal <span class="cn">(最佳)</span> stat priorities <span class="cn">(属性优先级)</span><br>
+                - Guides team composition <span class="cn">(指导队伍组成)</span> decisions
+            </div>
+
+            <h2>The Six Specialties <span class="cn">(六大专精)</span></h2>
+
+            <div class="role-card attack">
+                <h3>Attack <span class="cn">(强攻)</span></h3>
+                <p>
+                    <strong>Role:</strong> Primary <span class="cn">(主要)</span> damage dealer <span class="cn">(输出者)</span><br>
+                    <strong>Focus:</strong> Maximizing <span class="cn">(最大化)</span> damage during stun windows <span class="cn">(眩晕窗口期)</span>
+                </p>
+                <p>
+                    Attack agents are your <span class="vocab">main DPS</span> <span class="cn">(主C/主输出)</span>.
+                    They have high damage multipliers <span class="cn">(高伤害倍率)</span> but often rely on
+                    <span class="cn">(依赖)</span> teammates to create openings <span class="cn">(创造机会)</span>.
+                </p>
+                <p><strong>Key Stats <span class="cn">(关键属性)</span>:</strong> ATK, CRIT Rate, CRIT DMG, Elemental DMG Bonus</p>
+                <p><strong>Notable Agents <span class="cn">(代表角色)</span>:</strong>
+                    <span class="tag s">S</span> Ellen Joe, Zhu Yuan, Miyabi
+                    <span class="tag a">A</span> Billy, Corin, Anton
+                </p>
+            </div>
+
+            <div class="role-card stun">
+                <h3>Stun <span class="cn">(击破)</span></h3>
+                <p>
+                    <strong>Role:</strong> Daze accumulator <span class="cn">(失衡积累者)</span><br>
+                    <strong>Focus:</strong> Filling enemy Daze meters quickly <span class="cn">(快速填满敌人失衡条)</span>
+                </p>
+                <p>
+                    Stun agents have high <span class="vocab">Impact</span> <span class="cn">(冲击力)</span>
+                    stats and skills that rapidly <span class="cn">(快速地)</span> build Daze.
+                    Essential <span class="cn">(必要的)</span> for enabling <span class="cn">(使能够)</span>
+                    Attack agents to deal maximum damage.
+                </p>
+                <p><strong>Key Stats <span class="cn">(关键属性)</span>:</strong> Impact, ATK, Daze Multiplier</p>
+                <p><strong>Notable Agents <span class="cn">(代表角色)</span>:</strong>
+                    <span class="tag s">S</span> Lycaon, Qingyi, Lighter
+                    <span class="tag a">A</span> Koleda, Anby
+                </p>
+            </div>
+
+            <div class="role-card anomaly">
+                <h3>Anomaly <span class="cn">(异常)</span></h3>
+                <p>
+                    <strong>Role:</strong> Debuff <span class="cn">(减益)</span> applicator <span class="cn">(施加者)</span><br>
+                    <strong>Focus:</strong> Triggering attribute anomalies and Disorder <span class="cn">(触发属性异常和紊乱)</span>
+                </p>
+                <p>
+                    Anomaly agents excel at <span class="cn">(擅长)</span> applying status effects
+                    <span class="cn">(状态效果)</span>. They can deal significant <span class="cn">(显著的)</span>
+                    damage through Disorder combos <span class="cn">(紊乱连招)</span>.
+                </p>
+                <p><strong>Key Stats <span class="cn">(关键属性)</span>:</strong> Anomaly Proficiency, Anomaly Mastery, ATK</p>
+                <p><strong>Notable Agents <span class="cn">(代表角色)</span>:</strong>
+                    <span class="tag s">S</span> Jane Doe, Burnice, Yanagi
+                    <span class="tag a">A</span> Grace, Piper
+                </p>
+            </div>
+
+            <div class="role-card support">
+                <h3>Support <span class="cn">(支援)</span></h3>
+                <p>
+                    <strong>Role:</strong> Team buffer <span class="cn">(团队增益者)</span> and enabler <span class="cn">(辅助者)</span><br>
+                    <strong>Focus:</strong> Enhancing <span class="cn">(增强)</span> teammate performance <span class="cn">(表现)</span>
+                </p>
+                <p>
+                    Support agents provide buffs <span class="cn">(增益)</span>, healing <span class="cn">(治疗)</span>,
+                    or utility <span class="cn">(实用功能)</span>. They amplify <span class="cn">(放大)</span>
+                    the team's overall <span class="cn">(整体)</span> effectiveness <span class="cn">(效果)</span>.
+                </p>
+                <p><strong>Key Stats <span class="cn">(关键属性)</span>:</strong> Varies by agent - often HP, Energy Regen</p>
+                <p><strong>Notable Agents <span class="cn">(代表角色)</span>:</strong>
+                    <span class="tag s">S</span> Rina, Caesar, Soukaku
+                    <span class="tag a">A</span> Nicole, Lucy
+                </p>
+            </div>
+
+            <div class="role-card defense">
+                <h3>Defense <span class="cn">(防护)</span></h3>
+                <p>
+                    <strong>Role:</strong> Tank <span class="cn">(坦克)</span> and protector <span class="cn">(保护者)</span><br>
+                    <strong>Focus:</strong> Absorbing <span class="cn">(吸收)</span> damage and shielding <span class="cn">(护盾)</span> teammates
+                </p>
+                <p>
+                    Defense agents have high HP and DEF. They can take hits <span class="cn">(承受攻击)</span>
+                    for the team and often provide shields <span class="cn">(护盾)</span> or damage reduction
+                    <span class="cn">(伤害减免)</span>.
+                </p>
+                <p><strong>Key Stats <span class="cn">(关键属性)</span>:</strong> HP, DEF, Impact</p>
+                <p><strong>Notable Agents <span class="cn">(代表角色)</span>:</strong>
+                    <span class="tag s">S</span> Caesar King
+                    <span class="tag a">A</span> Ben Bigger
+                </p>
+            </div>
+
+            <div class="role-card rupture">
+                <h3>Rupture <span class="cn">(破裂)</span></h3>
+                <p>
+                    <strong>Role:</strong> Sustained <span class="cn">(持续)</span> damage dealer<br>
+                    <strong>Focus:</strong> Dealing consistent <span class="cn">(稳定的)</span> damage over time
+                </p>
+                <p>
+                    Added in Version 2.0, Rupture agents specialize in <span class="cn">(专精于)</span>
+                    dealing steady <span class="cn">(稳定的)</span> damage without relying heavily on
+                    <span class="cn">(不过度依赖)</span> stun windows.
+                </p>
+                <p><strong>Key Stats <span class="cn">(关键属性)</span>:</strong> ATK, CRIT, Elemental DMG</p>
+                <p><strong>Notable Agents <span class="cn">(代表角色)</span>:</strong>
+                    <span class="tag s">S</span> (Newer agents)
+                </p>
+            </div>
+
+            <h2>Team Role Distribution <span class="cn">(队伍角色分配)</span></h2>
+            <p>
+                A balanced <span class="cn">(平衡的)</span> team typically <span class="cn">(通常)</span> includes:
+            </p>
+
+            <table>
+                <tr>
+                    <th>Slot <span class="cn">(位置)</span></th>
+                    <th>Recommended Role <span class="cn">(推荐角色)</span></th>
+                    <th>Purpose <span class="cn">(目的)</span></th>
+                </tr>
+                <tr>
+                    <td>Slot 1</td>
+                    <td>Attack / Anomaly</td>
+                    <td>Main damage source <span class="cn">(主要伤害来源)</span></td>
+                </tr>
+                <tr>
+                    <td>Slot 2</td>
+                    <td>Stun / Defense</td>
+                    <td>Create openings / Protection <span class="cn">(创造机会/保护)</span></td>
+                </tr>
+                <tr>
+                    <td>Slot 3</td>
+                    <td>Support / Sub-DPS</td>
+                    <td>Buff team / Secondary damage <span class="cn">(增益团队/副输出)</span></td>
+                </tr>
+            </table>
+
+            <h2>Specialty Synergies <span class="cn">(专精协同)</span></h2>
+
+            <h3>Classic Combo: Stun + Attack <span class="cn">(经典组合：击破+强攻)</span></h3>
+            <p>
+                The most fundamental <span class="cn">(基础的)</span> synergy. Stun agent fills Daze,
+                then Attack agent unleashes <span class="cn">(释放)</span> damage during stun window.
+            </p>
+
+            <h3>Disorder Combo: Anomaly + Anomaly <span class="cn">(紊乱组合：异常+异常)</span></h3>
+            <p>
+                Two different-element Anomaly agents trigger Disorder repeatedly <span class="cn">(反复)</span>
+                for massive <span class="cn">(大量)</span> sustained damage.
+            </p>
+
+            <h3>Hypercarry: Attack + Support + Support <span class="cn">(超级主C：强攻+支援+支援)</span></h3>
+            <p>
+                Focus all resources <span class="cn">(资源)</span> on buffing one powerful Attack agent.
+                Requires <span class="cn">(需要)</span> well-built <span class="cn">(培养好的)</span> supports.
+            </p>
+
+            <div class="note-box tip">
+                <strong>Beginner Tip <span class="cn">(新手提示)</span>:</strong><br>
+                Start with the Stun + Attack combo. It's straightforward <span class="cn">(直接的)</span>
+                and effective <span class="cn">(有效的)</span>. As you get more agents, experiment
+                <span class="cn">(尝试)</span> with other compositions <span class="cn">(组合)</span>!
+            </div>
+
+            <h2>Choosing Your Main <span class="cn">(选择你的主力)</span></h2>
+            <p>
+                When deciding which agents to invest in <span class="cn">(投资培养)</span>, consider:
+            </p>
+            <ol>
+                <li><strong>Playstyle preference</strong> <span class="cn">(玩法偏好)</span>: Do you like big burst <span class="cn">(爆发)</span> or sustained damage?</li>
+                <li><strong>Available resources</strong> <span class="cn">(可用资源)</span>: S-Rank agents need more investment <span class="cn">(投入)</span></li>
+                <li><strong>Team gaps</strong> <span class="cn">(队伍空缺)</span>: Fill roles you're missing <span class="cn">(缺少的)</span></li>
+                <li><strong>Future banners</strong> <span class="cn">(未来卡池)</span>: Save for agents that complement <span class="cn">(补充)</span> your roster <span class="cn">(阵容)</span></li>
+            </ol>
+
+            <div class="nav-links">
+                <a href="/articles/zzz-guide/03-attributes-anomaly.html">Prev: Attributes & Anomaly</a>
+                <a href="/articles/zzz-guide/05-team-building.html">Next: Team Building</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

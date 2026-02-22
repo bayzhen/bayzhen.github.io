@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Tips & Meta - ZZZ Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article h1 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; }
+        .meta { color: #7f8c8d; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #e74c3c; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 12px; }
+        article p { margin-bottom: 15px; text-align: justify; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        .cn { color: #e74c3c; font-size: 0.85em; font-style: italic; }
+        .vocab { background: #fff3cd; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+        .note-box { background: #e8f4fd; border-left: 4px solid #3498db; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .note-box.warning { background: #fef9e7; border-left-color: #f39c12; }
+        .note-box.tip { background: #d5f5e3; border-left-color: #27ae60; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+        th { background: #2c3e50; color: #fff; font-weight: 500; }
+        tr:hover { background: #f8f9fa; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 30px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; padding: 10px 20px; border: 1px solid #3498db; border-radius: 5px; transition: all 0.3s; }
+        .nav-links a:hover { background: #3498db; color: #fff; }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/resume.html">Resume</a></li>
+            <li><a href="/articles/">Articles</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">Articles</a> <span>/</span>
+            <a href="/articles/zzz-guide/">ZZZ Guide</a> <span>/</span>
+            Advanced Tips
+        </div>
+
+        <article>
+            <h1>Advanced Tips & Meta <span class="cn">(进阶技巧与元游戏)</span></h1>
+            <div class="meta">Advanced | 10-12 min read</div>
+
+            <h2>Combat Optimization <span class="cn">(战斗优化)</span></h2>
+
+            <h3>Animation Canceling <span class="cn">(动画取消)</span></h3>
+            <p>
+                <span class="vocab">Animation canceling</span> <span class="cn">(动画取消)</span> allows you to
+                skip <span class="cn">(跳过)</span> recovery frames <span class="cn">(恢复帧)</span> and increase
+                DPS. Common techniques <span class="cn">(技巧)</span>:
+            </p>
+            <ul>
+                <li>
+                    <strong>Dodge Cancel</strong> <span class="cn">(闪避取消)</span>:
+                    Dodge immediately after an attack lands <span class="cn">(攻击命中后立即闪避)</span> to skip end lag <span class="cn">(跳过收招)</span>
+                </li>
+                <li>
+                    <strong>Switch Cancel</strong> <span class="cn">(切换取消)</span>:
+                    Switch agents mid-combo <span class="cn">(连招中切换角色)</span> to cancel animations
+                </li>
+                <li>
+                    <strong>Jump Cancel</strong> <span class="cn">(跳跃取消)</span>:
+                    Some agents can jump to cancel certain moves <span class="cn">(某些角色可以跳跃取消特定动作)</span>
+                </li>
+            </ul>
+
+            <div class="note-box tip">
+                <strong>Practice Tip <span class="cn">(练习技巧)</span>:</strong><br>
+                Go to training mode <span class="cn">(训练模式)</span> and practice cancels on a dummy <span class="cn">(木桩)</span>.
+                Watch your DPS numbers <span class="cn">(观察DPS数值)</span> to see improvement <span class="cn">(提升)</span>.
+            </div>
+
+            <h3>I-Frames & Timing <span class="cn">(无敌帧与时机)</span></h3>
+            <p>
+                <span class="vocab">I-frames</span> <span class="cn">(无敌帧)</span> are moments of invincibility
+                <span class="cn">(无敌时刻)</span> during certain actions:
+            </p>
+            <ul>
+                <li>Perfect Dodge <span class="cn">(完美闪避)</span>: Generous <span class="cn">(宽裕的)</span> i-frames</li>
+                <li>Ultimate activation <span class="cn">(终结技激活)</span>: Brief <span class="cn">(短暂的)</span> invincibility</li>
+                <li>Chain Attack startup <span class="cn">(连携攻击启动)</span>: Some i-frames during transition <span class="cn">(过渡期间有一些无敌帧)</span></li>
+            </ul>
+
+            <h2>Stat Optimization <span class="cn">(属性优化)</span></h2>
+
+            <h3>CRIT Ratio <span class="cn">(暴击比例)</span></h3>
+            <p>
+                The ideal <span class="cn">(理想的)</span> CRIT Rate to CRIT DMG ratio <span class="cn">(比例)</span>
+                is approximately <span class="cn">(大约)</span> <strong>1:2</strong>.
+            </p>
+            <table>
+                <tr>
+                    <th>CRIT Rate <span class="cn">(暴击率)</span></th>
+                    <th>Target CRIT DMG <span class="cn">(目标暴伤)</span></th>
+                </tr>
+                <tr>
+                    <td>50%</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>60%</td>
+                    <td>120%</td>
+                </tr>
+                <tr>
+                    <td>70%</td>
+                    <td>140%</td>
+                </tr>
+                <tr>
+                    <td>80%</td>
+                    <td>160%</td>
+                </tr>
+            </table>
+
+            <div class="note-box warning">
+                <strong>Diminishing Returns <span class="cn">(收益递减)</span>:</strong><br>
+                After ~70% CRIT Rate, additional <span class="cn">(额外的)</span> CRIT Rate has diminishing
+                <span class="cn">(递减的)</span> value. Shift focus <span class="cn">(转移重点)</span> to CRIT DMG or ATK%.
+            </div>
+
+            <h3>ATK vs Elemental DMG <span class="cn">(攻击力 vs 元素伤害)</span></h3>
+            <p>
+                Balance <span class="cn">(平衡)</span> is key. Too much of one stat leads to
+                <span class="vocab">diminishing returns</span> <span class="cn">(收益递减)</span>.
+            </p>
+            <ul>
+                <li>Base ATK from W-Engine is multiplied <span class="cn">(乘以)</span> by ATK%</li>
+                <li>Elemental DMG% is additive <span class="cn">(加法)</span> with other DMG bonuses</li>
+                <li>Aim for <span class="cn">(目标)</span> ~110-130% ATK bonus and ~40-60% Elemental DMG</li>
+            </ul>
+
+            <h2>Resource Management <span class="cn">(资源管理)</span></h2>
+
+            <h3>Polychrome Priority <span class="cn">(菲林优先级)</span></h3>
+            <ol>
+                <li>
+                    <strong>Limited Banners</strong> <span class="cn">(限定卡池)</span>:
+                    New S-Rank agents you want <span class="cn">(你想要的新S级角色)</span>
+                </li>
+                <li>
+                    <strong>Signature W-Engines</strong> <span class="cn">(专属W引擎)</span>:
+                    Only for your main DPS <span class="cn">(仅限主输出)</span>, optional <span class="cn">(可选的)</span>
+                </li>
+                <li>
+                    <strong>Standard Banner</strong> <span class="cn">(常驻卡池)</span>:
+                    Low priority <span class="cn">(低优先级)</span>, use free pulls only <span class="cn">(仅使用免费抽)</span>
+                </li>
+            </ol>
+
+            <h3>Stamina Usage <span class="cn">(体力使用)</span></h3>
+            <ul>
+                <li><strong>Daily priorities</strong> <span class="cn">(每日优先)</span>: Routine Cleanup for Drive Discs</li>
+                <li><strong>Weekly</strong> <span class="cn">(每周)</span>: Hollow Zero bounties <span class="cn">(悬赏)</span></li>
+                <li><strong>Events</strong> <span class="cn">(活动)</span>: Always clear <span class="cn">(总是清空)</span> event shops first</li>
+            </ul>
+
+            <h2>Meta Considerations <span class="cn">(元游戏考量)</span></h2>
+
+            <h3>Current Meta Trends <span class="cn">(当前元游戏趋势)</span></h3>
+            <p>
+                The meta <span class="cn">(元游戏)</span> evolves <span class="cn">(演变)</span> with each update.
+                General observations <span class="cn">(一般观察)</span>:
+            </p>
+            <ul>
+                <li>
+                    <strong>Anomaly teams</strong> <span class="cn">(异常队)</span> are increasingly <span class="cn">(越来越)</span>
+                    viable <span class="cn">(可行的)</span> with new agents
+                </li>
+                <li>
+                    <strong>Stun remains essential</strong> <span class="cn">(击破仍然必要)</span>:
+                    Even in Anomaly teams, Daze matters <span class="cn">(即使在异常队中，失衡也很重要)</span>
+                </li>
+                <li>
+                    <strong>Supports are underrated</strong> <span class="cn">(辅助被低估)</span>:
+                    Good supports multiply <span class="cn">(成倍增加)</span> team damage significantly <span class="cn">(显著地)</span>
+                </li>
+            </ul>
+
+            <h3>Future-Proofing <span class="cn">(面向未来)</span></h3>
+            <p>
+                Tips for long-term <span class="cn">(长期)</span> account health <span class="cn">(账号健康)</span>:
+            </p>
+            <ol>
+                <li>
+                    <strong>Diversify <span class="cn">(多样化)</span> elements</strong>:
+                    Build at least one team per element <span class="cn">(每个元素至少组建一支队伍)</span>
+                </li>
+                <li>
+                    <strong>Don't skip A-Ranks</strong> <span class="cn">(不要跳过A级)</span>:
+                    Some A-Ranks are meta-relevant <span class="cn">(某些A级与元游戏相关)</span> (Nicole, Lucy, Anby)
+                </li>
+                <li>
+                    <strong>Save for reruns</strong> <span class="cn">(为复刻存储)</span>:
+                    If you miss a limited agent <span class="cn">(如果错过限定角色)</span>, they'll return <span class="cn">(会复刻)</span>
+                </li>
+            </ol>
+
+            <h2>Common Mistakes to Avoid <span class="cn">(要避免的常见错误)</span></h2>
+
+            <div class="note-box warning">
+                <strong>1. Spreading Resources <span class="cn">(分散资源)</span></strong><br>
+                Don't level every agent equally <span class="cn">(不要平均升级每个角色)</span>.
+                Focus on 6-8 core agents <span class="cn">(专注于6-8个核心角色)</span> first.
+            </div>
+
+            <div class="note-box warning">
+                <strong>2. Ignoring Substats <span class="cn">(忽视副词条)</span></strong><br>
+                A good substat roll <span class="cn">(好的副词条)</span> on an off-set piece <span class="cn">(散件)</span>
+                beats <span class="cn">(胜过)</span> a bad 4-piece set bonus.
+            </div>
+
+            <div class="note-box warning">
+                <strong>3. Chasing Perfect Gear <span class="cn">(追求完美装备)</span></strong><br>
+                "Good enough" <span class="cn">(足够好)</span> clears all content.
+                Perfect gear is for whales <span class="cn">(完美装备是给大氪玩家的)</span>.
+            </div>
+
+            <div class="note-box warning">
+                <strong>4. Neglecting Supports <span class="cn">(忽视辅助)</span></strong><br>
+                A well-built support <span class="cn">(培养好的辅助)</span> increases team DPS more than
+                marginal <span class="cn">(边际的)</span> DPS upgrades.
+            </div>
+
+            <h2>Final Tips <span class="cn">(最终建议)</span></h2>
+
+            <ol>
+                <li>
+                    <strong>Play what you enjoy</strong> <span class="cn">(玩你喜欢的)</span>:
+                    Meta changes <span class="cn">(元游戏会变)</span>, but fun is constant <span class="cn">(但乐趣是恒定的)</span>
+                </li>
+                <li>
+                    <strong>Join communities</strong> <span class="cn">(加入社区)</span>:
+                    Discord, Reddit, and forums <span class="cn">(论坛)</span> have valuable <span class="cn">(有价值的)</span> resources
+                </li>
+                <li>
+                    <strong>Watch content creators</strong> <span class="cn">(观看内容创作者)</span>:
+                    Learn advanced techniques <span class="cn">(学习高级技巧)</span> from experienced <span class="cn">(有经验的)</span> players
+                </li>
+                <li>
+                    <strong>Be patient</strong> <span class="cn">(要有耐心)</span>:
+                    Gacha games reward <span class="cn">(奖励)</span> long-term <span class="cn">(长期)</span> commitment <span class="cn">(投入)</span>
+                </li>
+            </ol>
+
+            <div class="note-box tip">
+                <strong>Congratulations! <span class="cn">(恭喜!)</span></strong><br>
+                You've completed <span class="cn">(完成了)</span> the ZZZ Guide series! You now have the knowledge
+                <span class="cn">(知识)</span> to become a skilled <span class="cn">(熟练的)</span> player.
+                Good luck in New Eridu! <span class="cn">(在新艾利都祝你好运!)</span>
+            </div>
+
+            <div class="nav-links">
+                <a href="/articles/zzz-guide/09-endgame-content.html">Prev: Endgame Content</a>
+                <a href="/articles/zzz-guide/">Back to Index</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

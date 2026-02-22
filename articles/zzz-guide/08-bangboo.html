@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangboo Companions - ZZZ Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article h1 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; }
+        .meta { color: #7f8c8d; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #e74c3c; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 12px; }
+        article p { margin-bottom: 15px; text-align: justify; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        .cn { color: #e74c3c; font-size: 0.85em; font-style: italic; }
+        .vocab { background: #fff3cd; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+        .note-box { background: #e8f4fd; border-left: 4px solid #3498db; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .note-box.warning { background: #fef9e7; border-left-color: #f39c12; }
+        .note-box.tip { background: #d5f5e3; border-left-color: #27ae60; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+        th { background: #2c3e50; color: #fff; font-weight: 500; }
+        tr:hover { background: #f8f9fa; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 30px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; padding: 10px 20px; border: 1px solid #3498db; border-radius: 5px; transition: all 0.3s; }
+        .nav-links a:hover { background: #3498db; color: #fff; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; margin-right: 5px; }
+        .tag.s { background: #f1c40f; color: #2c3e50; }
+        .tag.a { background: #9b59b6; color: #fff; }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/resume.html">Resume</a></li>
+            <li><a href="/articles/">Articles</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">Articles</a> <span>/</span>
+            <a href="/articles/zzz-guide/">ZZZ Guide</a> <span>/</span>
+            Bangboo
+        </div>
+
+        <article>
+            <h1>Bangboo Companions <span class="cn">(邦布伙伴)</span></h1>
+            <div class="meta">Beginner | 6-8 min read</div>
+
+            <h2>What are Bangboo? <span class="cn">(什么是邦布?)</span></h2>
+            <p>
+                <span class="vocab">Bangboo</span> <span class="cn">(邦布)</span> are semi-intelligent <span class="cn">(半智能的)</span>,
+                rabbit-like <span class="cn">(兔子般的)</span> robots unique to New Eridu. Originally designed
+                <span class="cn">(最初设计)</span> to help residents <span class="cn">(居民)</span> evacuate
+                <span class="cn">(撤离)</span> during Hollow disasters <span class="cn">(空洞灾害)</span>,
+                they've evolved into <span class="cn">(演变成)</span> versatile <span class="cn">(多功能的)</span>
+                combat companions <span class="cn">(战斗伙伴)</span>.
+            </p>
+
+            <h2>Bangboo in Combat <span class="cn">(战斗中的邦布)</span></h2>
+            <p>
+                In gameplay, <span class="vocab">Combat Bangboo</span> <span class="cn">(战斗邦布)</span>
+                function as obtainable <span class="cn">(可获得的)</span> companion units. Each team can
+                have one Bangboo that provides <span class="cn">(提供)</span>:
+            </p>
+            <ul>
+                <li><strong>Passive abilities</strong> <span class="cn">(被动能力)</span>: Always active buffs <span class="cn">(始终激活的增益)</span></li>
+                <li><strong>Active skills</strong> <span class="cn">(主动技能)</span>: Triggered <span class="cn">(触发的)</span> during combat</li>
+                <li><strong>Bangboo Chain Attack</strong> <span class="cn">(邦布连携攻击)</span>: Special attack with its own cooldown <span class="cn">(独立冷却的特殊攻击)</span></li>
+            </ul>
+
+            <div class="note-box">
+                <strong>Key Point <span class="cn">(要点)</span>:</strong><br>
+                Bangboo Chain Attacks have their own cooldown and don't count toward <span class="cn">(不计入)</span>
+                the regular chain attack limit! This means extra <span class="cn">(额外的)</span> damage during stun windows.
+            </div>
+
+            <h2>Bangboo Attributes <span class="cn">(邦布属性)</span></h2>
+            <p>Each Bangboo has:</p>
+            <ul>
+                <li><strong>Rarity</strong> <span class="cn">(稀有度)</span>: A-Rank or S-Rank</li>
+                <li><strong>Attribute</strong> <span class="cn">(属性)</span>: Physical, Ice, Fire, Electric, or Ether</li>
+                <li><strong>Faction</strong> <span class="cn">(阵营)</span>: Some belong to specific factions <span class="cn">(某些属于特定阵营)</span></li>
+            </ul>
+
+            <h2>Faction Bonuses <span class="cn">(阵营加成)</span></h2>
+            <p>
+                Many Bangboo provide enhanced <span class="cn">(增强的)</span> effects when your team has
+                agents from a specific faction. This is called <span class="vocab">Faction Resonance</span>
+                <span class="cn">(阵营共鸣)</span>.
+            </p>
+
+            <table>
+                <tr>
+                    <th>Condition <span class="cn">(条件)</span></th>
+                    <th>Bonus Type <span class="cn">(加成类型)</span></th>
+                </tr>
+                <tr>
+                    <td>2 agents from same faction <span class="cn">(2个同阵营角色)</span></td>
+                    <td>Basic faction bonus <span class="cn">(基础阵营加成)</span></td>
+                </tr>
+                <tr>
+                    <td>3 agents from same faction <span class="cn">(3个同阵营角色)</span></td>
+                    <td>Enhanced faction bonus <span class="cn">(增强阵营加成)</span></td>
+                </tr>
+            </table>
+
+            <h2>Notable Bangboo <span class="cn">(值得注意的邦布)</span></h2>
+
+            <h3>S-Rank Bangboo <span class="cn">(S级邦布)</span></h3>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Attribute</th>
+                    <th>Best For <span class="cn">(最适合)</span></th>
+                </tr>
+                <tr>
+                    <td><strong>Butler</strong> <span class="cn">(管家)</span></td>
+                    <td>Ice</td>
+                    <td>Victoria Housekeeping teams <span class="cn">(维多利亚家政队)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Amillion</strong> <span class="cn">(阿米利恩)</span></td>
+                    <td>Electric</td>
+                    <td>General use, Electric teams <span class="cn">(通用，电队)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Resonaboo</strong> <span class="cn">(共鸣邦布)</span></td>
+                    <td>Physical</td>
+                    <td>Physical DPS teams <span class="cn">(物理输出队)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Paperboo</strong> <span class="cn">(纸邦布)</span></td>
+                    <td>Ether</td>
+                    <td>Anomaly teams <span class="cn">(异常队)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Red Moccus</strong> <span class="cn">(红莫库斯)</span></td>
+                    <td>Fire</td>
+                    <td>Sons of Calydon teams <span class="cn">(卡吕冬之子队)</span></td>
+                </tr>
+            </table>
+
+            <h3>A-Rank Bangboo <span class="cn">(A级邦布)</span></h3>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Attribute</th>
+                    <th>Best For</th>
+                </tr>
+                <tr>
+                    <td><strong>Plugboo</strong> <span class="cn">(插头邦布)</span></td>
+                    <td>Electric</td>
+                    <td>Belobog teams, Electric support <span class="cn">(白祇队，电辅助)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Booressure</strong> <span class="cn">(压力邦布)</span></td>
+                    <td>Physical</td>
+                    <td>Stun support <span class="cn">(击破辅助)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Luckyboo</strong> <span class="cn">(幸运邦布)</span></td>
+                    <td>Various</td>
+                    <td>General utility <span class="cn">(通用实用)</span></td>
+                </tr>
+            </table>
+
+            <h2>Obtaining Bangboo <span class="cn">(获取邦布)</span></h2>
+
+            <h3>Signal Search <span class="cn">(信号搜索)</span></h3>
+            <p>
+                Use <span class="vocab">Boopons</span> <span class="cn">(邦布券)</span> on the permanent
+                <span class="cn">(常驻的)</span> "An Outstanding Partner" channel <span class="cn">(卓越伙伴频道)</span>.
+            </p>
+
+            <div class="note-box tip">
+                <strong>S-Rank Selector <span class="cn">(S级选择器)</span>:</strong><br>
+                This channel includes an S-Rank selector <span class="cn">(S级选择器)</span> that guarantees
+                <span class="cn">(保证)</span> any S-Rank Bangboo of your choice! Save for the one that
+                fits <span class="cn">(适合)</span> your main team.
+            </div>
+
+            <h3>Other Sources <span class="cn">(其他来源)</span></h3>
+            <ul>
+                <li><strong>Flagship Events</strong> <span class="cn">(旗舰活动)</span>: Limited-time <span class="cn">(限时)</span> exclusive Bangboo</li>
+                <li><strong>Logistics Shop</strong> <span class="cn">(后勤商店)</span>: Some Bangboo like Luckyboo and Knightboo</li>
+                <li><strong>Story Rewards</strong> <span class="cn">(剧情奖励)</span>: Free Bangboo from progression <span class="cn">(推进获得免费邦布)</span></li>
+            </ul>
+
+            <h2>Bangboo Selection Guide <span class="cn">(邦布选择指南)</span></h2>
+
+            <h3>Priority Factors <span class="cn">(优先因素)</span></h3>
+            <ol>
+                <li>
+                    <strong>Faction Match</strong> <span class="cn">(阵营匹配)</span>:
+                    If running a same-faction team, pick the matching Bangboo <span class="cn">(如果使用同阵营队伍，选择匹配的邦布)</span>
+                </li>
+                <li>
+                    <strong>Element Match</strong> <span class="cn">(元素匹配)</span>:
+                    Bangboo element should complement <span class="cn">(补充)</span> your DPS
+                </li>
+                <li>
+                    <strong>Utility</strong> <span class="cn">(实用性)</span>:
+                    Some Bangboo provide healing, shields, or unique buffs <span class="cn">(某些邦布提供治疗、护盾或独特增益)</span>
+                </li>
+            </ol>
+
+            <h3>Team Examples <span class="cn">(队伍示例)</span></h3>
+            <table>
+                <tr>
+                    <th>Team Type <span class="cn">(队伍类型)</span></th>
+                    <th>Recommended Bangboo <span class="cn">(推荐邦布)</span></th>
+                </tr>
+                <tr>
+                    <td>Ellen Ice Team <span class="cn">(艾莲冰队)</span></td>
+                    <td>Butler (Victoria bonus) <span class="cn">(管家-维多利亚加成)</span></td>
+                </tr>
+                <tr>
+                    <td>Zhu Yuan Physical <span class="cn">(朱鸢物理队)</span></td>
+                    <td>Resonaboo or Officer Cui <span class="cn">(共鸣邦布或崔警官)</span></td>
+                </tr>
+                <tr>
+                    <td>Fire Anomaly <span class="cn">(火异常队)</span></td>
+                    <td>Red Moccus (Calydon bonus) <span class="cn">(红莫库斯-卡吕冬加成)</span></td>
+                </tr>
+                <tr>
+                    <td>Mixed Team <span class="cn">(混合队)</span></td>
+                    <td>Amillion (general use) <span class="cn">(阿米利恩-通用)</span></td>
+                </tr>
+            </table>
+
+            <div class="note-box warning">
+                <strong>Don't Neglect Bangboo! <span class="cn">(不要忽视邦布!)</span></strong><br>
+                A well-chosen <span class="cn">(精心选择的)</span> Bangboo can significantly <span class="cn">(显著地)</span>
+                boost your team's performance. Level them up <span class="cn">(升级它们)</span> alongside
+                <span class="cn">(与...一起)</span> your agents!
+            </div>
+
+            <div class="nav-links">
+                <a href="/articles/zzz-guide/07-w-engines.html">Prev: W-Engines</a>
+                <a href="/articles/zzz-guide/09-endgame-content.html">Next: Endgame Content</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

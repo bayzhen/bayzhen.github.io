@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combat System Basics - ZZZ Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        nav {
+            background: #2c3e50;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav ul {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article h1 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; }
+        .meta { color: #7f8c8d; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #e74c3c; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 12px; }
+        article p { margin-bottom: 15px; text-align: justify; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        .cn { color: #e74c3c; font-size: 0.85em; font-style: italic; }
+        .vocab { background: #fff3cd; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+        .note-box { background: #e8f4fd; border-left: 4px solid #3498db; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .note-box.warning { background: #fef9e7; border-left-color: #f39c12; }
+        .note-box.tip { background: #d5f5e3; border-left-color: #27ae60; }
+        .term { background: #f8f9fa; padding: 12px 15px; margin: 10px 0; border-radius: 5px; border: 1px solid #e9ecef; }
+        .term strong { color: #e74c3c; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+        th { background: #2c3e50; color: #fff; font-weight: 500; }
+        tr:hover { background: #f8f9fa; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 30px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; padding: 10px 20px; border: 1px solid #3498db; border-radius: 5px; transition: all 0.3s; }
+        .nav-links a:hover { background: #3498db; color: #fff; }
+        .key { display: inline-block; background: #2c3e50; color: #fff; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/resume.html">Resume</a></li>
+            <li><a href="/articles/">Articles</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">Articles</a> <span>/</span>
+            <a href="/articles/zzz-guide/">ZZZ Guide</a> <span>/</span>
+            Combat Basics
+        </div>
+
+        <article>
+            <h1>Combat System Basics <span class="cn">(战斗系统基础)</span></h1>
+            <div class="meta">Beginner | 8-10 min read</div>
+
+            <h2>Combat Overview <span class="cn">(战斗概述)</span></h2>
+            <p>
+                ZZZ features <span class="vocab">real-time action combat</span> <span class="cn">(实时动作战斗)</span>
+                where you control a team of up to 3 agents. Combat is fast-paced <span class="cn">(快节奏的)</span>
+                and emphasizes <span class="cn">(强调)</span> timing, positioning <span class="cn">(走位)</span>,
+                and team coordination <span class="cn">(团队配合)</span>.
+            </p>
+
+            <h2>Basic Controls <span class="cn">(基础操作)</span></h2>
+
+            <h3>Attack Types <span class="cn">(攻击类型)</span></h3>
+            <table>
+                <tr>
+                    <th>Action <span class="cn">(动作)</span></th>
+                    <th>Input</th>
+                    <th>Description <span class="cn">(描述)</span></th>
+                </tr>
+                <tr>
+                    <td>Basic Attack <span class="cn">(普通攻击)</span></td>
+                    <td><span class="key">LMB</span> / <span class="key">Square</span></td>
+                    <td>Standard combo <span class="cn">(标准连招)</span>, varies by agent</td>
+                </tr>
+                <tr>
+                    <td>Special Attack <span class="cn">(特殊攻击)</span></td>
+                    <td><span class="key">RMB</span> / <span class="key">Triangle</span></td>
+                    <td>Unique skill <span class="cn">(独特技能)</span>, often has cooldown <span class="cn">(冷却时间)</span></td>
+                </tr>
+                <tr>
+                    <td>Dodge <span class="cn">(闪避)</span></td>
+                    <td><span class="key">Space</span> / <span class="key">Circle</span></td>
+                    <td>Evade <span class="cn">(躲避)</span> enemy attacks</td>
+                </tr>
+                <tr>
+                    <td>Switch Agent <span class="cn">(切换角色)</span></td>
+                    <td><span class="key">1/2/3</span> / <span class="key">L1/R1</span></td>
+                    <td>Swap <span class="cn">(交换)</span> to another team member</td>
+                </tr>
+                <tr>
+                    <td>Ultimate <span class="cn">(终结技)</span></td>
+                    <td><span class="key">Q</span> / <span class="key">L2+R2</span></td>
+                    <td>Powerful finisher <span class="cn">(强力终结技)</span> when energy full</td>
+                </tr>
+            </table>
+
+            <h2>The Daze System <span class="cn">(失衡系统)</span></h2>
+            <p>
+                <span class="vocab">Daze</span> <span class="cn">(失衡值)</span> is one of the most important
+                mechanics <span class="cn">(机制)</span> in ZZZ. Every enemy has a Daze meter <span class="cn">(失衡条)</span>
+                that fills up as you attack them.
+            </p>
+
+            <div class="term">
+                <strong>Daze Buildup</strong> <span class="cn">(失衡积累)</span>: When you hit enemies,
+                you accumulate <span class="cn">(积累)</span> Daze based on your agent's
+                <span class="vocab">Impact</span> <span class="cn">(冲击力)</span> stat and skill multipliers <span class="cn">(技能倍率)</span>.
+            </div>
+
+            <div class="term">
+                <strong>Stun State</strong> <span class="cn">(眩晕状态)</span>: When Daze reaches 100%,
+                the enemy becomes <span class="vocab">stunned</span> <span class="cn">(眩晕)</span> and
+                takes increased damage <span class="cn">(增加伤害)</span>.
+            </div>
+
+            <h3>Stun Duration by Enemy Type <span class="cn">(不同敌人的眩晕时长)</span></h3>
+            <table>
+                <tr>
+                    <th>Enemy Type <span class="cn">(敌人类型)</span></th>
+                    <th>Stun Duration <span class="cn">(眩晕时长)</span></th>
+                    <th>DMG Multiplier <span class="cn">(伤害倍率)</span></th>
+                </tr>
+                <tr>
+                    <td>Normal <span class="cn">(普通)</span></td>
+                    <td>2 seconds</td>
+                    <td>125%</td>
+                </tr>
+                <tr>
+                    <td>Elite <span class="cn">(精英)</span></td>
+                    <td>8-10 seconds</td>
+                    <td>150%</td>
+                </tr>
+                <tr>
+                    <td>Boss <span class="cn">(首领)</span></td>
+                    <td>10-13 seconds</td>
+                    <td>150-200%</td>
+                </tr>
+            </table>
+
+            <div class="note-box tip">
+                <strong>Pro Tip <span class="cn">(专业技巧)</span>:</strong><br>
+                Stun agents <span class="cn">(眩晕型角色)</span> like Koleda and Lycaon have high Impact
+                and can fill the Daze meter quickly. Use them to stun enemies, then switch to
+                Attack agents <span class="cn">(攻击型角色)</span> for maximum damage!
+            </div>
+
+            <h2>Chain Attacks <span class="cn">(连携攻击)</span></h2>
+            <p>
+                When an enemy is stunned, you can trigger <span class="vocab">Chain Attacks</span>
+                <span class="cn">(连携攻击)</span> by using a heavy attack <span class="cn">(重击)</span>.
+                This initiates <span class="cn">(发动)</span> a powerful coordinated <span class="cn">(协调的)</span> assault.
+            </p>
+
+            <h3>Chain Attack Limits <span class="cn">(连携攻击次数限制)</span></h3>
+            <ul>
+                <li><strong>Normal enemies</strong> <span class="cn">(普通敌人)</span>: 1 chain attack</li>
+                <li><strong>Elite enemies</strong> <span class="cn">(精英敌人)</span>: 2 chain attacks</li>
+                <li><strong>Boss enemies</strong> <span class="cn">(首领敌人)</span>: 3 chain attacks</li>
+            </ul>
+
+            <div class="note-box">
+                <strong>Bangboo Chain Attack <span class="cn">(邦布连携攻击)</span>:</strong><br>
+                If you have a Bangboo in your party, it can also perform <span class="cn">(执行)</span>
+                a special chain attack with its own cooldown <span class="cn">(独立冷却)</span>.
+                This doesn't count toward <span class="cn">(不计入)</span> the regular chain attack limit!
+            </div>
+
+            <h2>Dodge Mechanics <span class="cn">(闪避机制)</span></h2>
+
+            <h3>Perfect Dodge <span class="cn">(完美闪避)</span></h3>
+            <p>
+                Dodging at the exact moment <span class="cn">(精确时刻)</span> an enemy attack lands
+                triggers a <span class="vocab">Perfect Dodge</span> <span class="cn">(完美闪避)</span>.
+                This has several benefits <span class="cn">(好处)</span>:
+            </p>
+            <ul>
+                <li>Time slows down briefly <span class="cn">(时间短暂减缓)</span></li>
+                <li>Enables <span class="cn">(启用)</span> a powerful counter-attack <span class="cn">(反击)</span></li>
+                <li>Grants <span class="cn">(给予)</span> invincibility frames <span class="cn">(无敌帧)</span></li>
+                <li>Recovers <span class="cn">(恢复)</span> some energy</li>
+            </ul>
+
+            <h3>Defensive Assist <span class="cn">(防御支援)</span></h3>
+            <p>
+                When your active agent is about to be hit, you can switch to another agent to
+                trigger a <span class="vocab">Defensive Assist</span> <span class="cn">(防御支援)</span>.
+                The incoming <span class="cn">(即将到来的)</span> agent will parry <span class="cn">(格挡)</span>
+                the attack and counter <span class="cn">(反击)</span>.
+            </p>
+
+            <div class="note-box warning">
+                <strong>Timing is Key <span class="cn">(时机是关键)</span>:</strong><br>
+                Defensive Assist requires precise <span class="cn">(精确的)</span> timing.
+                Switch too early or too late and you'll take damage instead <span class="cn">(反而会受到伤害)</span>.
+                Practice <span class="cn">(练习)</span> against easier enemies first!
+            </div>
+
+            <h2>Attack Types <span class="cn">(攻击类型)</span></h2>
+            <p>
+                Each agent's attacks fall into <span class="cn">(属于)</span> one of three physical
+                <span class="cn">(物理)</span> categories <span class="cn">(类别)</span>:
+            </p>
+
+            <table>
+                <tr>
+                    <th>Type <span class="cn">(类型)</span></th>
+                    <th>Description <span class="cn">(描述)</span></th>
+                    <th>Example Agents <span class="cn">(示例角色)</span></th>
+                </tr>
+                <tr>
+                    <td><strong>Slash</strong> <span class="cn">(斩击)</span></td>
+                    <td>Cutting attacks <span class="cn">(切割攻击)</span>, usually swords/blades</td>
+                    <td>Ellen Joe, Miyabi</td>
+                </tr>
+                <tr>
+                    <td><strong>Strike</strong> <span class="cn">(打击)</span></td>
+                    <td>Blunt force <span class="cn">(钝击)</span>, hammers/fists</td>
+                    <td>Koleda, Ben</td>
+                </tr>
+                <tr>
+                    <td><strong>Pierce</strong> <span class="cn">(穿刺)</span></td>
+                    <td>Penetrating <span class="cn">(穿透)</span> attacks, guns/spears</td>
+                    <td>Zhu Yuan, Billy</td>
+                </tr>
+            </table>
+
+            <h2>Energy System <span class="cn">(能量系统)</span></h2>
+            <p>
+                Each agent has an <span class="vocab">Energy</span> <span class="cn">(能量)</span> bar
+                that fills through combat. When full, you can unleash <span class="cn">(释放)</span>
+                their <span class="vocab">Ultimate</span> <span class="cn">(终结技)</span> ability.
+            </p>
+
+            <h3>Ways to Gain Energy <span class="cn">(获取能量的方式)</span></h3>
+            <ul>
+                <li>Dealing damage <span class="cn">(造成伤害)</span></li>
+                <li>Perfect dodges <span class="cn">(完美闪避)</span></li>
+                <li>Chain attacks <span class="cn">(连携攻击)</span></li>
+                <li>Certain skills and passives <span class="cn">(某些技能和被动)</span></li>
+                <li>Support agent buffs <span class="cn">(辅助角色增益)</span></li>
+            </ul>
+
+            <h2>Combat Tips for Beginners <span class="cn">(新手战斗技巧)</span></h2>
+            <ol>
+                <li>
+                    <strong>Don't button mash</strong> <span class="cn">(不要乱按)</span>:
+                    Learn your agent's combo timing <span class="cn">(连招节奏)</span> for optimal <span class="cn">(最佳)</span> damage.
+                </li>
+                <li>
+                    <strong>Watch enemy tells</strong> <span class="cn">(观察敌人预兆)</span>:
+                    Most attacks have visual cues <span class="cn">(视觉提示)</span> before they land.
+                </li>
+                <li>
+                    <strong>Use the whole team</strong> <span class="cn">(使用整个队伍)</span>:
+                    Switching agents is free and provides <span class="cn">(提供)</span> tactical <span class="cn">(战术)</span> advantages.
+                </li>
+                <li>
+                    <strong>Prioritize <span class="cn">(优先)</span> stunning</strong>:
+                    A stunned enemy takes much more damage. Focus on filling the Daze meter.
+                </li>
+                <li>
+                    <strong>Save ultimates for bosses</strong> <span class="cn">(为首领保留终结技)</span>:
+                    Don't waste <span class="cn">(浪费)</span> your ultimate on weak enemies.
+                </li>
+            </ol>
+
+            <div class="nav-links">
+                <a href="/articles/zzz-guide/01-game-overview.html">Prev: Game Overview</a>
+                <a href="/articles/zzz-guide/03-attributes-anomaly.html">Next: Attributes & Anomaly</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>

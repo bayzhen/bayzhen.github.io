@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenless Zone Zero Guide - English Study Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        nav {
+            background: #2c3e50;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #3498db;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .breadcrumb {
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            color: #95a5a6;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #7f8c8d;
+        }
+
+        .series-intro {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .series-intro h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .series-intro p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .series-intro .note {
+            background: #fef9e7;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e74c3c;
+        }
+
+        .article-list {
+            list-style: none;
+        }
+
+        .article-item {
+            background: #fff;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .article-item a {
+            display: block;
+            padding: 20px 25px;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s;
+        }
+
+        .article-item a:hover {
+            background: #f8f9fa;
+        }
+
+        .article-item h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .article-item p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #ecf0f1;
+            color: #7f8c8d;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+
+        .tag.beginner {
+            background: #d5f5e3;
+            color: #27ae60;
+        }
+
+        .tag.intermediate {
+            background: #fef9e7;
+            color: #f39c12;
+        }
+
+        .tag.advanced {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+
+        .cn {
+            color: #95a5a6;
+            font-size: 0.85em;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/resume.html">Resume</a></li>
+            <li><a href="/articles/">Articles</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">Articles</a> <span>/</span> ZZZ Guide
+        </div>
+
+        <div class="page-header">
+            <h1>Zenless Zone Zero: Complete Guide</h1>
+            <p>English study notes with Chinese annotations <span class="cn">(带中文注释的英文学习笔记)</span></p>
+        </div>
+
+        <div class="series-intro">
+            <h2>Series Overview <span class="cn">(系列概述)</span></h2>
+            <p>This series contains <strong>10 articles</strong> covering all essential <span class="cn">(必要的)</span> gameplay knowledge for Zenless Zone Zero.</p>
+            <p>Each article is written in English with Chinese annotations <span class="cn">(注释)</span> for complex vocabulary <span class="cn">(词汇)</span>.</p>
+            <p>Goal: Become a skilled <span class="cn">(熟练的)</span> player by understanding game mechanics <span class="cn">(机制)</span> thoroughly <span class="cn">(彻底地)</span>.</p>
+            <div class="note">
+                Tip: Read articles in order for beginners <span class="cn">(初学者按顺序阅读)</span>. Veterans can jump to specific topics <span class="cn">(老手可跳转特定主题)</span>.
+            </div>
+        </div>
+
+        <h2 class="section-title">Fundamentals <span class="cn">(基础篇)</span></h2>
+        <ul class="article-list">
+            <li class="article-item">
+                <a href="/articles/zzz-guide/01-game-overview.html">
+                    <h3>01. Game Overview <span class="cn">(游戏概述)</span></h3>
+                    <p>Introduction to New Eridu, Hollows, factions, and core gameplay loop</p>
+                    <div>
+                        <span class="tag beginner">Beginner</span>
+                        <span class="tag">5-8 min</span>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/zzz-guide/02-combat-basics.html">
+                    <h3>02. Combat System Basics <span class="cn">(战斗系统基础)</span></h3>
+                    <p>Basic attacks, dodging, chain attacks, Daze mechanics, and stun windows</p>
+                    <div>
+                        <span class="tag beginner">Beginner</span>
+                        <span class="tag">8-10 min</span>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/zzz-guide/03-attributes-anomaly.html">
+                    <h3>03. Attributes & Anomaly System <span class="cn">(属性与异常系统)</span></h3>
+                    <p>Five elements, special attributes, Anomaly Buildup, and Disorder damage</p>
+                    <div>
+                        <span class="tag beginner">Beginner</span>
+                        <span class="tag">8-10 min</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+
+        <h2 class="section-title">Characters & Teams <span class="cn">(角色与队伍)</span></h2>
+        <ul class="article-list">
+            <li class="article-item">
+                <a href="/articles/zzz-guide/04-agent-specialties.html">
+                    <h3>04. Agent Specialties & Roles <span class="cn">(角色专精与定位)</span></h3>
+                    <p>Attack, Stun, Anomaly, Support, Defense, Rupture - understanding each role</p>
+                    <div>
+                        <span class="tag intermediate">Intermediate</span>
+                        <span class="tag">8-10 min</span>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/zzz-guide/05-team-building.html">
+                    <h3>05. Team Building Guide <span class="cn">(组队指南)</span></h3>
+                    <p>Faction synergies, team archetypes, and recommended compositions</p>
+                    <div>
+                        <span class="tag intermediate">Intermediate</span>
+                        <span class="tag">10-12 min</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+
+        <h2 class="section-title">Equipment Systems <span class="cn">(装备系统)</span></h2>
+        <ul class="article-list">
+            <li class="article-item">
+                <a href="/articles/zzz-guide/06-drive-discs.html">
+                    <h3>06. Drive Discs Equipment <span class="cn">(驱动盘装备)</span></h3>
+                    <p>Slots, main stats, sub stats, set bonuses, and farming locations</p>
+                    <div>
+                        <span class="tag intermediate">Intermediate</span>
+                        <span class="tag">10-12 min</span>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/zzz-guide/07-w-engines.html">
+                    <h3>07. W-Engines Guide <span class="cn">(W引擎指南)</span></h3>
+                    <p>Weapon types, specialty matching, enhancement, and best-in-slot options</p>
+                    <div>
+                        <span class="tag intermediate">Intermediate</span>
+                        <span class="tag">8-10 min</span>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/zzz-guide/08-bangboo.html">
+                    <h3>08. Bangboo Companions <span class="cn">(邦布伙伴)</span></h3>
+                    <p>Bangboo types, chain attacks, faction bonuses, and top picks</p>
+                    <div>
+                        <span class="tag beginner">Beginner</span>
+                        <span class="tag">6-8 min</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+
+        <h2 class="section-title">Endgame & Mastery <span class="cn">(终局与精通)</span></h2>
+        <ul class="article-list">
+            <li class="article-item">
+                <a href="/articles/zzz-guide/09-endgame-content.html">
+                    <h3>09. Endgame Content <span class="cn">(终局内容)</span></h3>
+                    <p>Shiyu Defense, Deadly Assault, Hollow Zero modes and strategies</p>
+                    <div>
+                        <span class="tag advanced">Advanced</span>
+                        <span class="tag">12-15 min</span>
+                    </div>
+                </a>
+            </li>
+            <li class="article-item">
+                <a href="/articles/zzz-guide/10-advanced-tips.html">
+                    <h3>10. Advanced Tips & Meta <span class="cn">(进阶技巧与元游戏)</span></h3>
+                    <p>Frame data, animation cancels, tier considerations, and resource management</p>
+                    <div>
+                        <span class="tag advanced">Advanced</span>
+                        <span class="tag">10-12 min</span>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

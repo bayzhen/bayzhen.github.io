@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Building Guide - ZZZ Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.8; color: #333; background-color: #f5f5f5; }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav ul { max-width: 900px; margin: 0 auto; padding: 0 20px; list-style: none; display: flex; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 20px; font-size: 0.9em; }
+        .breadcrumb a { color: #3498db; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: #95a5a6; }
+        article h1 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; }
+        .meta { color: #7f8c8d; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #ecf0f1; }
+        article h2 { font-size: 1.4em; color: #2c3e50; margin: 35px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #e74c3c; }
+        article h3 { font-size: 1.15em; color: #34495e; margin: 25px 0 12px; }
+        article p { margin-bottom: 15px; text-align: justify; }
+        article ul, article ol { margin: 15px 0 15px 25px; }
+        article li { margin-bottom: 8px; }
+        .cn { color: #e74c3c; font-size: 0.85em; font-style: italic; }
+        .vocab { background: #fff3cd; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+        .note-box { background: #e8f4fd; border-left: 4px solid #3498db; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .note-box.warning { background: #fef9e7; border-left-color: #f39c12; }
+        .note-box.tip { background: #d5f5e3; border-left-color: #27ae60; }
+        .team-card { background: #fff; border-radius: 10px; padding: 20px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .team-card h4 { color: #2c3e50; margin-bottom: 10px; font-size: 1.1em; }
+        .team-card .agents { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
+        .team-card .agent { background: #f8f9fa; padding: 5px 12px; border-radius: 5px; font-size: 0.9em; }
+        .team-card .agent.main { background: #e74c3c; color: #fff; }
+        .team-card .agent.stun { background: #f39c12; color: #fff; }
+        .team-card .agent.support { background: #27ae60; color: #fff; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+        th { background: #2c3e50; color: #fff; font-weight: 500; }
+        tr:hover { background: #f8f9fa; }
+        .nav-links { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 30px; border-top: 1px solid #ecf0f1; }
+        .nav-links a { color: #3498db; text-decoration: none; padding: 10px 20px; border: 1px solid #3498db; border-radius: 5px; transition: all 0.3s; }
+        .nav-links a:hover { background: #3498db; color: #fff; }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/resume.html">Resume</a></li>
+            <li><a href="/articles/">Articles</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/articles/">Articles</a> <span>/</span>
+            <a href="/articles/zzz-guide/">ZZZ Guide</a> <span>/</span>
+            Team Building
+        </div>
+
+        <article>
+            <h1>Team Building Guide <span class="cn">(组队指南)</span></h1>
+            <div class="meta">Intermediate | 10-12 min read</div>
+
+            <h2>Team Building Fundamentals <span class="cn">(组队基础)</span></h2>
+            <p>
+                Building an effective <span class="cn">(有效的)</span> team in ZZZ requires understanding
+                <span class="vocab">synergy</span> <span class="cn">(协同效应)</span> between agents.
+                A well-constructed <span class="cn">(构建良好的)</span> team multiplies <span class="cn">(成倍增加)</span>
+                each member's effectiveness <span class="cn">(效果)</span>.
+            </p>
+
+            <h3>The Three Pillars <span class="cn">(三大支柱)</span></h3>
+            <ol>
+                <li><strong>Damage</strong> <span class="cn">(伤害)</span>: Someone needs to deal the damage</li>
+                <li><strong>Enabling</strong> <span class="cn">(辅助)</span>: Create opportunities <span class="cn">(机会)</span> for damage</li>
+                <li><strong>Sustain</strong> <span class="cn">(续航)</span>: Keep the team alive <span class="cn">(存活)</span> and fighting</li>
+            </ol>
+
+            <h2>Team Archetypes <span class="cn">(队伍原型)</span></h2>
+
+            <h3>1. Standard DPS Team <span class="cn">(标准输出队)</span></h3>
+            <p>
+                The most common <span class="cn">(常见的)</span> and beginner-friendly <span class="cn">(新手友好的)</span>
+                composition <span class="cn">(组合)</span>.
+            </p>
+            <div class="team-card">
+                <h4>Structure <span class="cn">(结构)</span></h4>
+                <div class="agents">
+                    <span class="agent main">Attack DPS</span>
+                    <span class="agent stun">Stun Agent</span>
+                    <span class="agent support">Support</span>
+                </div>
+                <p><strong>How it works <span class="cn">(运作方式)</span>:</strong></p>
+                <ol>
+                    <li>Stun agent fills enemy Daze meter <span class="cn">(击破角色填满失衡条)</span></li>
+                    <li>Support buffs the team <span class="cn">(辅助增益队伍)</span></li>
+                    <li>Attack DPS unleashes damage during stun <span class="cn">(强攻在眩晕期间释放伤害)</span></li>
+                </ol>
+            </div>
+
+            <h3>2. Disorder Team <span class="cn">(紊乱队)</span></h3>
+            <p>
+                Focuses on triggering <span class="cn">(触发)</span> Disorder for sustained <span class="cn">(持续的)</span> damage.
+            </p>
+            <div class="team-card">
+                <h4>Structure <span class="cn">(结构)</span></h4>
+                <div class="agents">
+                    <span class="agent main">Anomaly A</span>
+                    <span class="agent main">Anomaly B</span>
+                    <span class="agent support">Support/Flex</span>
+                </div>
+                <p><strong>Key requirement <span class="cn">(关键要求)</span>:</strong> Two anomaly agents must have <strong>different attributes</strong> <span class="cn">(不同属性)</span> to trigger Disorder!</p>
+            </div>
+
+            <h3>3. Hypercarry Team <span class="cn">(超级主C队)</span></h3>
+            <p>
+                All resources focused on <span class="cn">(集中于)</span> one powerful carry <span class="cn">(主C)</span>.
+            </p>
+            <div class="team-card">
+                <h4>Structure <span class="cn">(结构)</span></h4>
+                <div class="agents">
+                    <span class="agent main">Main DPS</span>
+                    <span class="agent support">Buffer 1</span>
+                    <span class="agent support">Buffer 2</span>
+                </div>
+                <p><strong>Best for <span class="cn">(最适合)</span>:</strong> Highly invested <span class="cn">(高投入的)</span> S-Rank attackers like Ellen Joe or Miyabi</p>
+            </div>
+
+            <h3>4. Quickswap Team <span class="cn">(速切队)</span></h3>
+            <p>
+                Rapidly <span class="cn">(快速地)</span> switches between agents for constant <span class="cn">(持续的)</span> damage.
+            </p>
+            <div class="team-card">
+                <h4>Structure <span class="cn">(结构)</span></h4>
+                <div class="agents">
+                    <span class="agent main">Sub-DPS 1</span>
+                    <span class="agent main">Sub-DPS 2</span>
+                    <span class="agent main">Sub-DPS 3</span>
+                </div>
+                <p><strong>Playstyle <span class="cn">(玩法)</span>:</strong> Use each agent's burst <span class="cn">(爆发技能)</span>, then switch. No dedicated <span class="cn">(专门的)</span> support needed.</p>
+            </div>
+
+            <h2>Faction Synergies <span class="cn">(阵营协同)</span></h2>
+            <p>
+                Some Bangboo provide bonuses <span class="cn">(加成)</span> when your team has agents from the same
+                <span class="vocab">faction</span> <span class="cn">(阵营)</span>. This can significantly <span class="cn">(显著地)</span>
+                boost <span class="cn">(提升)</span> team performance.
+            </p>
+
+            <table>
+                <tr>
+                    <th>Faction <span class="cn">(阵营)</span></th>
+                    <th>Key Agents <span class="cn">(关键角色)</span></th>
+                    <th>Team Strength <span class="cn">(队伍优势)</span></th>
+                </tr>
+                <tr>
+                    <td>Victoria Housekeeping <span class="cn">(维多利亚家政)</span></td>
+                    <td>Ellen, Lycaon, Corin, Rina</td>
+                    <td>Ice DPS + Stun synergy <span class="cn">(冰输出+击破协同)</span></td>
+                </tr>
+                <tr>
+                    <td>Belobog Industries <span class="cn">(白祇重工)</span></td>
+                    <td>Koleda, Grace, Anton, Ben</td>
+                    <td>Electric/Fire flexibility <span class="cn">(电/火灵活性)</span></td>
+                </tr>
+                <tr>
+                    <td>Sons of Calydon <span class="cn">(卡吕冬之子)</span></td>
+                    <td>Caesar, Burnice, Lighter, Piper</td>
+                    <td>Fire Anomaly + Defense <span class="cn">(火异常+防护)</span></td>
+                </tr>
+                <tr>
+                    <td>CIRS <span class="cn">(刑侦特响科)</span></td>
+                    <td>Zhu Yuan, Qingyi, Jane Doe, Seth</td>
+                    <td>Physical/Ether damage <span class="cn">(物理/以太伤害)</span></td>
+                </tr>
+                <tr>
+                    <td>Obol Squad <span class="cn">(奥波勒斯小队)</span></td>
+                    <td>Soldier 11, Trigger</td>
+                    <td>Fire DPS <span class="cn">(火输出)</span></td>
+                </tr>
+            </table>
+
+            <h2>Sample Team Compositions <span class="cn">(示例队伍组合)</span></h2>
+
+            <div class="team-card">
+                <h4>Ice DPS Team <span class="cn">(冰输出队)</span></h4>
+                <div class="agents">
+                    <span class="agent main">Ellen Joe</span>
+                    <span class="agent stun">Lycaon</span>
+                    <span class="agent support">Soukaku</span>
+                </div>
+                <p>
+                    <strong>Strategy <span class="cn">(策略)</span>:</strong> Lycaon stuns, Soukaku buffs Ice DMG,
+                    Ellen deals massive <span class="cn">(大量)</span> burst damage. All Victoria faction for Bangboo bonus.
+                </p>
+            </div>
+
+            <div class="team-card">
+                <h4>Physical Burst Team <span class="cn">(物理爆发队)</span></h4>
+                <div class="agents">
+                    <span class="agent main">Zhu Yuan</span>
+                    <span class="agent stun">Qingyi</span>
+                    <span class="agent support">Nicole</span>
+                </div>
+                <p>
+                    <strong>Strategy <span class="cn">(策略)</span>:</strong> Qingyi's fast stun, Nicole's DEF shred
+                    <span class="cn">(防御削减)</span>, Zhu Yuan's gun barrage <span class="cn">(枪弹连射)</span>.
+                </p>
+            </div>
+
+            <div class="team-card">
+                <h4>Fire Disorder Team <span class="cn">(火紊乱队)</span></h4>
+                <div class="agents">
+                    <span class="agent main">Burnice</span>
+                    <span class="agent main">Jane Doe</span>
+                    <span class="agent support">Lucy</span>
+                </div>
+                <p>
+                    <strong>Strategy <span class="cn">(策略)</span>:</strong> Burnice applies Burn, Jane triggers Disorder
+                    with Physical. Lucy buffs ATK. Constant <span class="cn">(持续的)</span> Disorder procs <span class="cn">(触发)</span>.
+                </p>
+            </div>
+
+            <div class="team-card">
+                <h4>F2P Friendly Team <span class="cn">(平民友好队)</span></h4>
+                <div class="agents">
+                    <span class="agent main">Billy / Anton</span>
+                    <span class="agent stun">Anby / Koleda</span>
+                    <span class="agent support">Nicole / Lucy</span>
+                </div>
+                <p>
+                    <strong>Note <span class="cn">(注意)</span>:</strong> All A-Rank agents! Effective <span class="cn">(有效的)</span>
+                    for most content <span class="cn">(内容)</span> without S-Rank investment <span class="cn">(投入)</span>.
+                </p>
+            </div>
+
+            <h2>Team Building Tips <span class="cn">(组队技巧)</span></h2>
+
+            <div class="note-box tip">
+                <strong>Tip 1: Element Matching <span class="cn">(元素匹配)</span></strong><br>
+                Match your DPS element with support buffs. Ice DPS + Ice DMG buffer = maximum damage.
+                <span class="cn">(让输出元素与辅助增益匹配。冰输出+冰伤增益=最大伤害)</span>
+            </div>
+
+            <div class="note-box tip">
+                <strong>Tip 2: Don't Neglect Stun <span class="cn">(不要忽视击破)</span></strong><br>
+                Even the best DPS needs stun windows. Invest in <span class="cn">(投资)</span> at least one good Stun agent.
+            </div>
+
+            <div class="note-box warning">
+                <strong>Common Mistake <span class="cn">(常见错误)</span>:</strong><br>
+                Running 3 DPS agents without stun or support. You'll struggle <span class="cn">(挣扎)</span>
+                against bosses who don't get stunned easily <span class="cn">(不容易被眩晕)</span>.
+            </div>
+
+            <h2>Bangboo Selection <span class="cn">(邦布选择)</span></h2>
+            <p>
+                Choose Bangboo based on <span class="cn">(基于)</span>:
+            </p>
+            <ul>
+                <li><strong>Faction bonus</strong> <span class="cn">(阵营加成)</span>: If running same-faction team</li>
+                <li><strong>Element match</strong> <span class="cn">(元素匹配)</span>: Bangboo element should complement <span class="cn">(补充)</span> your DPS</li>
+                <li><strong>Utility</strong> <span class="cn">(实用性)</span>: Some Bangboo provide healing or buffs</li>
+            </ul>
+
+            <div class="nav-links">
+                <a href="/articles/zzz-guide/04-agent-specialties.html">Prev: Agent Specialties</a>
+                <a href="/articles/zzz-guide/06-drive-discs.html">Next: Drive Discs</a>
+            </div>
+        </article>
+    </div>
+</body>
+</html>
