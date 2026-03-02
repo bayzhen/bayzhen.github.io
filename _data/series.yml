@@ -1,0 +1,38 @@
+- id: claude-code
+  title: "Claude Code教程"
+  description: "AI编程助手完全指南"
+  order: 1
+
+- id: ai-inference-server
+  title: "游戏AI推理服务"
+  description: "系统架构、推理引擎、特征提取"
+  order: 2
+
+- id: interview-prep
+  title: "面试准备"
+  description: "Lua 模拟考试、知识测验"
+  order: 3
+  standalone_pages:
+    - title: "Lua 游戏化学习"
+      url: "/articles/lua-game/"
+      description: "边玩边学 Lua！即时反馈学习模式、连击系统、XP 等级成长、章节雷达图、每日挑战打卡"
+      tags: ["Lua", "游戏化", "交互式"]
+    - title: "Lua 模拟面试考试"
+      url: "/articles/lua-exam/"
+      description: "面向腾讯洛克王国 UE 客户端岗位，42 道题覆盖 Lua 全部 13 个核心章节。支持计时、错题本、章节分析"
+      tags: ["Lua", "面试", "交互式"]
+
+- id: mbrl-study-notes
+  title: "MBRL学习笔记"
+  description: "基于模型的强化学习、Dreamer、世界模型"
+  order: 4
+
+- id: zzz-guide
+  title: "ZZZ英文笔记"
+  description: "绝区零游戏指南、带中文注释"
+  order: 5
+
+- id: unreal-engine
+  title: "虚幻引擎"
+  description: "UE开发、编辑器扩展、UI系统"
+  order: 6

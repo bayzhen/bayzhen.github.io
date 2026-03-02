@@ -1,0 +1,26 @@
+title: "陈栢成 - 技术博客"
+description: "虚幻引擎开发、游戏AI研发、技术分享"
+url: "https://bayzhen.github.io"
+baseurl: ""
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: highlight
+
+exclude:
+  - node_modules
+  - Docs
+  - study_notes
+  - scripts
+  - package.json
+  - package-lock.json
+  - DESIGN.md
+  - utility_ai_proposal.md
+  - CLAUDE.md
+  - .claude
+  - Gemfile
+  - Gemfile.lock
+  - README.md

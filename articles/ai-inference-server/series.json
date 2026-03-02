@@ -1,9 +1,0 @@
-{
-  "id": "ai-inference-server",
-  "title": "游戏AI推理服务",
-  "description": "系统架构、推理引擎、特征提取",
-  "order": 2,
-  "sections": [
-    { "name": "全部文章", "levels": ["intermediate", "advanced"] }
-  ]
-}

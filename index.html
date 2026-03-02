@@ -1,277 +1,55 @@
-<!DOCTYPE html><html lang="zh-CN"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>陈栢成 - 虚幻引擎客户端工程师 / AI数据工程师</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+---
+layout: default
+title: "陈栢成 - 虚幻引擎客户端工程师 / AI数据工程师"
+---
+<section class="hero">
+    <h1>陈栢成</h1>
+    <p class="subtitle">虚幻引擎客户端工程师 / AI数据工程师</p>
+    <p class="intro">
+        专注于虚幻引擎开发与游戏AI研发，在UE客户端开发、强化学习训练、工具链建设等方面有丰富经验。
+        热衷于技术分享，记录开发中的实践与思考。
+    </p>
+    <div class="social-links">
+        <a href="mailto:baychen354@gmail.com">Email</a>
+        <a href="https://github.com/bayzhen" target="_blank">GitHub</a>
+    </div>
+</section>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f5f5f5;
-        }
-
-        nav {
-            background: #2c3e50;
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav ul {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 20px;
-            list-style: none;
-            display: flex;
-            gap: 30px;
-        }
-
-        nav a {
-            color: #ecf0f1;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        nav a:hover {
-            color: #3498db;
-        }
-
-        .hero {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: #fff;
-            padding: 80px 20px;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-
-        .hero .subtitle {
-            font-size: 1.3em;
-            color: #bdc3c7;
-            margin-bottom: 25px;
-        }
-
-        .hero .intro {
-            max-width: 700px;
-            margin: 0 auto 30px;
-            font-size: 1.1em;
-            line-height: 1.8;
-            color: #ecf0f1;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .social-links a {
-            color: #ecf0f1;
-            text-decoration: none;
-            padding: 10px 20px;
-            border: 1px solid #ecf0f1;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .social-links a:hover {
-            background: #ecf0f1;
-            color: #2c3e50;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 50px 20px;
-        }
-
-        h2 {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .nav-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-
-        .nav-card {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .nav-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        }
-
-        .nav-card h3 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 1.3em;
-        }
-
-        .nav-card p {
-            color: #7f8c8d;
-            font-size: 0.95em;
-        }
-
-        .nav-card .icon {
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-
-        .categories {
-            margin-top: 60px;
-        }
-
-        .category-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .category-item {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            text-decoration: none;
-            color: #2c3e50;
-            border-left: 4px solid #3498db;
-            transition: all 0.3s;
-        }
-
-        .category-item:hover {
-            border-left-color: #2c3e50;
-            transform: translateX(5px);
-        }
-
-        .category-item h4 {
-            margin-bottom: 5px;
-        }
-
-        .category-item span {
-            color: #7f8c8d;
-            font-size: 0.85em;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-
-        @media (max-width: 600px) {
-            .hero h1 {
-                font-size: 2em;
-            }
-
-            .hero .subtitle {
-                font-size: 1.1em;
-            }
-
-            .social-links {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="/">首页</a></li>
-            <li><a href="/resume.html">简历</a></li>
-            <li><a href="/articles/">文章</a></li>
-        </ul>
-    </nav>
-
-    <section class="hero">
-        <h1>陈栢成</h1>
-        <p class="subtitle">虚幻引擎客户端工程师 / AI数据工程师</p>
-        <p class="intro">
-            专注于虚幻引擎开发与游戏AI研发，在UE客户端开发、强化学习训练、工具链建设等方面有丰富经验。
-            热衷于技术分享，记录开发中的实践与思考。
-        </p>
-        <div class="social-links">
-            <a href="mailto:baychen354@gmail.com">Email</a>
-            <a href="https://github.com/bayzhen" target="_blank">GitHub</a>
-        </div>
-    </section>
-
-    <div class="container">
-        <h2>导航</h2>
-        <div class="nav-cards">
-            <a href="/resume.html" class="nav-card">
-                <div class="icon">📄</div>
-                <h3>个人简历</h3>
-                <p>查看我的工作经历、教育背景、专业技能与项目经验</p>
-            </a>
-            <a href="/articles/" class="nav-card">
-                <div class="icon">📝</div>
-                <h3>技术文章</h3>
-                <p>虚幻引擎开发经验、AI训练实践、工具开发心得</p>
-            </a>
-        </div>
-
-        <div class="categories">
-            <h2>文章分类</h2>
-            <div class="category-list">
-                <a href="/articles/claude-code/" class="category-item">
-                    <h4>Claude Code教程</h4>
-                    <span>AI编程助手完全指南</span>
-                </a>
-
-                <a href="/articles/ai-inference-server/" class="category-item">
-                    <h4>游戏AI推理服务</h4>
-                    <span>系统架构、推理引擎、特征提取</span>
-                </a>
-
-                <a href="/articles/mbrl-study-notes/" class="category-item">
-                    <h4>MBRL学习笔记</h4>
-                    <span>基于模型的强化学习、Dreamer、世界模型</span>
-                </a>
-
-                <a href="/articles/zzz-guide/" class="category-item">
-                    <h4>ZZZ英文笔记</h4>
-                    <span>绝区零游戏指南、带中文注释</span>
-                </a>
-
-                <a href="/articles/unreal-engine/" class="category-item">
-                    <h4>虚幻引擎</h4>
-                    <span>UE开发、编辑器扩展、UI系统</span>
-                </a>
-                <a href="/articles/lua-exam/" class="category-item">
-                    <h4>面试准备</h4>
-                    <span>Lua 模拟考试、知识测验</span>
-                </a>
-            </div>
-        </div>
+<div class="container">
+    <h2 class="home-section-title">导航</h2>
+    <div class="nav-cards">
+        <a href="/resume.html" class="nav-card">
+            <div class="icon">📄</div>
+            <h3>个人简历</h3>
+            <p>查看我的工作经历、教育背景、专业技能与项目经验</p>
+        </a>
+        <a href="/articles/" class="nav-card">
+            <div class="icon">📝</div>
+            <h3>技术文章</h3>
+            <p>虚幻引擎开发经验、AI训练实践、工具开发心得</p>
+        </a>
     </div>
 
-    <footer>
-        <p>baychen354@gmail.com | github.com/bayzhen</p>
-    </footer>
+    <div class="categories">
+        <h2 class="home-section-title">文章分类</h2>
+        <div class="category-list">
+            {% for s in site.data.series %}
+            {% if s.standalone_pages %}
+            <a href="/articles/" class="category-item">
+                <h4>{{ s.title }}</h4>
+                <span>{{ s.description }}</span>
+            </a>
+            {% else %}
+            <a href="/articles/{{ s.id }}/" class="category-item">
+                <h4>{{ s.title }}</h4>
+                <span>{{ s.description }}</span>
+            </a>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
 
-
-</body></html>
+<footer>
+    <p>baychen354@gmail.com | github.com/bayzhen</p>
+</footer>

@@ -1,0 +1,34 @@
+---
+layout: default
+---
+<div class="container container--narrow">
+    <div class="breadcrumb">
+        <a href="/articles/">文章</a> <span>/</span>
+        <a href="/articles/{{ page.series }}/">{{ page.series_title }}</a> <span>/</span>
+        {{ page.title }}
+    </div>
+
+    <article>
+        <h1>{{ page.title }}</h1>
+        <div class="article-meta">
+            {% for tag in page.tags %}
+            <span class="tag">{{ tag }}</span>
+            {% endfor %}
+        </div>
+
+        {{ content }}
+
+        <div class="nav-links">
+            {% if page.prev %}
+            <a href="{{ page.prev.url }}">← 上一篇: {{ page.prev.title }}</a>
+            {% else %}
+            <span></span>
+            {% endif %}
+            {% if page.next %}
+            <a href="{{ page.next.url }}">下一篇: {{ page.next.title }} →</a>
+            {% else %}
+            <span></span>
+            {% endif %}
+        </div>
+    </article>
+</div>

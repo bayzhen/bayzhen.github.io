@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: 'zh-CN' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if page.description %}<meta name="description" content="{{ page.description }}">{% endif %}
+    <title>{{ page.title }}{% if page.title_suffix %} - {{ page.title_suffix }}{% endif %}</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+    {% include nav.html %}
+    {{ content }}
+</body>
+</html>

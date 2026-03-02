@@ -1,528 +1,60 @@
-<!DOCTYPE html><html lang="zh-CN"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>技术文章 - 陈栢成</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f5f5f5;
-        }
-
-        nav {
-            background: #2c3e50;
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav ul {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 20px;
-            list-style: none;
-            display: flex;
-            gap: 30px;
-        }
-
-        nav a {
-            color: #ecf0f1;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        nav a:hover {
-            color: #3498db;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .page-header {
-            margin-bottom: 40px;
-        }
-
-        .page-header h1 {
-            font-size: 2em;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .page-header p {
-            color: #7f8c8d;
-        }
-
-        .category-section {
-            margin-bottom: 50px;
-        }
-
-        .category-section h2 {
-            font-size: 1.4em;
-            color: #2c3e50;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #3498db;
-            margin-bottom: 20px;
-        }
-
-        .article-list {
-            list-style: none;
-        }
-
-        .article-item {
-            background: #fff;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-
-        .article-item a {
-            display: block;
-            padding: 20px 25px;
-            text-decoration: none;
-            color: inherit;
-            transition: background 0.2s;
-        }
-
-        .article-item a:hover {
-            background: #f8f9fa;
-        }
-
-        .article-item h3 {
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-
-        .article-item p {
-            color: #7f8c8d;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-
-        .article-meta {
-            font-size: 0.85em;
-            color: #95a5a6;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #95a5a6;
-        }
-
-        .tag {
-            display: inline-block;
-            background: #ecf0f1;
-            color: #7f8c8d;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 0.8em;
-            margin-right: 5px;
-        }
-
-        @media (max-width: 600px) {
-            .page-header h1 {
-                font-size: 1.6em;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="/">首页</a></li>
-            <li><a href="/resume.html">简历</a></li>
-            <li><a href="/articles/">文章</a></li>
-        </ul>
-    </nav>
-
-    <div class="container">
-        <div class="page-header">
-            <h1>技术文章</h1>
-            <p>虚幻引擎开发经验、AI训练实践、工具开发心得</p>
-        </div>
-        <section class="category-section">
-            <h2>Claude Code教程 (9篇)</h2>
-            <ul class="article-list">
-                <li class="article-item">
-                    <a href="/articles/claude-code/01-getting-started.html">
-                        <h3>快速入门</h3>
-                        <p>安装、启动、基础操作，3分钟上手AI编程助手</p>
-                        <div class="article-meta">
-                            <span class="tag beginner">入门</span>
-                            <span class="tag">3-5分钟</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/claude-code/02-work-modes.html">
-                        <h3>三种工作模式</h3>
-                        <p>正常模式、计划模式、危险模式——选对模式，效率翻倍</p>
-                        <div class="article-meta">
-                            <span class="tag beginner">入门</span>
-                            <span class="tag">5-7分钟</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/claude-code/03-efficiency-tips.html">
-                        <h3>效率技巧</h3>
-                        <p>10个让效率翻倍的实用技巧，从入门到真香</p>
-                        <div class="article-meta">
-                            <span class="tag beginner">入门</span>
-                            <span class="tag">8-10分钟</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/claude-code/04-mcp.html">
-                        <h3>MCP插件系统</h3>
-                        <p>给Claude Code装外挂，连接数据库、GitHub、浏览器等外部服务</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">5-7分钟</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/claude-code/05-skills.html">
-                        <h3>Skills技能系统</h3>
-                        <p>让Claude按需下载技能，像黑客帝国的Neo一样</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">5-7分钟</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/claude-code/06-subagents.html">
-                        <h3>Subagents分身术</h3>
-                        <p>上下文隔离，让Claude同时处理多个任务而不乱套</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">5-7分钟</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/claude-code/07-hooks.html">
-                        <h3>Hooks自动化</h3>
-                        <p>自动化触发器，让Claude自动遵守规矩</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">7-10分钟</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/claude-code/08-slash-commands.html">
-                        <h3>Slash Commands快捷指令</h3>
-                        <p>一键触发工作流，把常用prompt存成快捷命令</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">5-7分钟</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/claude-code/09-plugins.html">
-                        <h3>Plugins与团队协作</h3>
-                        <p>打包分享你的超能力，团队协作最佳实践</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">7-10分钟</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="category-section">
-            <h2>游戏AI推理服务 (12篇)</h2>
-            <ul class="article-list">
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/00-architecture-overview.html">
-                        <h3>架构概述</h3>
-                        <p>整体系统架构、请求处理管道、核心设计模式与扩展点</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">架构</span>
-                            <span class="tag">系统设计</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/01-config-system.html">
-                        <h3>配置系统</h3>
-                        <p>双缓冲机制、NACOS集成、热更新配置与静态配置管理</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">配置</span>
-                            <span class="tag">热更新</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/02-grpc-service.html">
-                        <h3>gRPC服务层</h3>
-                        <p>异步服务器、多CompletionQueue并发、Protobuf Arena优化</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">gRPC</span>
-                            <span class="tag">并发</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/03-model-inference.html">
-                        <h3>模型推理系统</h3>
-                        <p>ONNX Runtime集成、LSTM状态管理、多模型动态选择</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">ONNX</span>
-                            <span class="tag">推理</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/04-rule-system.html">
-                        <h3>规则系统</h3>
-                        <p>前置/后置规则、链式执行、工厂模式与规则注册</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">规则引擎</span>
-                            <span class="tag">设计模式</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/05-action-system.html">
-                        <h3>动作系统</h3>
-                        <p>多任务学习架构、Encode/Decode机制、动作掩码约束</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">动作空间</span>
-                            <span class="tag">多任务学习</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/06-character-system.html">
-                        <h3>角色系统</h3>
-                        <p>角色技能检查、继承与工厂模式、技能权重机制</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">角色</span>
-                            <span class="tag">技能系统</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/07-context-system.html">
-                        <h3>上下文系统</h3>
-                        <p>游戏状态管理、敌人追踪、掩体系统、声音感知</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">上下文</span>
-                            <span class="tag">状态管理</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/08-data-management.html">
-                        <h3>数据管理系统</h3>
-                        <p>地图资源、战略点位、空间索引、角色技能配置</p>
-                        <div class="article-meta">
-                            <span class="tag intermediate">进阶</span>
-                            <span class="tag">数据管理</span>
-                            <span class="tag">空间索引</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/09-feature-extraction.html">
-                        <h3>特征提取系统</h3>
-                        <p>特征管理器、归一化处理、动态复制因子</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">特征工程</span>
-                            <span class="tag">归一化</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/10-pathfinding.html">
-                        <h3>寻路系统</h3>
-                        <p>战略图路径规划、DFS/BFS搜索、势力计算</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">寻路</span>
-                            <span class="tag">图算法</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/ai-inference-server/11-3d-rendering.html">
-                        <h3>3D渲染系统</h3>
-                        <p>OSMesa离屏渲染、深度图生成、BVH射线追踪</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">渲染</span>
-                            <span class="tag">射线追踪</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="category-section">
-            <h2>面试准备</h2>
-            <ul class="article-list">
-                <li class="article-item">
-                    <a href="/articles/lua-game/">
-                        <h3>Lua 游戏化学习</h3>
-                        <p>边玩边学 Lua！即时反馈学习模式、连击系统、XP 等级成长、章节雷达图、每日挑战打卡。</p>
-                        <div class="article-meta">
-                            <span class="tag">Lua</span>
-                            <span class="tag">游戏化</span>
-                            <span class="tag">交互式</span>
-                        </div>
-                    </a>
-                </li>
-                <li class="article-item">
-                    <a href="/articles/lua-exam/">
-                        <h3>Lua 模拟面试考试</h3>
-                        <p>面向腾讯洛克王国 UE 客户端岗位，42 道题覆盖 Lua 全部 13 个核心章节。支持计时、错题本、章节分析。</p>
-                        <div class="article-meta">
-                            <span class="tag">Lua</span>
-                            <span class="tag">面试</span>
-                            <span class="tag">交互式</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="category-section">
-            <h2>MBRL学习笔记 (10篇)</h2>
-            <ul class="article-list">
-                <li class="article-item">
-                    <a href="/articles/mbrl-study-notes/">
-                        <h3>基于模型的强化学习学习笔记</h3>
-                        <p>系统学习笔记，涵盖核心框架、世界模型、Dreamer V1-V4架构演进、规划与策略优化、误差分析、不确定性量化、离线学习、好奇心探索与多智能体等主题。</p>
-                        <div class="article-meta">
-                            <span class="tag">MBRL</span>
-                            <span class="tag">Dreamer</span>
-                            <span class="tag">世界模型</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="category-section">
-            <h2>Zenless Zone Zero Guide (10篇)</h2>
-            <ul class="article-list">
-                <li class="article-item">
-                    <a href="/articles/zzz-guide/">
-                        <h3>ZZZ Complete Guide - English Study Notes</h3>
-                        <p>绝区零英文学习笔记，带中文注释。涵盖战斗系统、角色专精、装备系统、组队指南、终局内容等全部游戏知识。</p>
-                        <div class="article-meta">
-                            <span class="tag">ZZZ</span>
-                            <span class="tag">English</span>
-                            <span class="tag">Game Guide</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="category-section">
-            <h2>虚幻引擎</h2>
-            <ul class="article-list">
-                <li class="article-item">
-                    <a href="/articles/unreal-engine/getting-started.html">
-                        <h3>虚幻引擎开发入门指南</h3>
-                        <p>从零开始搭建UE开发环境，了解项目结构与基础概念</p>
-                        <div class="article-meta">
-                            <span class="tag beginner">入门</span>
-                            <span class="tag">UE5</span>
-                        </div>
-                    </a>
-                </li>
-
-                <li class="article-item">
-                    <a href="/articles/unreal-engine/ai-cover-data-generation.html">
-                        <h3>UE编辑器中AI掩体数据的自动化生成</h3>
-                        <p>洪水填充、空间网格索引、并行射线检测——掩体射击游戏的AI数据生成管线</p>
-                        <div class="article-meta">
-                            <span class="tag advanced">高级</span>
-                            <span class="tag">AI</span>
-                            <span class="tag">掩体系统</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </section>
-        
-
-        
-
-        
-
-        
-
-        
-
-        <!-- 后续可添加更多分类
-        <section class="category-section">
-            <h2>AI与强化学习</h2>
-            <ul class="article-list">
-                <li class="article-item">
-                    <a href="/articles/ai/reward-function-design.html">
-                        <h3>强化学习奖励函数设计实践</h3>
-                        <p>如何设计有效的奖励函数，避免局部最优陷阱</p>
-                        <div class="article-meta">
-                            <span class="tag">强化学习</span>
-                            <span class="tag">实践</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-        </section>
-        -->
+---
+layout: default
+title: "技术文章 - 陈栢成"
+---
+<div class="container">
+    <div class="page-header">
+        <h1>技术文章</h1>
+        <p>虚幻引擎开发经验、AI训练实践、工具开发心得</p>
     </div>
 
+    {% for s in site.data.series %}
+    <section class="category-section">
+        {% assign articles = site.pages | where: "series", s.id | sort: "order" %}
 
-</body></html>
+        {% if s.standalone_pages %}
+        <h2>{{ s.title }}</h2>
+        <ul class="article-list">
+            {% for page in s.standalone_pages %}
+            <li class="article-item">
+                <a href="{{ page.url }}">
+                    <h3>{{ page.title }}</h3>
+                    <p>{{ page.description }}</p>
+                    <div class="article-meta">
+                        {% for tag in page.tags %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        {% elsif articles.size > 0 %}
+        <h2>{{ s.title }} ({{ articles.size }}篇)</h2>
+        <ul class="article-list">
+            {% for a in articles %}
+            <li class="article-item">
+                <a href="{{ a.url }}">
+                    <h3>{{ a.title }}</h3>
+                    <p>{{ a.description }}</p>
+                    <div class="article-meta">
+                        {% if a.level == 'beginner' %}
+                        <span class="tag beginner">入门</span>
+                        {% elsif a.level == 'intermediate' %}
+                        <span class="tag intermediate">进阶</span>
+                        {% elsif a.level == 'advanced' %}
+                        <span class="tag advanced">高级</span>
+                        {% endif %}
+                        {% for tag in a.tags %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </section>
+    {% endfor %}
+</div>

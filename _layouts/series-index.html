@@ -1,0 +1,30 @@
+---
+layout: default
+---
+<div class="container">
+    <div class="page-header">
+        <h1>{{ page.title }}</h1>
+        <p>{{ page.description }}</p>
+    </div>
+
+    {% if content and content != '' %}
+    <div class="series-intro">
+        {{ content }}
+    </div>
+    {% endif %}
+
+    <ul class="article-list">
+        {% assign articles = site.pages | where: "series", page.series_id | sort: "order" %}
+        {% for a in articles %}
+        <li class="article-item">
+            <a href="{{ a.url }}">
+                <span class="article-num">{{ a.order | default: forloop.index0 }}</span>
+                <div class="article-content">
+                    <h3>{{ a.title }}</h3>
+                    <p>{{ a.description }}</p>
+                </div>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
