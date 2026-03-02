@@ -12,6 +12,9 @@ order: 11
 prev:
   title: "Football Game UI/UX Conventions"
   url: "10-ui-ux.html"
+next:
+  title: "Networking & Gameplay Ability Systems"
+  url: "12-networking-gameplay-ability.html"
 ---
 
 ## How to Use This Glossary

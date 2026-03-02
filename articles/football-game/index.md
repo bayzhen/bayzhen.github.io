@@ -26,4 +26,6 @@ This series is designed for game developers who are new to football (soccer) and
 
 **Part III — Technical Implementation** (Articles 08–10): Engineering patterns — architecture, physics, and UI/UX.
 
-**Part IV — Reference** (Article 11): A comprehensive English-Chinese glossary of football and game development terminology.
+**Part IV — Online & Abilities** (Article 12): Network architecture and Gameplay Ability System design for online football games.
+
+**Part V — Reference** (Article 11): A comprehensive English-Chinese glossary of football and game development terminology.
