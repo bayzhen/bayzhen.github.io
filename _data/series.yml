@@ -41,3 +41,8 @@
   title: "足球游戏开发入门"
   description: "Football game development fundamentals in English, with CET-6 annotations"
   order: 7
+
+- id: shooter-game-design
+  title: "射击游戏系统设计"
+  description: "Multiplayer shooter game system design in English, with CET-6 annotations"
+  order: 8
