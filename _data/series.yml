@@ -46,3 +46,8 @@
   title: "射击游戏系统设计"
   description: "Multiplayer shooter game system design in English, with CET-6 annotations"
   order: 8
+
+- id: software-testing
+  title: "软件测试实战"
+  description: "Comprehensive guide to software testing in English, with CET-6 annotations"
+  order: 9
