@@ -51,3 +51,8 @@
   title: "软件测试实战"
   description: "Comprehensive guide to software testing in English, with CET-6 annotations"
   order: 9
+
+- id: ecommerce-startup
+  title: "E-commerce Startup Guide"
+  description: "Build, launch, and monetize your independent online store from scratch"
+  order: 10
