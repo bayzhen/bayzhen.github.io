@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Football Game AI Design"
-description: "AI systems in football games — team intelligence, player decision-making, difficulty scaling, and common architectures"
+description: "How 22 AI players coordinate in real-time without looking stupid — the hardest problem in sports game development"
 lang: en
 level: intermediate
 tags: ["AI", "Game Design", "Decision Making"]
@@ -17,21 +17,21 @@ next:
   url: "08-architecture-patterns.html"
 ---
 
-## 1. Why Football AI is Hard
+## The Challenge
 
-Football AI is one of the most *demanding* (高要求的) challenges in game AI. Unlike turn-based games, football requires:
+Football AI is one of the hardest problems in game development. Here's why:
 
-- **22 agents** making decisions *simultaneously* (同时地)
-- **Real-time** responses at 30–60 decisions per second
+- **22 agents** making decisions simultaneously
+- **Real-time** responses at 30-60 decisions per second
 - **Coordination** between 11 teammates without explicit communication
-- **Emergent behavior** that looks and feels like real football
-- **Scalable difficulty** from beginner to expert-level play
+- **Emergent behavior** that looks like real football
+- **Scalable difficulty** from beginner to expert
 
-The AI must handle *both* teams — the opponent AI and the teammate AI (players on your team not currently controlled by the human).
+And the kicker: the AI must control both your opponents *and* your teammates (the 10 players you're not directly controlling). If your AI teammates do something stupid, players blame you, not the AI.
 
-## 2. AI Architecture Layers
+## The Three-Layer Architecture
 
-Football game AI is typically organized into three hierarchical layers:
+Football AI is organized into three hierarchical layers:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -54,97 +54,160 @@ Football game AI is typically organized into three hierarchical layers:
 └─────────────────────────────────────────────────────┘
 ```
 
-> 句型解析: "Football game AI is typically organized into three hierarchical layers" — "hierarchical" (层级的) 意为从上到下有从属关系的结构，战略层指导战术层，战术层指导个体层。
+Each layer informs the layer below. Strategy sets the overall plan, tactics coordinate groups, individuals execute.
 
-## 3. Strategic AI — The Team Brain
+## Strategic AI — The Team Brain
 
-The strategic layer makes high-level decisions that affect the entire team:
+The strategic layer makes high-level decisions that affect the entire team.
 
 ### Game State Assessment
 
-```
-function assessGameState(match) {
+```python
+def assess_game_state(match):
     score_diff = my_goals - opponent_goals
     time_remaining = 90 - current_minute
     possession_ratio = my_possession / total_time
-    
+
     if score_diff > 0 and time_remaining < 15:
         return "protect_lead"
-    if score_diff < 0 and time_remaining < 20:
+    elif score_diff < 0 and time_remaining < 20:
         return "all_out_attack"
-    if possession_ratio > 0.6:
+    elif possession_ratio > 0.6:
         return "control_game"
-    return "balanced"
-}
+    else:
+        return "balanced"
 ```
 
 ### Dynamic Formation Shifts
 
-Based on the game state, the AI can *dynamically* (动态地) adjust the formation:
+Based on game state, the AI adjusts formation:
 
 | Game State | Formation Shift | Pressing |
-| --- | --- | --- |
-| Protect lead | Shift to 5-4-1 | Low block |
-| All-out attack | Shift to 3-4-3 | High press |
+|------------|-----------------|----------|
+| Protect lead | 5-4-1 (defensive) | Low block |
+| All-out attack | 3-4-3 (offensive) | High press |
 | Control game | Maintain current | Mid block |
-| Chasing the game | Push full-backs forward | High press |
+| Chasing game | Push full-backs forward | High press |
 
-## 4. Tactical AI — Group Coordination
+**Real example**: You're winning 1-0 in the 80th minute. The AI shifts to a defensive formation, pulls attackers back, and wastes time with slow passes. Frustrating to play against, but realistic.
 
-The tactical layer coordinates groups of players to create *patterns of play* (比赛模式):
+## Tactical AI — Group Coordination
+
+The tactical layer coordinates groups of players to create patterns of play.
 
 ### Passing Network Analysis
 
 The AI evaluates available passing options by scoring each potential receiver:
 
-```
-function evaluatePassTarget(passer, receiver, opponents) {
-    lane_openness = calculateLaneOpenness(passer, receiver, opponents)
-    field_position_value = getPositionValue(receiver.position)
-    receiver_freedom = getPlayerFreedom(receiver, opponents)
+```python
+def evaluate_pass_target(passer, receiver, opponents):
+    # Is the passing lane clear?
+    lane_openness = calculate_lane_openness(passer, receiver, opponents)
+
+    # Is the receiver in a valuable position?
+    field_position_value = get_position_value(receiver.position)
+
+    # Is the receiver under pressure?
+    receiver_freedom = get_player_freedom(receiver, opponents)
+
+    # Does this pass move the ball forward?
     forward_progress = receiver.y - passer.y
-    
-    score = w1 * lane_openness
-          + w2 * field_position_value
-          + w3 * receiver_freedom
-          + w4 * max(0, forward_progress)
-    
+
+    # Weighted score
+    score = (w1 * lane_openness +
+             w2 * field_position_value +
+             w3 * receiver_freedom +
+             w4 * max(0, forward_progress))
+
     return score
-}
 ```
 
-### Off-Ball Movement
+The AI picks the highest-scoring target. High-difficulty AI uses better weights and evaluates more options.
 
-Perhaps the most critical AI system — how do players *without* the ball decide where to run?
+### Off-Ball Movement — The Hardest Problem
 
-**Movement types:**
+**Off-ball movement** is the most critical AI system. How do players *without* the ball decide where to run?
+
+Movement types:
 
 - **Support run** (接应跑位): Move toward the ball carrier to offer a safe pass
 - **Overlap run** (套边跑位): Full-back runs outside the winger
-- **Diagonal run** (斜线跑位): Cut *diagonally* (对角线地) behind defenders
+- **Diagonal run** (斜线跑位): Cut diagonally behind defenders to receive a through ball
 - **Decoy run** (牵制跑位): Run to drag a defender away, creating space for others
 - **Check run** (回撤接应): Move toward the ball to receive under pressure
 
-Each player evaluates potential runs using an *influence map* (影响力图) — a grid overlay on the pitch that shows value and danger zones.
+Each player evaluates potential runs using an **influence map** (影响力图) — a grid overlay on the pitch that shows value and danger zones.
 
-> 句型解析: "Each player evaluates potential runs using an influence map" — "influence map" 是游戏AI中的常用术语，指将球场划分为网格，每个格子标注战术价值和危险程度。
+```python
+def decide_off_ball_movplayer, ball_carrier, teammates, opponents):
+    # Generate candidate positions
+    candidates = generate_movement_candidates(player)
+
+    # Score each candidate
+    best_score = -inf
+    best_position = player.position
+
+    for candidate in candidates:
+        # Tactical value of this position
+        value = influence_map[candidate.x][candidate.y]
+
+        # Distance from nearest opponent (want space)
+        space = min_distance_to_opponents(candidate, opponents)
+
+        # Passing lane quality
+        lane_quality = evaluate_passing_lane(ball_carrier, candidate, opponents)
+
+        # Role-specific bonus (strikers prefer forward positions)
+        role_bonus = get_role_bonus(player.role, candidate)
+
+        score = value + space * w1 + lane_quality * w2 + role_bonus
+
+        if score > best_score:
+            best_score = score
+            best_position = candidate
+
+    return best_position
+```
+
+**Why this is hard**: 11 players are all running this logic simultaneously. If they all run to the same "best" position, they cluster. You need coordination without explicit communication.
+
+**Solution**: Add a "teammate proximity penalty" — positions near other teammates score lower.
 
 ### Defensive Shape
 
-When the team loses the ball, the tactical AI must *reorganize* (重新组织) the defensive shape:
+When the team loses the ball, the tactical AI reorganizes the defensive shape:
 
 1. **Transition trigger**: Ball is lost — all players switch to defensive AI
 2. **Recovery runs**: Players sprint back toward their defensive positions
-3. **Compactness**: The team *compresses* (压缩) horizontally and vertically to deny space
+3. **Compactness**: The team compresses horizontally and vertically to deny space
 4. **Marking assignments**: Each defender is assigned a player or zone to cover
 
-## 5. Individual AI — Per-Player Decisions
+```python
+def organize_defense(team, ball_position):
+    # Compress the team shape
+    target_width = 40  # meters (compact)
+    target_depth = 30  # meters
 
-At the individual level, each AI player makes frame-by-frame decisions. Common approaches include:
+    for player in team:
+        # Calculate defensive position based on role
+        defensive_pos = get_defensive_position(player.role, ball_position)
 
-### 5.1 Behavior Trees
+        # Assign marking if near an opponent
+        nearest_opponent = find_nearest_opponent(player, opponents)
+        if distance(player, nearest_opponent) < marking_threshold:
+            player.mark_target = nearest_opponent
 
-**Behavior trees** (行为树) are the most common architecture for individual football AI:
+        # Move toward defensive position
+        player.set_target_position(defensive_pos)
+```
+
+## Individual AI — Per-Player Decisions
+
+At the individual level, each AI player makes frame-by-frame decisions.
+
+### Behavior Trees
+
+**Behavior trees** (行为树) are the most common architecture:
 
 ```
 Root (Selector)
@@ -159,88 +222,159 @@ Root (Selector)
 │   ├── SpaceAvailable? ──▶ MakeRun
 │   └── Default ──▶ SupportBallCarrier
 │
-└── OpponentHasBall? (Sequence)
+└── OpponentHasBa(Sequence)
     ├── NearestToBall? ──▶ PressOpponent
     ├── InDefensiveZone? ──▶ MarkAssignment
     └── Default ──▶ RecoverPosition
 ```
 
-### 5.2 Utility AI
+Behavior trees are easy to debug and extend. You can visualize them in real-time to see why a player made a decision.
+
+### Utility AI
 
 **Utility AI** (效用AI) scores multiple potential actions and picks the highest:
 
-```
-function decideAction(player, context) {
+```python
+def decide_action(player, context):
     actions = {
-        "pass":    scorePassing(player, context),
-        "shoot":   scoreShooting(player, context),
-        "dribble": scoreDribbling(player, context),
-        "hold":    scoreHolding(player, context)
+        "pass":    score_passing(player, context),
+        "shoot":   score_shooting(player, context),
+        "dribble": score_dribbling(player, context),
+        "hold":    score_holding(player, context)
     }
-    return argmax(actions)
-}
+    return max(actions, key=actions.get)
 
-function scoreShooting(player, context) {
-    distance = distanceTo(goal)
-    angle = angleToGoal(player)
-    defenders = countBlockingDefenders(player, goal)
-    
-    base = player.finishing / 100
+def score_shooting(player, context):
+    distance = distance_to_goal(player)
+    angle = angle_to_goal(player)
+    defenders = count_blocking_defenders(player, goal)
+
+    # Base score from player attribute
+    base = player.finishing / 100.0
+
+    # Distance factor (closer = better)
     distance_factor = 1.0 - (distance / max_shot_range)
+
+    # Angle factor (central = better)
     angle_factor = angle / 45.0
+
+    # Clear shot factor (fewer defenderer)
     clear_factor = 1.0 / (1 + defenders)
-    
+
     return base * distance_factor * angle_factor * clear_factor
-}
 ```
 
-### 5.3 State Machines
+Utility AI is more flexible than behavior trees but harder to debug. You can't easily see *why* the AI chose an action — just that it scored highest.
 
-Simpler games use **finite state machines** (有限状态机, FSM) for individual AI:
+### State Machines
+
+Simpler games use **finite state machines** (FSM, 有限状态机):
 
 ```
 States: Idle, ChaseBall, Dribble, Pass, Shoot, Defend, ReturnToPosition
 
 Transitions:
   Idle → ChaseBall:         ball is loose and nearby
-  ChaseBall → Dribble:     won the ball
-  Dribble → Pass:          teammate is open and better positioned
-  Dribble → Shoot:         within shooting range and angle
-  Dribble → Defend:        lost the ball
-  Any → ReturnToPosition:  ball is far away
+  ChaseBall → Dribble:      won the ball
+  Dribble → Pass:           teammate is open and better positioned
+  Dribble → Shoot:          within shooting range and angle
+  Dribble → Def  lost the ball
+  Any → ReturnToPosition:   ball is far away
 ```
 
-## 6. Difficulty Scaling
+FSMs are simple and fast but can feel robotic. Modern games use behavior trees or utility AI.
 
-AI difficulty is a critical design challenge — the game must be fun for both beginners and experts.
+## Difficulty Scaling — The Hardest Design Problem
 
-### Approaches to Difficulty
+AI difficulty must be fun for both beginners and experts. This is *really* hard.
 
-| Method | Description | Pros | Cons |
-| --- | --- | --- | --- |
-| Attribute scaling | Boost/reduce AI player stats | Simple to implement | Feels unfair — "*rubber banding*" (橡皮筋效应) |
-| Decision quality | AI makes better/worse choices | More natural feeling | Complex to tune |
-| Reaction time | AI responds faster/slower | Subtle and effective | Can feel robotic at extremes |
-| Error injection | AI *deliberately* (故意地) makes mistakes | Very natural | Hard to calibrate |
-| Tactical depth | AI uses more/fewer tactical concepts | Most realistic | Requires extensive AI systems |
+### Bad Approach: Attribute Scaling
 
-> 句型解析: "rubber banding" (橡皮筋效应) 指的是当领先时AI被增强、当落后时AI被削弱的动态难度调整，名称来源于被拉伸的橡皮筋会弹回的物理现象。
+**Don't do this**: Boost AI player stats on higher difficulties.
 
-The best approach combines multiple methods — lower difficulties reduce decision quality and inject errors, while higher difficulties unlock advanced tactical patterns.
+```python
+# BAD: Unfair and frustrating
+if difficulty == "legendary":
+    ai_player.speed *= 1.3
+    ai_player.shooting *= 1.5
+```
 
-## 7. Teammate AI
+This feels unfair. Players notice when the AI's slow defender suddenly catches their fast winger.
 
-Teammate AI (控制队友的AI) has unique challenges compared to opponent AI:
+### Good Approach: Decision Quality
 
-- Must not *outperform* (表现优于) the human player — the human should feel like the star
-- Must be *responsive* (响应灵敏的) to the human's play style
-- Must not make obviously stupid mistakes (players blame their AI teammates more than opponents)
-- Should *complement* (补充) the human's actions — e.g., making runs when the human has the ball
+**Do this**: AI makes better/worse decisions based on difficulty.
 
-## 8. Key Takeaways
+```python
+# GOOD: Natural and fair
+if difficulty == "beginner":
+    # AI only evaluates 3 nearest passing options
+    passing_options = get_nearest_teammates(3)
+elif difficulty == "legendary":
+    # AI evaluates all 10 teammates and picks the best
+    passing_options = get_all_teammates()
+```
+
+### Good Approach: Reaction Time
+
+**Do this**: AI responds faster/slower based on difficulty.
+
+```python
+# GOOD: Subtle and effective
+if difficulty == "beginner":
+    ai_reaction_delay = 0.5  # seconds
+elif difficulty == "legendary":
+    ai_reaction_delay = 0.1  # seconds
+```
+
+### Good Approach: Error Injection
+
+**Do this**: AI deliberately makes mistakes on lower difficulties.
+
+```python
+# GOOD: Very natural
+if difficulty == "beginner":
+    if random() < 0.3:  # 30% chance
+        # AI makes a bad pass
+        pass_target = random_teammate()
+```
+
+**Best approach**: Combine all three. Lower difficulties reduce decision quality, add reaction delay, and inject errors. Higher difficulties unlock advanced tactical patter## Teammate AI — The Unique Challenge
+
+Teammate AI (controlling your 10 teammates) has unique constraints:
+
+- **Must not outperform the human** — the human should feel like the star
+- **Must be responsive** to the human's play style
+- **Must not make obviously stupid mistakes** — players blame their AI teammates more than opponents
+- **Should complement** the human's actions — e.g., making runs when the human has the ball
+
+```python
+def teammate_ai_decision(player, human_player, context):
+    # If human has the ball, prioritize supporting them
+    if human_player.has_ball:
+        return make_supporting_run(player, human_player)
+
+    # Otherwise, use normal AI but with reduced "hero" behavior
+    action = normal_ai_decision(player, context)
+
+    # Reduce likelihood of "stealing the spotlight"
+    if action == "shoot" and distance(player, human_player) < 20:
+        # Human is nearby, maybe pass to them instead
+        if random() < 0.6:
+            return pass_to(human_player)
+
+    return action
+```
+
+## Key Takeaways
 
 - Football AI uses a **three-layer hierarchy**: strategic (team), tactical (group), individual (player)
 - **Off-ball movement** is the hardest and most impactful AI system
-- Common individual AI architectures: **behavior trees**, **utility AI**, and **state machines**
-- Difficulty scaling should combine **decision quality**, **reaction time**, and **error injection** — not just stat boosts
-- Teammate AI has the unique constraint of being helpful without *overshadowing* (抢风头) the human player
+- Common individual AI architectures: **behavior trees** (most popular), **utility AI** (flexible), **state machines** (simple)
+- Difficulty scaling should use **decision quality**, **reaction time**, and **error injection** — not stat boosts
+- Teammate AI must be helpful without overshadowing (抢风头) the human player
+- The best AI creates **emergent behavior** that looks like real football without being scripted
+
+## Next Up
+
+AI makes players smart, but [Architecture Patterns](08-architecture-patterns.html) make your codebase maintainable. Let's talk about how to structure a football game.

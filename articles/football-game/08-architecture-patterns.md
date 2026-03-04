@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Football Game Architecture Patterns"
-description: "Common software architecture patterns used in football game development — ECS, state machines, event systems, and data-driven design"
+description: "ECS, state machines, event systems — the software patterns that keep 22 AI players from turning your codebase into spaghetti"
 lang: en
 level: intermediate
 tags: ["Architecture", "Design Patterns", "Technical"]
@@ -17,292 +17,346 @@ next:
   url: "09-ball-physics.html"
 ---
 
-## 1. Overview
+## The Problem
 
-A football game is a complex real-time simulation with dozens of *interacting systems* (交互系统): physics, AI, animation, input, audio, rendering, networking, and more. Choosing the right **architecture patterns** determines how *maintainable* (可维护的), *extensible* (可扩展的), and performant your codebase will be.
+A football game is a complex real-time simulation with dozens of interacting systems: physics, AI, animation, input, audio, rendering, networking. Without good architecture, your codebase becomes unmaintainable spaghetti.
 
-This article covers the most common patterns found in football game engines.
+This article covers the patterns that keep football games from collapsing under their own complexity.
 
-## 2. Entity-Component-System (ECS)
+## Entity-Component-System (ECS)
 
-The **ECS** pattern is widely used in modern game engines, and it fits football games particularly well because you have many similar entities (22 players + ball + referee) that share some behaviors but differ in others.
+**ECS** is widely used in modern game engines, and it fits football games perfectly. You have many similar entities (22 players + ball + referee) that share some behaviors but differ in others.
 
 ### Core Concepts
 
 - **Entity** (实体): A unique ID — a player, the ball, a goal post
-- **Component** (组件): Raw data attached to an entity — `Position`, `Velocity`, `PlayerAttributes`, `TeamAffiliation`
+- **Component** (组件): Raw data attached to an entity — `Position`, `Velocity`, `PlayerAttributes`
 - **System** (系统): Logic that operates on entities with specific component combinations
 
-```
-// Components
+### Example
+
+```cpp
+// Components (pure data, no logic)
 struct Position { float x, y, z; };
 struct Velocity { float vx, vy, vz; };
 struct PlayerAttributes { int pace, shooting, passing, ...; };
 struct BallOwnership { entity_id owner; };
 struct TeamMembership { int team_id; };
 
-// Systems
-MovementSystem:    queries (Position, Velocity) → updates Position
-AIDecisionSystem:  queries (Position, PlayerAttributes, TeamMembership) → updates AI state
-PhysicsSystem:     queries (Position, Velocity, Collider) → resolves collisions
-AnimationSystem:   queries (Position, Velocity, AnimState) → updates animations
+// Systems (logic, no data)
+class MovementSystem {
+    void update(float dt) {
+        for (auto [entity, pos, vel] : query<Position, Velocity>()) {
+            pos.x += vel.vx * dt;
+            pos.y += vel.vy * dt;
+            pos.z += vel.vz * dt;
+        }
+    }
+};
+
+class AIDecisionSystem {
+    void update(float dt) {
+        for (auto [entity, pos, attrs, team] : query<Position, PlayerAttributes, TeamMembership>()) {
+            // AI logic here
+            decide_action(entity, pos, attrs, team);
+        }
+    }
+};
 ```
 
 ### Why ECS Works for Football
 
 - **Uniform entities**: All players share the same base components but differ in attribute values
-- **Cache-friendly**: Component data is stored *contiguously* (连续地) in memory, improving performance
-- **Easy to add features**: Adding a new behavior means adding a new component + system, without modifying existing code
-- **Parallelizable**: Systems that don't share write access to components can run *concurrently* (并发地)
+- **Cache-friendly**: Component data is stored contiguously (连续地) in memory, improving performance
+- **Easy to add features**: Adding a new behavior = adding a new component + system, without modifying existing code
+- **Parallelizable**: Systems that don't share write access can run concurrently (并发地)
 
-> 句型解析: "Component data is stored contiguously in memory, improving performance" — "contiguously" 意为"连续地、相邻地"，指数据在内存中紧挨着存储，有利于CPU缓存命中。
+### Real-World Example
 
-## 3. State Machine Patterns
+Unity's DOTS (Data-Oriented Technology Stack) uses ECS. If you're building in Unity, consider using DOTS for player and ball entities.
 
-Football games use state machines at multiple levels:
+## State Machine Patterns
+
+Football games use state machines at multiple levels.
 
 ### Match State Machine
 
 Controls the overall flow of the match:
 
-```
+```cpp
 enum MatchState {
-    PreMatch,       // team sheets, coin toss
-    KickOff,        // waiting for kick-off
-    InPlay,         // normal play
-    FreeKick,       // direct or indirect free kick
-    CornerKick,     // corner kick setup
-    ThrowIn,        // throw-in
-    GoalKick,       // goal kick
-    PenaltyKick,    // penalty
-    GoalCelebration,// goal scored animation
-    HalfTime,       // half-time break
-    FullTime,       // match ended
-    ExtraTime,      // additional time
-    PenaltyShootout // penalty shootout
-}
+    PreMatch,           // team sheets, coin toss
+    KickOff,            // waiting for kick-off
+    InPlay,             // normal play
+    FreeKick,           // free kick setup
+    CornerKick,         // corner kick
+    ThrowIn,            // throw-in
+    GoalKick,           // goal kick
+    Pen     // penalty
+    GoalCelebration,    // goal scored animation
+    HalfTime,           // half-time break
+    FullTime,           // match ended
+    ExtraTime,          // additional time
+    PenaltyShootout     // penalty shootout
+};
+
+class MatchStateMachine {
+    MatchState current_state;
+
+    void transition_to(MatchState new_state) {
+        on_exit(current_state);
+        current_state = new_state;
+        on_enter(current_state);
+    }
+
+    void on_enter(MatchState state) {
+        switch (state) {
+            case KickOff:
+                position_players_for_kickoff();
+                set_camera_angle(KICKOFF_CAMERA);
+                break;
+            case FreeKick:
+                pause_game();
+                show_free_kick_ui();
+                break;
+            // ...
+        }
+    }
+};
 ```
 
 ### Player State Machine
 
 Each player has their own FSM for physical actions:
 
-```
+```cpp
 enum PlayerState {
     Idle,
     Running,
     Sprinting,
-    Dribbling,
-    Passing,
+    Dribb    Passing,
     Shooting,
     Tackling,
     Heading,
     Falling,
-    GettingUp,
-    Celebrating,
-    Injured
-}
+    Celebrating
+};
+
+class PlayerFSM {
+    PlayerState current_state;
+
+    void update(float dt) {
+        switch (current_state) {
+            case Idle:
+                if (input.move_pressed()) transition_to(Running);
+                if (ball_nearby()) transition_to(Dribbling);
+                break;
+            case Running:
+                if (input.sprint_pressed()) transition_to(Sprinting);
+                if (input.shoot_pressed()) transition_to(Shooting);
+                break;
+            // ...
+        }
+    }
+};
 ```
 
-### Hierarchical State Machine (HFSM)
+### Why State Machines Work
 
-For complex behavior, states can contain *sub-states* (子状态):
+- **Clear transitions**: Easy to see what states can lead to what
+- **Debuggable**: You can visualize the current state in real-time
+- **Animation integration**: Each state maps to an animation or animation blend
 
-```
-Attacking (top-level state)
-├── BuildUp
-│   ├── ShortPassing
-│   ├── LongBall
-│   └── Dribbling
-├── FinalThird
-│   ├── Crossing
-│   ├── ThroughBall
-│   └── SettingUpShot
-└── Finishing
-    ├── Shooting
-    ├── Header
-    └── Volley
-```
+## Event System
 
-This *hierarchical* (层级式的) approach keeps state management organized as complexity grows.
+An event system decouples systems that need to react to game events.
 
-## 4. Event System
+### Example Events
 
-Football games generate many events that multiple systems need to react to. An **event-driven architecture** (事件驱动架构) *decouples* (解耦) the event producer from consumers.
+```cpp
+struct GoalScoredEvent {
+    entity_id scorer;
+    entity_id assister;
+    int team_id;
+    float time;
+};
 
-### Common Events
+struct FoulCommittedEvent {
+    entity_id fouler;
+    entity_id victim;
+    FoulSeverity severity;
+    Vec3 location;
+};
 
-```
-// Match events
-MatchStarted, HalfTimeReached, FullTimeReached
-GoalScored { team_id, scorer_id, assist_id, minute }
-FoulCommitted { offender_id, victim_id, severity, position }
-CardShown { player_id, card_type }
-SubstitutionMade { team_id, player_out, player_in }
-
-// Ball events
-BallPassed { from_id, to_id, pass_type }
-BallShot { shooter_id, power, direction, spin }
-BallOutOfPlay { last_touch_team, exit_point, restart_type }
-
-// Player events
-PlayerInjured { player_id, severity }
-OffsideDetected { player_id, position }
+struct SubstitutionEvent {
+    entity_id player_off;
+    entity_id player_on;
+    int team_id;
+};
 ```
 
-### Event Bus Pattern
+### Event Bus
 
-```
+```cpp
 class EventBus {
-    subscribers: Map<EventType, List<Callback>>
-    
-    function subscribe(event_type, callback):
-        subscribers[event_type].add(callback)
-    
-    function publish(event):
-        for callback in subscribers[event.type]:
-            callback(event)
-}
+    std::unordered_map<std::type_index, std::vector<std::function<void(void*)>>> listeners;
+
+    template<typename T>
+    void subscribe(std::function<void(const T&)> callback) {
+        listeners[typeid(T)].push_back([callback](void* event) {
+            callback(*static_cast<T*>(event));
+        });
+    }
+
+    template<typename T>
+    void publish(const T& event) {
+        for (auto& callback : listeners[typeid(T)]) {
+            callback((void*)&event);
+        }
+    }
+};
 
 // Usage
-event_bus.subscribe(GoalScored, commentarySystem.onGoal)
-event_bus.subscribe(GoalScored, crowdSystem.onGoal)
-event_bus.subscribe(GoalScored, scoreboardUI.onGoal)
-event_bus.subscribe(GoalScored, statisticsTracker.onGoal)
-event_bus.subscribe(GoalScored, replaySystem.onGoal)
+event_bus.subscribe<GoalScoredEvent>([](const GoalScoredEvent& e) {
+    ui_system.show_goal_notification(e.scorer);
+    audio_system.play_crowd_cheer();
+    stats_system.record_goal(e.scorer, e.assister);
+    camera_system.start_celebration_camera(e.scorer);
+});
+
+event_bus.publish(GoalScoredEvent{scorer_id, assister_id, team_id, match_time});
 ```
 
-When a goal is scored, **one event** triggers commentary, crowd reactions, scoreboard updates, statistics, and replay capture — all without these systems knowing about each other.
+### Why Event Systems Work
 
-## 5. Data-Driven Design
+- **Decoupling**: Systems don't need to know about each other
+- **Extensibility**: Adding a new reaction to an event doesn't require modifying existing code
+- **Debugging**: You can log all events to see the sequence of what happened
 
-Football games benefit enormously from **data-driven design** — separating data from logic so that designers can tune the game without code changes.
+## Data-Driven Design
 
-### Configuration Files
+Football games have massive amounts of data: player attributes, team rosters, formations, tactics. Hard-coding this data is a nightmare.
 
-```yaml
-# formations.yaml
-formations:
-  - name: "4-4-2"
-    positions:
-      - { role: GK,  x: 50, y: 5 }
-      - { role: CB,  x: 35, y: 25 }
-      - { role: CB,  x: 65, y: 25 }
-      # ...
+### Player Data (JSON)
 
-# difficulty.yaml
-difficulty_levels:
-  amateur:
-    ai_reaction_delay_ms: 400
-    pass_error_multiplier: 1.8
-    shot_error_multiplier: 2.0
-    decision_quality: 0.4
-  professional:
-    ai_reaction_delay_ms: 100
-    pass_error_multiplier: 1.0
-    shot_error_multiplier: 1.0
-    decision_quality: 0.85
-```
-
-This approach lets designers *iterate* (迭代) on gameplay balance without recompiling the game.
-
-## 6. Command Pattern
-
-Player input and AI actions can both be *encapsulated* (封装) as **commands**:
-
-```
-interface GameCommand {
-    function execute(context)
-    function canExecute(context) -> bool
-}
-
-class PassCommand implements GameCommand {
-    target_player: Entity
-    pass_type: PassType
-    
-    function execute(context):
-        calculate_pass_trajectory(context.player, target_player, pass_type)
-        apply_ball_physics(trajectory)
-        trigger_animation(context.player, "pass_" + pass_type)
-}
-
-class ShootCommand implements GameCommand {
-    direction: Vector3
-    power: float
-    
-    function canExecute(context):
-        return context.player.hasBall 
-            and context.player.state != Falling
+```json
+{
+  "player_id": 12345,
+  "name": "Lionel Messi",
+  "position": "RW",
+  "attributes": {
+    "pace": 85,
+    "shooting": 92,
+    "passing": 91,
+    "dribbling": 95,
+    "defending": 35,
+    "physical": 65
+  },
+  "traits": ["finesse_shot", "speed_dribbler", "playmaker"],
+  "work_rates": { "attacking": "high", "defensive": "low" },
+  "potential": 93,
+  "age": 36
 }
 ```
 
-### Benefits for Football Games
+### Formation Data (JSON)
 
-- **Input abstraction**: Human input and AI decisions produce the same command objects
-- **Replay system**: Record commands with timestamps → replay by re-executing them
-- **Network play**: Send commands over the network instead of raw input
-- **Undo support** (for management games): *Revert* (撤销) tactical changes
-
-> 句型解析: "Human input and AI decisions produce the same command objects" — 意为人类操作和AI决策产生相同格式的命令对象，从而统一了游戏逻辑的处理方式。
-
-## 7. Observer Pattern for UI
-
-UI systems in football games need to react to game state changes without *tightly coupling* (紧耦合) to the simulation:
-
-```
-// Game simulation publishes state
-match.onScoreChanged → scoreboard.update(home, away)
-player.onStaminaChanged → staminaBar.update(value)
-match.onMinuteChanged → clock.update(minute)
-match.onFormationChanged → minimap.redraw()
-```
-
-This is closely related to the event system but focused on **presentation** rather than game logic.
-
-## 8. System Update Order
-
-In a football game, systems must update in a specific order each frame:
-
-```
-Frame Update Pipeline:
-
-1. Input System         ← read controller / keyboard
-2. Network System       ← receive remote inputs
-3. AI System            ← make decisions for AI players
-4. Command Processor    ← execute all queued commands
-5. Physics System       ← move entities, resolve collisions
-6. Animation System     ← blend and update animations
-7. Camera System        ← follow ball / active player
-8. Audio System         ← trigger sound effects
-9. UI System            ← update HUD elements
-10. Render System       ← draw the frame
+```json
+{
+  "formation_id": -3-3",
+  "positions": [
+    { "role": "GK", "x": 5, "y": 50 },
+    { "role": "LB", "x": 20, "y": 15 },
+    { "role": "CB", "x": 20, "y": 35 },
+    { "role": "CB", "x": 20, "y": 65 },
+    { "role": "RB", "x": 20, "y": 85 },
+    { "role": "CM", "x": 40, "y": 30 },
+    { "role": "CM", "x": 40, "y": 50 },
+    { "role": "CM", "x": 40, "y": 70 },
+    { "role": "LW", "x": 70, "y": 20 },
+    { "role": "ST", "x": 75, "y": 50 },
+    { "role": "RW", "x": 70, "y": 80 }
+  ]
+}
 ```
 
-Getting this order wrong causes *one-frame-off* (差一帧) bugs — e.g., the ball appears to pass through a player because collision was checked before movement was applied.
+### Why Data-Driven Design Works
 
-## 9. Module Boundaries
+- **Iteration speed**: Designers can tweak values without recompiling
+- **Modding support**: Players can create custom content
+- **Localization**: Text is separated from code
+- **Version control**: Data changes are easy to review in diffs
 
-A well-structured football game separates concerns into clear modules:
+## Networking Architecture
+
+For online multiplayer, you need a robust networking architecture.
+
+### Client-Server Model
 
 ```
-┌─────────────┐  ┌──────────────┐  ┌──────────────┐
-│   Core Sim  │  │  Presentation │  │   Platform   │
-├─────────────┤  ├──────────────┤  ├──────────────┤
-│ Match Engine│  │ Renderer     │  │ Input        │
-│ Physics     │  │ Animation    │  │ Audio        │
-│ AI          │  │ Camera       │  │ Network      │
-│ Rules       │  │ UI / HUD     │  │ File I/O     │
-│ Statistics  │  │ Commentary   │  │ Save/Load    │
-└─────────────┘  └──────────────┘  └──────────────┘
+Client A                Server                Client B
+   │                      │                      │
+   │──── Input ──────────▶│                      │
+   │                      │◀──── Input ──────────│
+   │                      │                      │
+   │                   Simulate                  │
+   │                   (Authoritative)           │
+   │                      │                      │
+   │◀──── State ──────────│                      │
+   │                      │──── State ──────────▶│
+   │                      │                      │
+   │                   Render                 Render
 ```
 
-The **Core Sim** should be *platform-independent* (平台无关的) — it can run on any platform, headlessly for testing, or on a server for online matches.
+**Server is authoritative**: The server simulates the match. Clients send inputs, receive state updates, and render.
 
-## 10. Key Takeaways
+### Lag Compensation
 
-- **ECS** fits football games naturally — uniform entities with varying data
-- **State machines** manage match flow and player actions at multiple levels
-- **Event systems** decouple game events from the many systems that react to them
-- **Data-driven design** lets designers tune formations, difficulty, and balance without code changes
-- **Command pattern** unifies human input and AI decisions, enabling replay and networking
-- System **update order** matters — incorrect ordering causes subtle physics and visual bugs
+```cpp
+// Client-side prediction
+void client_update(float dt) {
+    // Apply local input immediately (feels responsive)
+    apply_input(local_player, local_input);
+
+    // When server state arrives, reconcile
+    if (server_state_received) {
+        if (server_state.position != predicted_position) {
+            // Snap to server position (or smoothly interpolate)
+            local_player.position = server_state.position;
+        }
+    }
+}
+
+// Server-side lag compensation
+void server_process_input(PlayerInput input, float client_timestamp) {
+    // Rewind the game state to when the client sent the input
+    GameState past_state = history.get_state_at(client_timestamp);
+
+    // Apply the input in that past state
+    apply_input(past_state, input);
+
+    // Check if the action succeeded (e.g., did the tackle connect?)
+    bool success = check_action_success(past_state, input);
+
+    // Send result to client
+    send_result(client, success);
+}
+```
+
+### Why This Architecture Works
+
+- **Responsive**: Client-side prediction makes the game feel instant
+- **Fair**: Server authority prevents cheating
+- **Lag compensation**: Players with high ping can still compete
+
+## Key Takeaways
+
+- **ECS** is ideal for football games — uniform entities, cache-friendly, parallelizable
+- **State machines** comatch flow and player actions ear, debuggable, animation-friendly
+- **Event systems** decouple systems — extensible, maintainable
+- **Data-driven design** separates content from code — faster iteration, modding support
+- **Client-server architecture** with lag compensation enables fair online play
+
+## Next Up
+
+Architecture keeps your code clean, but [Ball Physics](09-ball-physics.html) makes your game feel real. Let's talk about trajectory, spin, and why FIFA's ball physics are harder than rocket science.

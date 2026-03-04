@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Football Rules & Match Structure"
-description: "The fundamental rules of football (soccer), match structure, and key referee decisions explained for game developers"
+description: "The essential rules of football explained for game developers — no fluff, just what you need to build a game"
 lang: en
 level: beginner
 tags: ["Football", "Rules", "Fundamentals"]
@@ -14,119 +14,174 @@ next:
   url: "02-player-positions.html"
 ---
 
-## 1. What is Football?
+## The 30-Second Version
 
-Football (also called *soccer* in North America) is the world's most popular sport. Two teams of eleven players each compete to score goals by moving the ball into the opposing team's net. The team with the most goals at the end of the match wins.
+Football (soccer): two teams, 11 players each, 90 minutes, one ball, two goals. Use your feet (mostly). Score more than the other team. That's it.
 
-For game developers, understanding football's rules is the foundation for building any football game — from realistic *simulations* (模拟游戏) to casual arcade-style experiences.
+Everything else is details.
 
-## 2. The Pitch
+## Why You Need to Know This
 
-A football match is played on a rectangular grass field called the **pitch** (球场). Key *dimensions* (尺寸) and areas include:
+You can't build a football game without understanding the rules. Not because you need to memorize the FIFA rulebook, but because every rule maps to a game system:
 
-- **Length**: 100–110 meters; **Width**: 64–75 meters
-- **Center Circle**: A circle with a 9.15m radius at the midpoint
-- **Penalty Area** (禁区): A rectangular zone 40.3m wide and 16.5m deep in front of each goal. *Fouls* (犯规) committed by the defending team inside this area result in a **penalty kick** (点球)
-- **Goal Area** (球门区): A smaller box 18.3m wide and 5.5m deep, also known as the "six-yard box"
-- **Goal**: 7.32m wide and 2.44m high
+- **Offside** → spatial queries and AI positioning
+- **Fouls** → collision detection and referee logic
+- **Substitutions** → roster management UI
+- **Penalty kicks** → special game state with different camera and controls
 
-> 句型解析: "Fouls committed by the defending team inside this area result in a penalty kick" — 过去分词短语 "committed by..." 作后置定语修饰 fouls，意为"由防守方在此区域内犯下的犯规将判罚点球"。
+Think of football rules as your game design specification, written by 150 years of iteration.
 
-In a game engine, the pitch is typically your primary *terrain* (地形). These exact measurements matter for realistic scaling.
+## The Pitch (球场)
 
-## 3. Match Structure
+A football pitch is a rectangle, roughly 100m × 70m. Key zones:
 
-A standard match has the following time structure:
+```
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│  ┌─────┐                                   ┌─────┐     │
+│  │     │          Penalty Area             │     │     │
+│  │  G  │          (禁区)                   │  G  │     │
+│  │     │                                   │     │     │
+│  └─────┘                                   └─────┘     │
+│                                                         │
+│                    Center Circle                        │
+│                    (中圈)                               │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
 
-| Phase | Duration |
-| --- | --- |
-| First Half | 45 minutes |
-| Half-Time Break | 15 minutes |
-| Second Half | 45 minutes |
-| *Stoppage Time* (补时) | Added by referee |
-| Extra Time (if needed) | 2 × 15 minutes |
-| Penalty Shootout (if needed) | Best of 5 kicks |
+**Penalty Area** (禁区): The big box in front of each goal. Fouls here = penalty kick.
+**Goal Area** (小禁区): The small box. Mostly used for goal kicks.
+**Center Circle** (中圈): Where kick-offs happen.
 
-**Stoppage time** (also called *injury time* or *added time*) *compensates* (补偿) for delays such as injuries, substitutions, and time-wasting. The referee decides how many minutes to add.
+In your game engine, this is your world geometry. FIFA uses exact real-world dimensions. Rocket League... does not.
 
-> 句型解析: "Stoppage time compensates for delays such as injuries, substitutions, and time-wasting" — "compensate for" 是固定搭配，意为"补偿、弥补"；"such as" 后接具体例子。
+## Match Structure
 
-In game development, you need to decide whether to simulate real-time (90 minutes = 90 real minutes), compressed time (common: 4–10 real minutes per match), or *abstracted* (抽象化的) time.
+| Phase | Duration | Notes |
+|-------|----------|-------|
+| First Half | 45 min | |
+| Half-Time | 15 min | Tactical adjustments, substitutions |
+| Second Half | 45 min | |
+| Stoppage Time | +1–5 min | Referee adds time for injuries, delays |
+| Extra Time | 2 × 15 min | Only in knockout matches |
+| Penalties | Best of 5 | If still tied after extra time |
 
-## 4. Starting and Restarting Play
+**Game Dev Decision**: Do you simulate 90 real minutes? Hell no. Most games compress time:
 
-The match begins with a **kick-off** (开球) at the center spot. Kick-offs also restart play after a goal is scored and at the start of the second half.
+- **FIFA**: 6 minutes per half (12 min total)
+- **Football Manager**: Simulated, no real-time
+- **Rocket League**: 5 minutes, no halves
 
-Other restarts include:
+Choose based on your game's pacing. Arcade games go fast. Simulations go slower.
 
-- **Throw-in** (掷界外球): When the ball crosses the sideline. A player throws the ball in with both hands from behind the head.
-- **Goal kick** (球门球): When the attacking team kicks the ball over the goal line (but not into the goal). The defending team restarts from the goal area.
-- **Corner kick** (角球): When the defending team kicks the ball over their own goal line. The attacking team kicks from the corner arc.
-- **Free kick** (任意球): Awarded after a foul. Can be *direct* (直接任意球, can score directly) or *indirect* (间接任意球, must touch another player first).
-- **Penalty kick** (点球): A direct shot from the penalty spot (11m from the goal), awarded for fouls inside the penalty area.
+## How Play Starts and Restarts
 
-Each of these restarts is a distinct game state that your game engine must handle.
+Football has a state machine. Here are the states:
 
-## 5. Scoring
+### Kick-Off (开球)
+Starts the match, restarts after a goal. Ball placed at ce one team kicks forward.
 
-A goal is scored when the **entire ball** crosses the goal line between the goalposts and under the crossbar. This "whole ball" rule is critical:
+### Throw-In (界外球)
+Ball goes out on the sideline. Player throws it back in with both hands over their head. Yes, it looks silly. No, you can't score directly from a throw-in.
 
-- The ball must *completely traverse* (完全越过) the goal line
-- Modern professional football uses **Goal-Line Technology** (门线技术) to verify this
+### Goal Kick (球门球)
+Attacking team kicks the ball over the goal line (but not into the goal). Defending team restarts from their goal area.
 
-In game code, this is typically a *collision detection* (碰撞检测) problem: check whether the ball's bounding volume has fully passed the goal-line plane.
+### Corner Kick (角球)
+Defending team kicks the ball over their own goal line. Attacking team gets a kick from the corner. Dangerous situation — lots of goals come from corners.
 
-## 6. Offside
+### Free Kick (任意球)
+Awarded after a foul. Two types:
 
-The **offside** (越位) rule is one of football's most complex rules:
+- **Direct** (直接任意球): Can score directly
+- **Indirec: Must touch another player first
 
-A player is in an offside position if they are nearer to the opponent's goal line than both the ball and the *second-to-last defender* (倒数第二名防守球员) at the moment the ball is played to them.
+### Penalty Kick (点球)
+The most dramatic moment in football. Foul in the penalty area = penalty. One attacker, one goalkeeper, 11 meters apart. Attacker has about a 75% chance of scoring.
 
-> 句型解析: "A player is in an offside position if they are nearer to the opponent's goal line than both the ball and the second-to-last defender" — "nearer...than both A and B" 是比较级结构，意为"比A和B都更靠近..."。
+In FIFA, penalties are a mini-game with aiming and power mechanics. In Football Manager, it's a dice roll modified by player attributes.
 
-Being offside is **not** an offense by itself. It only becomes an offense if the player:
+## Scoring
 
-1. *Interferes with play* (干扰比赛) — e.g., plays or touches the ball
-2. *Interferes with an opponent* (干扰对方球员) — e.g., blocks the goalkeeper's view
-3. *Gains an advantage* (获得利益) from the offside position
+A goal counts when the **entire ball** crosses the goal line between the posts and under the crossbar.
 
-For game AI, implementing offside detection requires tracking the positions of all relevant players at the exact frame the ball is passed.
+"Entire ball" is key. If even 1mm of the ball is still on the line, no goal. Modern football uses **Goal-Line Technology** (门线技术) — cameras and sensorsat detect this instantly.
 
-## 7. Fouls and Misconduct
+In your game, this is a collision detection problem:
 
-Common fouls include:
+```cpp
+bool isGoal(Ball ball, GoalLine line) {
+    return ball.position.x > line.position.x
+        && ball.position.y > line.bottom
+        && ball.position.y < line.top;
+}
+```
 
-- **Tripping** (绊摔) or tackling an opponent carelessly
-- **Pushing** (推人) or holding an opponent
-- **Handball** (手球): Deliberately touching the ball with hand or arm
+(Simplified, but you get the idea.)
 
-The referee can show:
+## Offside (越位)
 
-- **Yellow card** (黄牌): A *caution* (警告). Two yellows = one red.
-- **Red card** (红牌): The player is *sent off* (罚下) and cannot be replaced. The team plays with fewer players.
+The most confusing rule in football. Here's the simple version:
 
-In game design, the foul system affects gameplay balance. Most games implement *simplified* (简化的) foul detection based on tackle angle, timing, and contact type.
+**You can't cherry-pick.** You can't just stand next to the opponent's goal waiting for a long pass. You have to be behind the ball or behind at least two defenders when the pass is made.
 
-## 8. Substitutions
+More precisely: A player is offside if they're closer to the goal than both the ball and the second-to-last defender **at the moment the ball is passed**.
 
-Each team can make a limited number of **substitutions** (换人):
+Key points:
 
-- Standard rules allow **5 substitutions** per match (changed from 3 in recent years)
-- Substitutions can only happen during *stoppages* (停顿) in play
-- A substituted player cannot return to the match
+1. You can't be offside in your own half
+2. You can't be offside from a throw-in, corner, or goal kick
+3. Being offside isn't a foul unless you interfere with play
 
-For game developers, substitutions are a key *tactical* (战术的) mechanic — allowing players to bring on fresh legs or change formation mid-match.
+**Why this rule exists**: Without it, football would be boring. Attackers would just camp near the goal, and every attack would be a long ball forward.
 
-## 9. Key Takeaways for Game Developers
+**Game dev challenge**: You need to track all player positions at the exact frame the pass happens. FIFA's AI constantly checks offside lines to position attackers.
 
-| Rule Concept | Game Dev Implication |
-| --- | --- |
-| Pitch dimensions | World/level geometry, camera boundaries |
-| Match timing | Game clock system, time compression |
-| Restarts (kick-off, throw-in, etc.) | State machine transitions |
-| Goal detection | Physics/collision system |
-| Offside | Real-time spatial queries on player positions |
-| Fouls & cards | Contact detection, disciplinary system |
-| Substitutions | Roster management, tactical UI |
+## Fouls and Cards
 
-Understanding these rules gives you the *blueprint* (蓝图) for the core systems you will need to build.
+Common fouls:
+
+- **Tripping** (绊倒): Tackling the player instead of the ball
+- **Pushing** (推人): Using hands to shove an opponent
+- **Handball** (手球): Touching the ball with your hand/arm (goalkeepers excepted in their own area)
+
+Referee can show:
+
+- **Yellow Card** (黄牌): Warning. Two yellows = red.
+- **Red Card** (红牌): Player is sent off. Team plays with 10 players for the rest of the match.
+
+In FIFA, fouls are detected by collision angle and timing. Slide tackles from behind = likely foul. Clean tackle from the side = play on.
+
+Most games simplify this. Football Manager just rolls dice based on player aggression and referee strictness.
+
+## Substitutions (换人)
+
+Each team can make **5 substitutions** per match (recently increased from 3). Once a player is subbed off, they can't come back.
+
+**Tactical use**:
+- Bring on fresh legs when players are tired
+- Change formation (sub a defender for an attacker when losing)
+- Waste time when winning (yes, this is a real tactic)
+
+In FIFA, you pause and swap players. In Football Manager, you set substitution rules and the AI executes them.
+
+## What You Actually Need to Remember
+
+If you're building a football game, focus on these systems:
+
+| Rule | Game System |
+|------|-------------|
+| Pitch layout | World geometry, camera bounds |
+| Match timing | Game clock, time compression |
+| Restarts | State machine (kick-off, throw-in, etc.) |
+| Goal detection | Collision detection |
+| Offside | Spatial queries, AI positioning |
+| Fouls | Contact detection, referee AI |
+| Substitutions | Roster management, UI |
+
+You don't need to know every obscure rule. You need to know how rules become code.
+
+## Next Up
+
+Now that you know the rules, let's talk about [Player Positions & Roles](02-player-positions.html) — because not allayers do the same thing.

@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Player Positions & Roles"
-description: "Understanding football player positions, their responsibilities on the pitch, and how they translate to game attributes"
+description: "From goalkeeper to striker — what each position does and why it matters for your game's AI and attribute system"
 lang: en
 level: beginner
 tags: ["Football", "Positions", "Fundamentals"]
@@ -17,15 +17,20 @@ next:
   url: "03-tactics-formations.html"
 ---
 
-## 1. Overview
+## Why Positions Matter for Game Dev
 
-A football team consists of 11 players on the pitch, each assigned a specific **position** (位置). Positions define a player's primary area of responsibility and influence what attributes matter most for that role.
+In real football, positions define where a player operates and what they're expected to do. In game development, positions are the foundation of:
 
-In game development, positions are the foundation of your **roster system** (阵容系统) and determine how AI-controlled players behave — where they run, when they pass, and how they *prioritize* (优先考虑) defensive vs. offensive actions.
+- **Roster system** — organizing your player database
+- **AI behavior** — where players run, when they pass, how they defend
+- **Attribute weights** — which stats matter for each role
+- **Heat maps** — where players spend most of their time
 
-## 2. The Four Lines
+Think of positions as job descriptions for your AI agents.
 
-Football positions are organized into four broad *tiers* (层级) from back to front:
+## The Four Lines
+
+Football positions are organized into four tiers from back to front:
 
 ```
                     ┌─────────────┐
@@ -45,148 +50,220 @@ Football positions are organized into four broad *tiers* (层级) from back to f
               └────────────┼────────────┘
 ```
 
-Each tier can have multiple specialized sub-roles. Let's examine them.
+Let's break down each tier and its specialized roles.
 
-## 3. Goalkeeper (GK)
+## Goalkeeper (GK)
 
-The **goalkeeper** (守门员, often abbreviated GK) is the last line of defense. They are the only player allowed to use their hands — but only inside the penalty area.
+The **goalkeeper** (守门员) is the last line of defense. Only player allowed to use hands (inside the penalty area).
 
 **Key responsibilities:**
-- Shot-stopping: diving, *reflexes* (反应), positioning
-- Commanding the penalty area: catching crosses, *punching* (击球) the ball clear
-- Distribution: throwing or kicking the ball to teammates to start attacks
-- Organizing the defense: shouting instructions, directing the *defensive line* (防线)
+- Stop shots
+- Catch crosses
+- Distribute the ball to start attacks
+- Organize the defense (shouting instructions)
 
-**Key attributes for game dev:**
+**Key attributes:**
 
-| Attribute | Description |
-| --- | --- |
-| Diving | Ability to reach shots in the corners |
-| Handling | Catching and holding the ball securely |
+| Attribute | What It Does |
+|-----------|--------------|
+| Diving | Reaching shots in the corners |
+| Handling | Catching and holding the ball |
 | Reflexes | Reaction speed to close-range shots |
-| Positioning | Reading the play to be in the right spot |
-| Kicking | Distribution accuracy over long distances |
+| Positioning | Being in the right spot |
+| Kicking | Distribution accuracy |
 
-## 4. Defenders (DEF)
+**Game dev note**: Goalkeepers are often semi-automated. The AI handles positioning and diving; the player might control distribution.
 
-Defenders occupy the back line and aim to prevent the opposition from scoring.
+## Defenders (DEF)
 
-### 4.1 Center-Back (CB)
+Defenders occupy the back line and prevent the opposition from scoring.
 
-The **center-back** (中后卫) is the core of the defense, typically positioned centrally in front of the goalkeeper.
+### Center-Back (CB) — 中后卫
 
-- Wins *aerial duels* (空中对抗) — heading the ball away from danger
-- Makes *tackles* (铲球) and *interceptions* (拦截)
-- Usually tall and physically strong
-- Key attributes: **Marking** (盯人), **Tackling**, **Heading**, **Strength**
+The core of the defense, positioned centrally in front of the goalkeeper.
 
-### 4.2 Full-Back (FB)
+**What they do:**
+- Win aerial duels (空中对抗) — heading the ball away
+- Make tackles and interceptions
+- Organize the defensive line
 
-**Full-backs** (边后卫) play on the left (LB) or right (RB) side of the defense.
+**Typical attributes:**
+- Usually tall (6'0" / 183cm+) and physically strong
+- High: Tackling, Heading, Strength, Marking
+- Low: Pace, Dribbling (they don't need to be fast or skillful)
 
-- Defend against opposing *wingers* (边锋)
-- Modern full-backs are expected to *overlap* (套边) — run forward along the sideline to support attacks
-- Key attributes: **Pace** (速度), **Stamina** (体力), **Crossing** (传中), **Tackling**
+**Famous examples**: Virgil van Dijk, Sergio Ramos
 
-> 句型解析: "Modern full-backs are expected to overlap — run forward along the sideline to support attacks" — "be expected to" 表示"被期望做某事"；破折号后是对 overlap 的解释。
+### Full-Back (LB/RB) — 边后卫
 
-### 4.3 Wing-Back (WB)
+Play on the left (LB) or right (RB) side of the defense.
 
-A more *offensive variant* (进攻变体) of the full-back, used in formations with three center-backs. Wing-backs cover the entire flank — defending and attacking.
+**What they do:**
+- Defend against opposing wingers
+- **Overlap** (套边) — run forward along the sideline to support attacks
+- Deliver crosses into the box
 
-## 5. Midfielders (MID)
+**Typical attributes:**
+- High: Pace, Stamina, Crossing, Tackling
+- Modern full-backs are expected to contribute to efense and attack
 
-Midfielders operate in the center of the pitch, linking defense and attack. They are often the most *versatile* (全能的) players.
+**Famous examples**: Trent Alexander-Arnold, Alphonso Davies
 
-### 5.1 Central Midfielder (CM)
+### Wing-Back (LWB/RWB) — 翼卫
 
-The **central midfielder** (中场中路球员) is the engine of the team.
+A more offensive variant of the full-back, used in formations with three center-backs. Wing-backs cover the entire flank — defending and attacking.
 
-- Distributes the ball, controls *tempo* (节奏)
-- Contributes to both defense and attack
-- Key attributes: **Passing**, **Vision** (视野), **Stamina**, **Work Rate** (跑动积极性)
+**Game dev note**: Wing-backs have higher attacking work rates than full-backs in your AI system.
 
-### 5.2 Defensive Midfielder (CDM/DM)
+## Midfielders (MID)
 
-The **defensive midfielder** (后腰) sits in front of the defense, acting as a *shield* (屏障).
+Midfielders operate in the center of the pitch, linking defense and attack. Often the most versatile (全能的) players.
 
-- Breaks up opposition attacks, *intercepts* (拦截) passes
-- Recycles possession with simple, safe passes
-- Sometimes called the "anchor" (锚点) or *pivot* (支点)
-- Key attributes: **Tackling**, **Positioning**, **Interceptions**, **Composure** (沉着)
+### Defensive Midfielder (CDM/DM) — 后腰
 
-### 5.3 Attacking Midfielder (CAM/AM)
+Sits in front of the defense, acting as a shield (屏障).
 
-The **attacking midfielder** (前腰) plays between midfield and the forwards.
+**What they do:**
+- Break up opposition attackscept passes
+- Recycle possession with simple, safe passes
+- Sometimes called the "anchor" (锚点) or pivot (支点)
 
-- Creates chances, delivers *through balls* (直塞球)
-- Often the most creative player on the team — the *playmaker* (组织核心)
-- Key attributes: **Creativity** (创造力), **Dribbling** (盘带), **Passing**, **Shooting**
+**Typical attributes:**
+- High: Tackling, Positioning, Interceptions, Composure
+- Low: Shooting, Dribbling (not their job)
 
-### 5.4 Wide Midfielder / Winger (LM/RM/LW/RW)
+**Famous examples**: N'Golo Kanté, Casemiro
 
-**Wingers** (边锋/边前卫) play on the flanks and aim to beat defenders with speed or skill.
+### Central Midfielder (CM) — 中场中路
 
-- Deliver **crosses** (传中球) into the box
-- Cut inside to shoot — the *inverted winger* (内切型边锋) is a modern tactical trend
-- Key attributes: **Pace**, **Dribbling**, **Crossing**, **Agility** (灵活性)
+The engine of the team.
 
-## 6. Forwards (FWD)
+**What they do:**
+- Distribute the ball
+- Control tempo (节奏)
+- Contribute to both defense and attack
+
+**Typical attributes:**
+- High: Passing, Vision, Stamina, Work Rate
+- Balanced across most attributes
+
+**Famous examples**: Kevin De Bruyne, Luka Modrić
+
+### Attacking Midfielder (CAM/AM) — 前腰
+
+Plays between midfield and the forwards. Often the most creative player — the playmaker (组织核心).
+
+**What they do:**
+- Create chances
+- Deliver through balls (直塞球)
+- Take shots from outside the box
+
+**Typical attributes:**
+- High: Creativity, Dribbling, Passing, Shooting
+- Low: Tackling, Strength (not expected to defend much)
+
+**Famous examples**: Bruno Fernandes, Martin Ødegaard
+
+### Winger (LW/RW/LM/RM) — 边锋/边前卫
+
+Play on the flanks and aim to beat defenders with speed or skill.
+
+**What they do:**
+- Deliver crosses into the box
+- **Cut inside** to sho inverted winger (内切型边锋) is a modern trend
+- Beat defenders 1v1 with dribbling
+
+**Typical attributes:**
+- High: Pace, Dribbling, Crossing, Agility
+- Modern wingers often have high shooting too (for cutting inside)
+
+**Famous examples**: Mohamed Salah, Vinícius Júnior
+
+## Forwards (FWD)
 
 Forwards are the primary goal-scorers.
 
-### 6.1 Striker / Center Forward (ST/CF)
+### Striker / Center Forward (ST/CF) — 前锋/中锋
 
-The **striker** (前锋/中锋) is the main goal threat.
+The main goal threat.
 
-- *Finishes* (终结) chances created by teammates
-- Holds up the ball, brings others into play
-- Key attributes: **Finishing** (射术), **Positioning**, **Heading**, **Composure**
+**What they do:**
+- Finish chances created by teammates
+- Hold up the ball, bring others into play
+- Make runs behind the defense
 
-### 6.2 Second Striker / Support Striker (SS)
+**Typical attributes:**
+- High: Finishing, Positioning, Heading, Composure
+- Oftand strong, or fast and agile (differ types)
+
+**Famous examples**: Erling Haaland, Harry Kane
+
+### Second Striker / Support Striker (SS) — 影锋
 
 Plays slightly behind the main striker, in the "hole" between midfield and attack.
 
-- More creative than a pure striker — combines goal-scoring with *chance creation* (创造机会)
-- Often *drops deep* (回撤) to receive the ball
+**What they do:**
+- Combine goal-scoring with chance creation
+- Drop deep to receive the ball
+- Link up with the main striker
 
-### 6.3 False Nine
+**Typical attributes:**
+- Balanced between striker and attacking midfielder
+- High: Finishing, Passing, Dribbling
 
-A modern tactical role where the center forward *drops into midfield* (回撤到中场) to create space and confuse defenders. This is not a fixed position but a *behavioral pattern* (行为模式) — important for AI programming.
+### False Nine — 伪九号
 
-> 句型解析: "A modern tactical role where the center forward drops into midfield to create space and confuse defenders" — "where" 引导定语从句，修饰 role；"to create... and confuse..." 是目的状语。
+A modern tactical role where the center forward drops into midfield to create space and confuse defenders.
 
-## 7. Position Maps for Game Development
+**Game dev note**: This is not a fixed position but a **behavioral pattern** (行为模式). In your AI system, it's a tactical instruction that modifies the striker's movement logic.
+
+**Famous example**: Lionel Messi (at Barcelona)
+
+## Position Maps for Game Development
 
 When implementing positions in your game, each position maps to:
 
-1. **Default coordinates** on the pitch (the starting position)
+1. **Default coordinates** — starting position on the pitch
 2. **Heat map zones** — areas where the player is most active
 3. **Attribute weights** — which stats matter most
-4. **AI behavior priorities** — defensive vs. offensive tendency
+4. **AI behavior priorities** — defensive vs. e tendency
 
+Example: Right-Back (RB) position definition
+
+```json
+{
+  "position": "RB",
+  "default_position": { "x": 35, "y": 55 },
+  "heat_map_zones": [
+    { "zone": "right_flank_defense", "weight": 0.6 },
+    { "zone": "right_flank_attack", "weight": 0.3 },
+    { "zone": "center_defense", "weight": 0.1 }
+  ],
+  "primary_attributes": ["pace", "stamina", "tackling", "crossing"],
+  "ai_tendency": { "defense": 0.65, "attack": 0.35 }
+}
 ```
-Example: A Right-Back (RB) position definition
 
-default_position: { x: 35, y: 55 }    // right side, near own goal
-heat_map_zones: [
-  { zone: "right_flank_defense", weight: 0.6 },
-  { zone: "right_flank_attack",  weight: 0.3 },
-  { zone: "center_defense",      weight: 0.1 }
-]
-primary_attributes: ["pace", "stamina", "tackling", "crossing"]
-ai_tendency: { defense: 0.65, attack: 0.35 }
-```
+## Summary Table
 
-## 8. Summary Table
-
-| Position | Abbr | Zone | Primary Role | Key Attributes |
-| --- | --- | --- | --- | --- |
+| Position | Abbr | Zone | Primary Role utes |
+|----------|------|------|--------------|----------------|
 | Goalkeeper | GK | Goal | Shot-stopping | Diving, Reflexes, Handling |
 | Center-Back | CB | Center Defense | Defending | Tackling, Heading, Strength |
 | Full-Back | LB/RB | Wide Defense | Defend + Overlap | Pace, Stamina, Crossing |
 | Defensive Mid | CDM | Central | Shield defense | Tackling, Interceptions |
 | Central Mid | CM | Central | Link play | Passing, Vision, Stamina |
 | Attacking Mid | CAM | Central Attack | Create chances | Creativity, Dribbling |
-| Winger | LW/RW | Wide Attack | Beat defenders | Pace, Dribbling, Crossing |
+| Winger | LW/RW | Wide Attacefenders | Pace, Dribbling, Crossing |
 | Striker | ST | Central Attack | Score goals | Finishing, Positioning |
+
+## What You Need to Remember
+
+- Positions define **where players operate** and **what they're expected to do**
+- Each position has **different attribute priorities** — pace matters for wingers, not for center-backs
+- Modern football has **hybrid roles** (like wing-backs and false nines) that blur traditional boundaries
+- In your game, positions drive **AI behavior**, **attribute weights**, and **heat maps**
+
+## Next Up
+
+Now that you know the positions, let's see how they fit together in [Tactics & Formations](03-tactics-formtml).

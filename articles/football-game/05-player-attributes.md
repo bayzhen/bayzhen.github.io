@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Player Attributes & Rating Systems"
-description: "How football games define player abilities through numerical attribute systems, overall ratings, and potential growth"
+description: "How numbers define players in football games — from FIFA's OVR to Football Manager's hidden attributes"
 lang: en
 level: intermediate
 tags: ["Game Design", "Attributes", "Rating"]
@@ -17,239 +17,280 @@ next:
   url: "06-match-mechanics.html"
 ---
 
-## 1. Why Attributes Matter
+## The Problem with Real Football
 
-In football games, every player is defined by a set of **numerical attributes** (数值属性) that *quantify* (量化) their abilities. These numbers drive everything: how fast a player runs, how accurately they pass, how well they tackle.
+In real football, you can't measure a player's ability with a single number. Is Messi better than Van Dijk? Depends on what you need — goals or defense.
 
-The attribute system is the *connective tissue* (连接纽带) between design and engineering — it links the player database to the animation system, physics engine, and AI decision-making.
+But in games, we need numbers. The physics engine needs to know how fast a player runs. The AI needs to know who to pass to. The UI needs to show the user who's "better."
 
-> 句型解析: "The attribute system is the connective tissue between design and engineering" — "connective tissue" 原意为"结缔组织"，此处比喻为"连接纽带"，意为属性系统是设计和工程之间的桥梁。
+So we quantify everything. Welcome to the attribute system.
 
-## 2. Attribute Categories
+## The Core Concept
 
-Most simulation football games organize attributes into 6 categories:
+Every player in a football game is defined by **numerical attributes** (数值属性) — typically 20-40 different stats ranging from 1-99. These numbers drive:
 
-### 2.1 Pace (速度)
+- **Physics**: Sprint speed → locomotion system
+- **AI**: Vision → passing target selection
+- **Animation**: Agility → turning speed
+- **Outcomes**: Finishing → shot accuracy
 
-| Attribute | Description |
-| --- | --- |
-| Acceleration | How quickly a player reaches top speed |
-| Sprint Speed | Maximum running velocity |
+Attributes are the bridge between your database and your game engine.
 
-These directly affect the *locomotion* (移动) system — translating to movement speed curves and animation playback rates.
+## FIFA's Attribute System
 
-### 2.2 Shooting (射门)
+FIFA uses ~35 attributes organized into 6 categories. Let's break them down:
 
-| Attribute | Description |
-| --- | --- |
-| Finishing | Accuracy when shooting inside the box |
-| Shot Power | Force behind the ball when striking |
-| Long Shots | Accuracy from outside the penalty area |
-| Volleys | Ability to strike the ball mid-air |
-| Penalties | *Composure* (沉着) during penalty kicks |
+### Pace (速度)
 
-In the physics engine, these attributes modify the ball's initial velocity vector, spin, and *deviation* (偏差) from the target.
+| Attribute | What It Does |
+|-----------|--------------|
+| Acceleration | 0 to top speed — how quickly |
+| Sprint Speed | Maximum velocity |
 
-### 2.3 Passing (传球)
+A player with 99 acceleration but 70 sprint speed (like Messi) reaches top speed instantly but gets caught by faster players over distance. A player with 70 acceleration but 99 sprint speed (like Adama Traoré) takes time to get going but becomes unstoppable.
 
-| Attribute | Description |
-| --- | --- |
-| Vision | Ability to spot *viable* (可行的) passing options |
-| Crossing | Accuracy of crosses from wide positions |
-| Short Passing | Accuracy of ground passes over short distances |
-| Long Passing | Accuracy of aerial passes over long distances |
-| Curve | Ability to *curl* (旋转) the ball on passes and shots |
+### Shooting (射门)
 
-Vision is particularly interesting from an AI *perspective* (角度) — it determines how many passing options the AI evaluates and how creative the choices are.
+| Attribute | What It Does |
+|-----------|--------------|
+| Finishing | Accuracy inside the box |
+| Shot Power | How hard the ball is struck |
+| Long Shots | Accuracy from outside the box |
+| Volleys | Striking the ball mid-air |
+| Penalties | Composure (沉着) during penalties |
 
-### 2.4 Dribbling (盘带)
+High finishing doesn't guarantee goals — it reduces the error cone. A 99 finishing player can still miss if you aim poorly or shoot under pressure.
 
-| Attribute | Description |
-| --- | --- |
-| Agility | Ability to change direction quickly |
-| Balance | Stability when *challenged* (受到对抗时) by opponents |
-| Ball Control | First touch quality and close control |
-| Dribbling | Ability to move with the ball past defenders |
-| Composure | Performance under pressure in *high-stakes* (高风险的) situations |
+### Passing (传球)
 
-### 2.5 Defending (防守)
+| Attribute | What It Does |
+|-----------|--------------|
+| Vision | AI's ability to "see" passing options |
+| Crossing | Accuracy from wide positions |
+| Short Passing | Ground passes, short distance |
+| Long Passing | Aerial passes, long distance |
+| Curve | Ability to bend the ball |
 
-| Attribute | Description |
-| --- | --- |
-| Interceptions | Reading passes and cutting them out |
-| Heading Accuracy | Winning and directing *aerial duels* (空中球) |
-| Marking | Staying close to assigned opponents |
-| Standing Tackle | Winning the ball while staying on feet |
-| Sliding Tackle | Winning the ball with a slide tackle |
+**Vision is fascinating** from a game dev perspective. It doesn't affect pass accuracy — it affects how many passing options the AI considers. A player with 50 vision might only evaluate the 3 nearest teammates. A player with 99 vision evaluates 8+ options, including creative through balls.
 
-### 2.6 Physical (身体素质)
+### Dribbling (盘带)
 
-| Attribute | Description |
-| --- | --- |
+| Attribute | What It Does |
+|-----------|--------------|
+| Agility | Turning speed with the ball |
+| Balance | Resistance to physical challenges |
+| Ball Control | First touch quality |
+| Dribbling | Close control while moving |
+| Composure | Performance under pressure |
+
+Composure is a hidden multiplier. When a player is under pressure (defenders nearby, high-stakes situation), composure reduces the penalty to other attributes.
+
+### Defending (防守)
+
+| Attribute | What It Does |
+|-----------|--------------|
+| Interceptions | Reading and cutting out passes |
+| Heading Accuracy | Winning aerial duels (空中球) |
+| Marking | Staying close to opponents |
+| Standing Tackle | Winning the ball on feet |
+| Sliding Tackle | Winning the ball with a slide |
+
+### Physical (身体)
+
+| Attribute | What It Does |
+|-----------|--------------|
 | Jumping | Vertical leap height |
-| Stamina | *Endurance* (耐力) over 90 minutes |
-| Strength | Ability to hold off opponents physically |
-| Aggression | *Intensity* (积极性) of challenges and pressing |
+| Stamina | Endurance (耐力) over 90 minutes |
+| Strength | Holding off opponents |
+| Aggression | Intensity of challenges |
 
-## 3. Overall Rating (OVR)
+Stamina is dynamic — it depletes during the match. When stamina drops below 30%, other attes are penalized. A 90-pace player at 20% stamina might only run at 75 pace.
 
-The **Overall Rating** is a single number (typically 1–99) that *summarizes* (概括) a player's ability. However, it is **not** a simple average of all attributes.
+## Overall Rating (OVR) — The Big Lie
 
-### Weighted Calculation
+FIFA shows every player an **Overall Rating** (OVR) — a single number from 1-99. Ronaldo is 91. Your created player starts at 65.
 
-The OVR is calculated using **position-specific weights**:
+But here's the trick: **OVR is not an average**. It's a weighted calculation that changes based on position.
 
-```
-// Striker OVR calculation (simplified)
+### Position-Specific Weights
+
+```python
+# Striker OVR (simplified)
 ovr_striker = (
     finishing      * 0.18 +
-    shot_power     * 0.10 +
     positioning    * 0.15 +
-    heading        * 0.08 +
+    shot_power     * 0.10 +
     sprint_speed   * 0.10 +
+    heading         +
     dribbling      * 0.08 +
     short_passing  * 0.08 +
     composure      * 0.08 +
-    ball_control   * 0.07 +
-    stamina        * 0.04 +
-    strength       * 0.04
+    # ... other attributes with smaller weights
 )
 
-// Goalkeeper OVR calculation (simplified)
+# Goalkeeper OVR (completely different)
 ovr_goalkeeper = (
     diving         * 0.21 +
     handling       * 0.21 +
     reflexes       * 0.21 +
     positioning    * 0.21 +
     kicking        * 0.10 +
-    speed          * 0.03 +
-    reactions      * 0.03
+    # pace barely matters
 )
 ```
 
-> 句型解析: "The OVR is calculated using position-specific weights" — "position-specific" 是复合形容词，意为"针对特定位置的"。同一个球员在不同位置的OVR值是不同的。
+This means:
+- The same player has different OVRs at different positions
+- A 75 OVR midfielder might be a 68 OVR striker
+- OVR is a UI convenience, not a gameplay value
 
-This means the **same player** can have different OVR values at different positions — a midfielder played as a striker will have a lower OVR because the weight distribution changes.
+**In your code, never use OVR for calculations.** Use the specific attributes.
 
-## 4. Potential and Growth
+## Growth and Potential
 
-### Player Potential
+### Player Potential (潜力值)
 
-Each player has a **potential** (潜力值) rating — the maximum OVR they can reach through development. Young players typically have a gap between current OVR and potential.
+Young players have a **potential** rating — the maximum OVR they can reach. This creates the career mode fantasy: sign an 18-year-old with 68 OVR but 88 potential, develop them, and they become a star.
 
 ```
-Example:
-  Player: Young Striker, Age 18
-  Current OVR: 68
-  Potential: 88
-  Growth Window: Age 18-27 (peak years)
+Player: Young Winger, Age 18
+Current OVR: 68
+Potential: 88
+Growth Window: Age 18-27
 ```
 
 ### Growth Curves
 
-Player development follows *characteristic* (特征性的) growth curves:
-
-- **Age 16–21**: Rapid growth, especially with regular playing time
-- **Age 22–29**: Peak performance, slow or no growth
-- **Age 30–33**: Gradual *decline* (下降), physical attributes drop first
-- **Age 34+**: Accelerated decline
+Player ratings follow predictable curves:
 
 ```
-Rating
-  90 ┤                  ╭────────╮
-  80 ┤            ╭─────╯        ╰──╮
-  70 ┤       ╭────╯                  ╰──╮
-  60 ┤  ╭────╯                           ╰──╮
-  50 ┤──╯                                    ╰──
-     └──┬────┬────┬────┬────┬────┬────┬────┬──
-       16   19   22   25   28   31   34   37
-                        Age
+OVR
+ 90 ┤                  ╭────────╮
+ 80 ┤            ╭─────╯        ╰──╮
+ 70 ┤       ╭────╯                  ╰──╮
+ 60 ┤  ╭────╯                           ╰──╮
+ 50 ┤──╯                                    ╰──
+    └──┬────┬────┬────┬────┬────┬────┬────┬──
+      16   19   22   25   28   31   34   37
+                       Age
 ```
 
-In game code, growth is typically calculated per-attribute with some *randomization* (随机化):
+- **16-21**: Rapid growth (especially with playing time)
+- **22-29**: Peak years, minimal growth
+- **30-33**: Gradual decline (physical attributes drop first)
+- **34+**: Accelerated decline
 
-```
-function updateAttribute(player, attr, season) {
+### Growth Implementation
+
+```python
+def update_attribute(player, attr, season):
     age = player.age
     potential_gap = player.potential - player.ovr
-    
+
+    # Age-based growth rate
     if age < 22:
         growth_rate = 0.6 + random(0.0, 0.4)
     elif age < 29:
         growth_rate = 0.1 + random(0.0, 0.1)
     else:
-        growth_rate = -0.3 - random(0.0, 0.5)
-    
+        growth_rate = -0.3 - random(0.0, 0.5)  # decline
+
+    # Playing time bonus
     playing_time_bonus = player.minutes_played / max_minutes * 0.3
-    
+
+    # Apply growth
     attr.value += growth_rate * potential_gap * playing_time_bonus
-}
 ```
 
-## 5. Work Rates and Traits
+## Work Rates and Traits
 
-Beyond numerical attributes, players have *qualitative* (定性的) modifiers:
+Beyond numbers, players have qualitative modifiers:
 
 ### Work Rates (跑动积极性)
 
-| Setting | Effect |
-| --- | --- |
-| High / High | Player runs constantly in attack and defense |
-| High / Low | Attacks eagerly but *neglects* (忽视) defensive duties |
-| Low / High | Stays back, *reluctant* (不情愿的) to join attacks |
-| Low / Low | Minimal off-ball movement — a "lazy" player |
+| Setting | Behavior |
+|---------|----------|
+| High / High | Runs constantly in attack and nse |
+| High / Low | Attacks eagerly, neglects (忽视) defense |
+| Low / High | Stays back, rarely joins attacks |
+| Low / Low | Minimal movement — "lazy" player |
 
-Work rates directly affect AI movement decisions — a high attacking work rate triggers more forward runs.
+Work rates directly affect AI movement. A high attacking work rate triggers more forward runs.
 
 ### Traits (特性)
 
-Traits are boolean *flags* (标记) that unlock special behaviors:
+Traits are boolean flags that unlock special behaviors:
 
-- **Finesse Shot** (巧射): Can perform curled shots into far corners
-- **Speed Dribbler** (高速盘带): Maintains speed while dribbling
-- **Power Header** (强力头球): Extra force on headed shots
-- **Leadership** (领导力): Boosts nearby teammates' composure
-- **Injury Prone** (易受伤): Higher chance of getting injured
+- **Finesse Shot** (巧射): Can curl shots into corners
+- **Speed Dribbler**: Maintains pace while dribbling
+- **Power Header**: Extra force on headers
+- **Leadership**: Boosts nearby teammates' composure
+- **Injury Prone** (易受伤): Higher injury chance
 
-In code, traits act as **feature flags** that enable or modify specific gameplay behaviors.
+In code, traits are feature flags:
 
-## 6. Chemistry and Synergy
+```cpp
+if (player.has_trait(FINESSE_SHOT) && input.is_modified_shot()) {
+    shot.apply_curve_bonus(1.5);
+    shot.reduce_power(0.8);
+}
+```
 
-Many football games include a **chemistry system** (化学反应系统) that applies bonuses when players have good *synergy* (协同效应):
+## Football Manager's Hidden Attributes
 
-- **Nationality link**: Players from the same country
-- **Club link**: Players from the same club
-- **League link**: Players from the same league
-- **Position compatibility**: Players in their natural position vs. out of position
+Football Manager takes attributes to the extreme — **~50 attributes per player**, many hidden from the player.
 
-Chemistry modifiers typically scale attributes by ±5–10%, affecting how a player performs in-game.
+### Hidden Attributes
 
-## 7. Data Pipeline
+- **Consistency** (稳定性): How often a player performs at their peak
+- **Important Matches**: Performance boost in big games
+- **Injury Proneness**: Likelihood of getting injured
+- **Dirtiness**: Tendency to commit fo**Controversy**: Likelihood of -field issues
 
-For a production football game, the attribute pipeline looks like:
+These create emergent narratives. A player with high ability but low consistency is frustrating — brilliant one match, invisible the next.
+
+## Chemistry Systems
+
+Many games add a **chemistry system** (化学反应系统) — bonuses when players have good synergy:
+
+- **Nationality link**: Same country
+- **Club link**: Same club
+- **League link**: Same league
+- **Position compatibility**: Natural position vs. out of position
+
+Chemistry typically scales attributes by ±5-10%. A player with 85 pace and full chemistry might perform at 90 pace.
+
+## The Data Pipeline
+
+For a production football game:
 
 ```
 Real-World Scouting Data
         │
         ▼
-  Scout Network / Data Partners (e.g., Opta, StatsBomb)
+Data Partners (Opta, StatsBomb)
         │
         ▼
-  Internal Rating Team (manual review + algorithms)
+Internal Rating Team (30+ people watching matches)
         │
         ▼
-  Player Database (JSON / SQL / proprietary format)
+Player Database (JSON / SQL)
         │
         ▼
-  Game Runtime (loaded into memory, queried by AI + physics)
+Game Runtime (loaded into memory)
 ```
 
-Major football games employ *dedicated* (专职的) rating teams of 30+ people who watch real matches and adjust attributes regularly.
+FIFA and PES employ dedicated rating teams who watch real matches and adjust attributes weekly during the season.
 
-## 8. Key Takeaways
+## Key Takeaways
 
-- Attributes are the **numerical backbone** of a football game — they drive physics, AI, and animation systems
-- OVR is a **weighted summary** that varies by position
-- Growth systems simulate player development over *careers* (职业生涯)
-- Traits are **feature flags** that toggle special gameplay behaviors
-- Chemistry systems add a *meta-layer* (元层) of team-building strategy
+- Attributes are the **numerical backbone** of your game — they connect design to engineering
+- **OVR is a UI convenience**, not a gameplay value — alwae specific attributes in code
+- **Growth systems** simulate player development over careers, creating long-term engagement
+- **Traits are feature flags** that toggle special behaviors
+- **Hidden attributes** (like consistency) create emergent narratives and realism
+- Real games employ **rating teams** who continuously update player data
+
+## Next Up
+
+Now that you understand how players are defined, let's see how they actually play in [Match Mechanics & Gameplay Systems](06-match-mechanics.html).

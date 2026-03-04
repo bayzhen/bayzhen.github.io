@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Ball Physics & Player Movement"
-description: "Physics simulation in football games — ball trajectory, spin, bouncing, player locomotion, and collision detection"
+description: "The invisible magic that makes football games feel real — trajectory, spin, collisions, and why FIFA's ball physics are harder than rocket science"
 lang: en
 level: advanced
 tags: ["Physics", "Movement", "Technical"]
@@ -17,309 +17,361 @@ next:
   url: "10-ui-ux.html"
 ---
 
-## 1. Introduction
+## Why Physics Matters
 
-Physics is the **invisible hand** that makes a football game feel authentic. When a player strikes the ball, the trajectory, spin, bounce, and *aerodynamic* (空气动力学的) behavior must all look and feel convincing — or the illusion breaks.
+You can have perfect AI, beautiful graphics, and deep career modes. But if the ball doesn't *feel* right when it leaves a player's foot, your game is broken.
 
-This article covers the physics models commonly used in football games for ball behavior and player movement.
+Physics is the invisible hand that makes football games convincing. When a player strikes the ball, the trajectory, spin, bounce, and curve must all look and feel authentic — or the illusion shatters.
 
-## 2. Ball Flight Model
+This article covers the physics models used in real football games. Spoiler: it's not actually realistic physics. It's *convincing* physics.
 
-### 2.1 Basic Projectile Motion
+## Ball Flight — The Three Forces
 
-At its simplest, a kicked ball follows *projectile motion* (抛体运动):
+A kicked football is affected by three forces:
 
+1. **Gravity** — pulls the ball down
+2. **Drag** — air resistance slows the ball
+3. **Magnus Effect** — spin makes the ball curve
+
+### Basic Projectile Motion
+
+Start with simple physics:
+
+```cpp
+// Every frame
+position.x += velocity.x * dt;
+position.y += velocity.y * dt;
+position.z += velocity.z * dt;
+
+velocity.z -= GRAVITY * dt;  // gravity = 9.81 m/s²
 ```
-position.x += velocity.x * dt
-position.y += velocity.y * dt
-position.z += velocity.z * dt
 
-velocity.z -= gravity * dt    // gravity pulls the ball down
-```
+This gives you a parabolic (抛物线) arc. But real footballs don't follow perfect parabolas.
 
-Where `dt` is the time step (delta time), and `gravity ≈ 9.81 m/s²`.
+### Air Drag
 
-But real footballs don't follow pure *parabolic* (抛物线的) paths — air resistance and spin cause significant deviations.
+Air resistance slows the ball proportionally to the **square** of its speed:
 
-### 2.2 Air Resistance (Drag)
-
-Air *drag* (阻力) slows the ball proportionally to the square of its speed:
-
-```
-F_drag = -0.5 * Cd * rho * A * |v|² * v_hat
+```cpp
+F_drag = -0.5 * Cd * rho * A * |v|² * v_normalized
 
 Where:
   Cd    = drag coefficient (~0.25 for a football)
   rho   = air density (~1.225 kg/m³)
   A     = cross-sectional area (π * r², r ≈ 0.11m)
   |v|   = speed magnitude
-  v_hat = velocity direction (unit vector)
+  v_normalized = velocity direction (unit vector)
 ```
 
-> 句型解析: "Air drag slows the ball proportionally to the square of its speed" — "proportionally to the square of" 意为"与...的平方成正比"。球速越快，空气阻力增长得越快。
+**What this means**: A ball kicked at 100 km/h experiences 4x more drag than one kicked at 50 km/h. This is why long shots slow down dramatically in flight.
 
-### 2.3 Magnus Effect (Spin)
+### Magnus Effect — The Curve Ball
 
-The **Magnus effect** (马格努斯效应) is what makes the ball *curve* (弯曲) in the air. When the ball spins, it creates a pressure difference that pushes it sideways:
+The **Magnus effect** (马格努斯效应) is what makes the ball curve. When the ball spins, it creates a pressure difference that pushes it sideways.
 
-```
-F_magnus = Cm * (omega × v)
+```cpp
+F_magnus = Cm * cross(angular_velocity, velocity)
 
 Where:
-  Cm    = Magnus coefficient
-  omega = angular velocity vector (spin axis and speed)
-  ×     = cross product
-  v     = linear velocity
+  Cm    = Magnus coefficient (tunable)
+  cross = cross product (gives perpendicular force)
+  angular_velocity = spin axis and speed (rad/s)
+  velocity = linear velocity
 ```
 
-This is the physics behind:
+This creates:
 
-- **Curl** (弧线球): Side-spin makes the ball curve left or right
+- **Curl** (弧线球): Side-spin makes the ball curve left/right
 - **Topspin** (上旋): Ball dips faster, bounces forward
 - **Backspin** (下旋): Ball floats longer, bounces backward
-- **Knuckleball** (电梯球): Almost no spin — the ball *wobbles* (摇摆) unpredictably due to turbulent airflow
+- **Knuckleball** (电梯球): Almost no spin — the ball wobbles unpredictably
 
-### 2.4 Combined Ball Update
+### Combined Ball Update
 
-```
-function updateBall(ball, dt) {
-    // Forces
-    gravity_force = Vector3(0, 0, -mass * g)
-    drag_force = -0.5 * Cd * rho * A * ball.speed² * ball.velocity.normalized
-    magnus_force = Cm * cross(ball.angular_velocity, ball.velocity)
-    
-    total_force = gravity_force + drag_force + magnus_force
-    
-    // Integration
-    ball.velocity += (total_force / mass) * dt
-    ball.position += ball.velocity * dt
-    
-    // Spin decay
-    ball.angular_velocity *= (1.0 - spin_decay_rate * dt)
+```cpp
+void updateBall(Ball& ball, float dt) {
+    // Calculate forces
+    Vec3 gravity_force = Vec3(0, 0, -ball.mass * GRAVITY);
+
+    float speed_sq = ball.velocity.lengthSquared();
+    Vec3 drag_force = -0.5f * Cd * rho * A * speed_sq * ball.velocity.normalized();
+
+    Vec3 magnus_force = Cm * cross(ball.angular_velocity, ball.velocity);
+
+    Vec3 total_force = gravity_force + drag_force + magnus_force;
+
+    // Integration (Euler method — simple but works)
+    ball.velocity += (total_force / ball.mass) * dt;
+    ball.position += ball.velocity * dt;
+
+    // Spin decays over time (air friction)
+    ball.angular_velocity *= (1.0f - spin_decay_rate * dt);
 }
 ```
 
-## 3. Ball-Ground Interaction
+## Ball-Ground Interaction
 
-### 3.1 Bounce Model
+### Bounce Model
 
 When the ball hits the ground, it bounces with energy loss:
 
-```
-function handleBounce(ball) {
-    if ball.position.z <= ground_height and ball.velocity.z < 0:
+```cpp
+void handleBounce(Ball& ball) {
+    if (ball.position.z <= GROUND_HEIGHT && ball.velocity.z < 0) {
         // Coefficient of restitution (恢复系数)
-        ball.velocity.z *= -COR    // COR ≈ 0.6-0.8 for grass
-        
-        // Friction on horizontal velocity
-        ball.velocity.x *= (1.0 - ground_friction)
-        ball.velocity.y *= (1.0 - ground_friction)
-        
-        // Spin affects bounce direction (topspin/backspin)
-        ball.velocity.x += ball.angular_velocity.y * spin_bounce_factor
-        ball.velocity.y -= ball.angular_velocity.x * spin_bounce_factor
-        
-        ball.position.z = ground_height
+        // COR = 0.6-0.8 for grass, 0.9 for artificial turf
+        ball.velocity.z *= -COR;
+
+        // Horizontal friction
+        ball.velocity.x *= (1.0f - ground_friction);
+        ball.velocity.y *= (1.0f - ground_friction);
+       // Spin affects bounce direction
+        // Topspin makes the ball bounce forward
+        // Backspin makes it bounce backward
+        ball.velocity.x += ball.angular_velocity.y * spin_bounce_factor;
+        ball.velocity.y -= ball.angular_velocity.x * spin_bounce_factor;
+
+        ball.position.z = GROUND_HEIGHT;
+    }
 }
 ```
 
-The **coefficient of restitution** (COR, 恢复系数) determines how "bouncy" the surface is. Wet grass has a lower COR than dry grass — the ball *skids* (打滑) more.
+**Coefficient of Restitution** (COR, 恢复系数) determines how "bouncy" the surface is:
 
-### 3.2 Rolling
+- **Dry grass**: COR ≈ 0.7 — moderate bounce
+- **Wet grass**: COR ≈ 0.5 — ball skids (打滑)
+- **Artificial turf**: COR ≈ 0.85 — high bounce
+
+### Rolling
 
 When the ball is on the ground and moving slowly:
 
-```
-function handleRolling(ball, dt) {
-    if ball.is_on_ground:
+```cpp
+void handleRolling(Ball& ball, float dt) {
+    if (ball.isOnGround()) {
         // Rolling friction
-        deceleration = rolling_friction * gravity
-        speed = ball.velocity.magnitude
-        
-        if speed > min_speed:
-            ball.velocity -= ball.velocity.normalized * deceleration * dt
-        else:
-            ball.velocity = Vector3.zero
-        
+        float deceleration = rolling_friction * GRAVITY;
+        float speed = ball.velocity.length();
+
+        if (speed > min_speed) {
+            ball.velocity -= ball.velocity.normalized() * deceleration * dt;
+        } else {
+            ball.velocity = Vec3::zero();
+        }
+
         // Update spin based on rolling (no sliding)
-        ball.angular_velocity = cross(Vector3.up, ball.velocity) / ball.radius
+        ball.angular_velocity = cross(Vec3::up(), ball.velocity) / ball.radius;
+    }
 }
 ```
 
-Different pitch conditions affect rolling speed:
-- **Dry pitch**: Faster rolling
-- **Wet pitch**: Slower, ball may *aquaplane* (水面滑行) on standing water
-- **Long grass**: More *friction* (摩擦力), slower rolling
+Different pitch conditions:
+
+- **Dry pitch**: Fast rolling, low friction
+- **Wet pitch**: Slow rolling, ball may aquaplane (水面滑行) on standing water
+- **Long grass**: High friction, slower rolling
 - **Artificial turf**: Consistent, fast surface
 
-## 4. Player Movement
+## Player Movement
 
-### 4.1 Locomotion Model
+### Locomotion States
 
-Player movement in football games uses a *locomotion* (运动) system with several states:
+Player movement uses a state machine:
 
 ```
 Movement States:
-  Idle       → zero velocity, breathing animation
+  Idle       → 0 m/s, breathing animation
   Walking    → 0-2 m/s, casual movement
   Jogging    → 2-5 m/s, default movement
   Running    → 5-8 m/s, purposeful movement
   Sprinting  → 8-10+ m/s, maximum speed, drains stamina
 ```
 
-### 4.2 Acceleration and Deceleration
+### Acceleration and Turning
 
-Players don't instantly reach top speed — they *accelerate* (加速) based on their attributes:
+Players don't instantly reach top speed — they accelerate based on attributes:
 
-```
-function updatePlayerMovement(player, input_direction, dt) {
-    target_speed = getTargetSpeed(player, input_type)
-    max_accel = player.acceleration_attribute * accel_scale
-    
+```cpp
+void updatePlayerMovement(Player& player, Vec2 input_direction, float dt) {
+    // Target speed based on input
+    float target_speed = getTargetSpeed(player, input_type);
+    float max_accel = player.acceleration * accel_scale;
+
     // Smooth acceleration
-    speed_diff = target_speed - player.current_speed
-    accel = clamp(speed_diff / dt, -max_decel, max_accel)
-    player.current_speed += accel * dt
-    
-    // Turning
-    current_dir = player.facing_direction
-    target_dir = input_direction
-    turn_speed = player.agility * turn_scale
-    
-    // Players turn slower at higher speeds
-    effective_turn = turn_speed / (1.0 + player.current_speed * speed_turn_penalty)
-    player.facing_direction = rotateToward(current_dir, target_dir, effective_turn * dt)
-    
+    float speed_diff = target_speed - player.current_speed;
+    float accel = clamp(speed_diff / dt, -max_decel, max_accel);
+    player.current_speed += accel * dt;
+
+    // Turning — slower at high speeds (inertia)
+    Vec2 current_dir = player.facing_direction;
+    Vec2 target_dir = input_direction;
+    float turn_speed = player.agility * turn_scale;
+
+    // Speed penalty for turning
+    float effective_turn = turn_speed / (1.0f + player.current_speed * speed_turn_penalty);
+    player.facing_direction = rotateToward(current_dir, target_dir, effective_turn * dt);
+
     // Apply movement
-    player.position += player.facing_direction * player.current_speed * dt
+    player.position += player.facing_direction * player.current_speed * dt;
 }
 ```
 
-> 句型解析: "Players turn slower at higher speeds" — 意为"球员在高速运动时转向更慢"。这模拟了真实世界中惯性的影响——跑得越快越难急转弯。
+**Key insight**: Players turn slower at high speeds. This simulates inertia — you can't make sharp turns while sprinting at full speed.
 
-### 4.3 Stamina System
+### Stamina System
 
-**Stamina** (体力) depletes during intense actions and recovers during rest:
+Stamina (体力) depletes during intense actions:
 
-```
-function updateStamina(player, dt) {
-    // Drain rates per action type
-    drain_rates = {
-        sprinting: 3.0,
-        pressing:  2.0,
-        running:   1.0,
-        jogging:   0.2,
-        idle:     -1.5   // recovery
+```cpp
+void updateStamina(Player& , float dt) {
+    // Drain rates per action
+    float drain = 0.0f;
+    switch (player.current_action) {
+        case SPRINTING: drain = 3.0f; break;
+        case PRESSING:  drain = 2.0f; break;
+        case RUNNING:   drain = 1.0f; break;
+        case JOGGING:   drain = 0.2f; break;
+        case IDLE:      drain = -1.5f; break;  // recovery
     }
-    
-    drain = drain_rates[player.current_action]
-    player.stamina -= drain * dt
-    player.stamina = clamp(player.stamina, 0, player.max_stamina)
-    
+
+    player.stamina -= drain * dt;
+    player.stamina = clamp(player.stamina, 0.0f, player.max_stamina);
+
     // Stamina affects performance
-    stamina_ratio = player.stamina / player.max_stamina
-    if stamina_ratio < 0.3:
-        player.effective_speed *= 0.85    // noticeably slower
-        player.effective_accuracy *= 0.80  // less accurate
+    float stamina_ratio = player.stamina / player.max_stamina;
+    if (stamina_ratio < 0.3f) {
+        player.effective_speed *= 0.85f;     // noticeably slower
+        player.effective_accuracy *= 0.80f;  // less accurate
+    }
 }
 ```
 
-## 5. Collision Detection
+## Collision Detection
 
-### 5.1 Player-Ball Collision
+### Player-Ball Collision
 
 Detecting when a player can interact with the ball:
 
-```
-function checkBallControl(player, ball) {
-    distance = length(ball.position - player.position)
-    
+```cpp
+enum ControlType { None, Feet, Header, Chest };
+
+ControlType checkBallControl(Player& player, Ball& ball) {
+    float distance = length(ball.position - player.position);
+
     // Feet control range
-    if distance < feet_range and ball.height < knee_height:
-        return ControlType.Feet
-    
+    if (distance < feet_range && ball.height < knee_height) {
+        return ControlType::Feet;
+    }
+
     // Header range
-    if distance < head_range and ball.height > chest_height:
-        return ControlType.Header
-    
+    if (distance < head_rangeheight > chest_height) {
+        return ControlType::Header;
+    }
+
     // Chest control
-    if distance < body_range and ball.height between waist and shoulder:
-        return ControlType.Chest
-    
-    return ControlType.None
+    if (distance < body_range && ball.height >= waist && ball.height <= shoulder) {
+        return ControlType::Chest;
+    }
+
+    return ControlType::None;
 }
 ```
 
-### 5.2 Player-Player Collision
+### Player-Player Collision
 
-*Physical contests* (身体对抗) between players use a simplified collision model:
+Physical contests (身体对抗) between players:
 
-```
-function resolvePlayerCollision(player_a, player_b) {
-    overlap = (player_a.radius + player_b.radius) - distance(a, b)
-    
-    if overlap > 0:
+```cpp
+void resolvePlayerCollision(Player& a, Player& b) {
+    float overlap = (a.radius + b.radius) - distance(a.position, b.position);
+
+    if (overlap > 0) {
         // Separation direction
-        normal = normalize(player_b.position - player_a.position)
-        
+        Vec2 normal = normalize(b.position - a.position);
+
         // Strength-based resolution
-        strength_ratio = player_a.strength / (player_a.strength + player_b.strength)
-        
-        player_a.position -= normal * overlap * (1 - strength_ratio)
-        player_b.position += normal * overlap * strength_ratio
-        
+        float strength_ratio = a.strength / (a.strength + b.strength);
+
+        // Push players apart
+        a.position -= normal * overlap * (1.0f - strength_ratio);
+        b.position += normal * overlap * strength_ratio;
+
         // Check for foul
-        if collision_force > foul_threshold:
-            evaluateFoul(player_a, player_b, collision_force)
+        float collision_force = calculateCollisionForce(a, b);
+        if (collision_force > foul_threshold) {
+            evaluateFoul(a, b, collision_force);
+        }
+    }
 }
 ```
 
-## 6. Camera Physics
+## Camera Physics
 
-The camera in a football game follows *smoothing* (平滑) algorithms to avoid jerky movement:
+The camera follows the ball with smoothing to avoid jerky movement:
 
-```
-function updateCamera(camera, ball, dt) {
-    // Target position: ahead of the ball's movement direction
-    look_ahead = ball.velocity.normalized * look_ahead_distance
-    target = ball.position + look_ahead + camera_offset
-    
-    // Smooth follow with damping
-    camera.position = lerp(camera.position, target, smoothing * dt)
-    
-    // Dynamic zoom based on play context
-    if is_set_piece:
-        target_zoom = close_zoom
-    elif ball_in_penalty_area:
-        target_zoom = medium_zoom
-    else:
-        target_zoom = default_zoom
-    
-    camera.zoom = lerp(camera.zoom, target_zoom, zoom_speed * dt)
+```cpp
+void updateCamera(Camera& camera, Ball& ball, float dt) {
+    // Target position: ahead of the ball's movement
+    Vec3 look_ahead = ball.velocity.normalized() * look_ahead_distance;
+    Vec3 target = ball.position + look_ahead + camera_offset;
+
+    // Smooth follow with damping (lerp = linear interpolation)
+    camera.position = lerp(camera.position, target, smoothing * dt);
+
+    // Dynamic zoom based on context
+    float target_zoom;
+    if (is_set_piece) {
+        target_zoom = close_zoom;
+    } else if (ball_in_penalty_area) {
+        target_zoom = medium_zoom;
+    } else {
+        target_zoom = default_zoom;
+    }
+
+    camera.zoom = lerp(camera.zoom, target_zoom, zoom_speed * dt);
 }
 ```
 
-`lerp` stands for **linear interpolation** (线性插值), a fundamental tool for smooth movement in games.
+**lerp** (linear interpolation, 线性插值) is fundamental for smooth movement in games:
 
-## 7. Physics Simplifications
+```cpp
+float lerp(float a, float b, float t) {
+    return a + (a - b) * t;
+}
+```
 
-Real physics is computationally expensive. Football games make *pragmatic* (务实的) simplifications:
+## The Pragmatic Approach
+
+Real physics is computationally expensive. Football games make smart simplifications:
 
 | Real Physics | Game Simplification |
-| --- | --- |
-| Continuous collision detection | Discrete time steps with *swept* (扫掠) checks for the ball |
-| Full rigid body dynamics | Simplified impulse-based ball response |
+|--------------|---------------------|
+| Continuous collision detection | Discrete time steps with swept checks |
+| Full rigid body dynamics | Simplified impulse-based response |
 | Accurate aerodynamics | Tunable drag + Magnus coefficients |
-| Grass deformation | Purely visual effect, no gameplay impact |
-| Weather effects on physics | Modifier values on friction and drag |
+| Grass deformation | Purely visual, no gameplay impact |
+| Weather effects | Modifier values on friction and drag |
 
-The goal is to achieve results that **look and feel** correct, even if the underlying math is simplified.
+**The goal**: Results that **look and feel** correct, even if the underlying math is simplified.
 
-## 8. Key Takeaways
+## PES vs FIFA — Different Physics Philosophies
 
-- Ball flight combines **gravity**, **drag**, and the **Magnus effect** (spin) — these three forces create realistic trajectories
-- The **coefficient of restitution** and surface friction determine bounce behavior
-- Player movement uses **acceleration curves** and **turning penalties** at speed for realism
-- **Stamina** directly modifies player performance attributes at runtime
-- Collision detection handles both **player-ball** interaction and **player-player** physical contests
-- Football games *pragmatically simplify* (务实地简化) real physics — correctness is less important than feel
+**PES (eFootball)**: Prioritizes realistic ball weight and momentum. The ball feels "heavy" — passes and shots have more inertia. Players praise it as more "simulation-like."
+
+**FIFA (EA Sports FC)**: Prioritizes responsiveness. The ball reacts instantly to input. Feels more "arcade-like" but more accessible to casual players.
+
+Neither is "correct" — it's a design choice about what feels fun.
+
+## Key Takeaways
+
+- Ball flight combines **gravity**, **drag**, and the **Magnus effect** (spin)
+- **Coefficient of restitution** (COR) determines bounce behavior
+- Player movement uses **acceleration curves** and **turning penalties** at speed
+- **Stamina** directly modifies player performance at runtime
+- Collision detection handles **player-ball** interaction and **player-player** physical contests
+- Football games **pragmatically simplify** real physics — correctness matters less than feel
+- Different games make different trade-offs between realism and responsiveness
+
+## Next Up
+
+Physics makes the game feel real, but [UI/UX](10-ui-ux.html) makes it playable. Let's talk about how football games communicate information to players.
