@@ -2,7 +2,7 @@
 layout: series-index
 title: "E-commerce Startup Guide"
 description: "Build, launch, and monetize your independent online store from scratch"
-series: ecommerce-startup
+series_id: ecommerce-startup
 level: intermediate
 ---
 
