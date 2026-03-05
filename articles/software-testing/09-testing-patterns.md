@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Testing Patterns & Anti-Patterns"
-description: "Best practices and common mistakes — test smells, flaky tests, and writing tests that stand the test of time"
+description: "Reusable solutions and common mistakes — how to write tests that last"
 lang: en
 level: advanced
 tags: ["Testing Patterns", "Anti-Patterns", "Best Practices", "Test Smells"]
@@ -17,21 +17,24 @@ next:
   url: "10-testing-in-cicd.html"
 ---
 
-## 1. Patterns vs. Anti-Patterns
+## Patterns vs. Anti-Patterns
 
 A **pattern** is a proven solution to a recurring problem. An **anti-pattern** is a common practice that *appears* to be a solution but actually creates more problems than it solves.
 
-In testing, patterns make your tests **reliable**, **readable**, and **maintainable**. Anti-patterns make them **fragile**, **slow**, and *misleading* (误导性的). Learning to recognize both is essential for writing tests that last.
+In testing, patterns make your tests **reliable**, **readable**, and **maintainable**. Anti-patterns make them **fragile**, **slow**, and *misleading* (误导性的).
 
-## 2. Pattern: One Assertion Per Test
+Let's learn to recognize both.
 
-Each test should verify **one** logical concept. This does not necessarily mean one `assert` statement — it means one *behavioral expectation* (行为期望).
+## Pattern: One Assertion Per Concept
 
-### Good: Focused Assertions
+Each test should verify **one** logical concept. This doesn't mean one `assert` statement — it means one *behavioral expectation* (行为期望).
+
+### ✅ Good: Focused Assertions
 
 ```python
 def test_user_registration_creates_account():
     result = register_user("Alice", "alice@test.com")
+
     assert result.success == True
     assert result.user.name == "Alice"
     assert result.user.email == "alice@test.com"
@@ -39,7 +42,7 @@ def test_user_registration_creates_account():
 
 These three assertions all verify the same behavior: "registration creates an account with the correct data."
 
-### Bad: Multiple Unrelated Behaviors
+### ❌ Bad: Multiple Unrelated Behaviors
 
 ```python
 def test_user_system():
@@ -58,7 +61,7 @@ def test_user_system():
 
 If this test fails, which behavior broke? Split it into three tests.
 
-## 3. Pattern: Arrange-Act-Assert Separation
+## Pattern: Clear AAA Separation
 
 Keep the three phases **visually distinct** with blank lines:
 
@@ -76,373 +79,346 @@ def test_apply_coupon_reduces_total():
     assert cart.total == 48  # 20% off 60 = 48
 ```
 
-### Anti-Pattern: Interleaved Act and Assert
+### ❌ Anti-Pattern: Interleaved Act and Assert
 
 ```python
-# BAD — mixing actions and assertions
-def test_shopping_flow():
+def test_shopping_cart():
     cart = ShoppingCart()
-
     cart.add_item(Item("Book", 50))
-    assert cart.total == 50        # Assert after first action
-
+    assert cart.total == 50  # Assert in the middle!
     cart.add_item(Item("Pen", 10))
-    assert cart.total == 60        # Assert after second action
-
+    assert cart.total == 60  # Another assert!
     cart.apply_coupon("SAVE20")
-    assert cart.total == 48        # Assert after third action
+    assert cart.total == 48  # Yet another!
 ```
 
-This is three tests disguised as one.
+This is hard to read and debug. Stick to AAA.
 
-## 4. Pattern: Test Data Builders
+## Pattern: Test Data Builders
 
-Instead of constructing complex objects in every test, use **builder functions** with sensible defaults:
+When tests need complex objects, use builders:
 
 ```python
-def make_user(
-    name="Test User",
-    email="test@example.com",
-    role="user",
-    is_active=True,
-):
-    return User(name=name, email=email, role=role, is_active=is_active)
+class UserBuilder:
+    def __init__(self):
+        self.name = "Test User"
+        self.email = "test@example.com"
+        self.age = 25
+        self.is_active = True
 
-def make_order(
-    user=None,
-    items=None,
-    status="pending",
-):
-    if user is None:
-        user = make_user()
-    if items is None:
-        items = [Item("Default Item", 10)]
-    return Order(user=user, items=items, status=status)
+    def with_name(self, name):
+        self.name = name
+        return self
 
-# Tests only specify what matters for the scenario
-def test_admin_can_cancel_any_order():
-    admin = make_user(role="admin")
-    order = make_order(status="confirmed")
+    def with_email(self, email):
+        self.email = email
+        return self
 
-    result = cancel_order(admin, order)
+    def inactive(self):
+        self.is_active = False
+        return self
 
+    def build(self):
+        return User(self.name, self.email, self.age, self.is_active)
+
+# Usage
+def test_inactive_users_cannot_login():
+    user = UserBuilder().inactive().build()
+    result = login(user)
+    assert result.success == False
+```
+
+This is more readable than passing 10 parameters to a constructor.
+
+## Pattern: Object Mother
+
+For common test objects, use factory methods:
+
+```python
+class TestUsers:
+    @staticmethod
+    def alice():
+        return User("Alice", "alice@test.com", age=25)
+
+    @staticmethod
+    def bob():
+        return User("Bob", "bob@test.com", age=30)
+
+    @staticmethod
+    def admin():
+        return User("Admin", "admin@test.com", role="admin")
+
+# Usage
+def test_admin_can_delete_users():
+    admin = TestUsers.admin()
+    user = TestUsers.alice()
+
+    result = admin.delete_user(user.id)
     assert result.success == True
-    assert order.status == "cancelled"
 ```
 
-> 句型解析: "Tests only specify what matters for the scenario." — 测试只需要指定与当前场景相关的参数，其他参数使用默认值。这使测试更简洁，也让读者一眼就能看出哪些数据对测试结果有影响。
+## Anti-Pattern: Test Interdependence
 
-## 5. Pattern: Given-When-Then (BDD Style)
+Tests should be **independent**. Each test should run in isolation.
 
-For tests that describe *user stories* (用户故事), the **Given-When-Then** format reads naturally:
+### ❌ Bad: Tests Depend on Each Other
 
 ```python
-def test_given_premium_member_when_purchasing_then_free_shipping():
-    # Given a premium member with items in cart
-    user = make_user(membership="premium")
-    cart = ShoppingCart(user)
-    cart.add_item(Item("Laptop", 999))
+user_id = None
 
-    # When they proceed to checkout
-    order = checkout(cart)
+def test_create_user():
+    global user_id
+    user = create_user("Alice")
+    user_id = user.id
+    assert user_id is not None
 
-    # Then shipping is free
-    assert order.shipping_cost == 0
+def test_get_user():
+    global user_id
+    user = get_user(user_id)  # Depends on previous test!
+    assert user.name == "Alice"
 ```
 
-### In JavaScript (Cucumber-style)
+If `test_create_user` fails, `test_get_user` also fails. If tests run in a different order, everything breaks.
 
-```javascript
-describe('Shipping costs', () => {
-  it('should be free for premium members', () => {
-    // Given
-    const user = createUser({ membership: 'premium' });
-    const cart = new ShoppingCart(user);
-    cart.addItem({ name: 'Laptop', price: 999 });
-
-    // When
-    const order = checkout(cart);
-
-    // Then
-    expect(order.shippingCost).toBe(0);
-  });
-});
-```
-
-## 6. Anti-Pattern: The Liar
-
-A **Liar** test always passes but does not actually test anything:
+### ✅ Good: Independent Tests
 
 ```python
-# The Liar — no assertions, just calls code
-def test_process_order():
-    order = create_order()
-    process_order(order)
-    # Passes even if process_order is completely broken
+def test_create_user():
+    user = create_user("Alice")
+    assert user.id is not None
 
-# Another Liar — trivially true assertion
-def test_add():
-    result = add(2, 3)
-    assert True  # Always passes!
+def test_get_user():
+    # Create user in this test
+    user = create_user("Alice")
+
+    retrieved = get_user(user.id)
+    assert retrieved.name == "Alice"
 ```
 
-**How to spot it**: If you can delete the production code and the test still passes, it is a liar.
+## Anti-Pattern: Sleeps and Arbitrary Waits
 
-## 7. Anti-Pattern: The Giant
+Never use `sleep()` in tests. It makes tests slow and flaky.
 
-A **Giant** test is too long and tests too many things:
+### ❌ Bad: Arbitrary Sleep
 
 ```python
-# BAD — 50+ lines testing multiple features
-def test_everything():
-    user = register("alice@test.com", "password123")
-    assert user is not None
-
-    token = login("alice@test.com", "password123")
-    assert token is not None
-
-    profile = get_profile(token)
-    assert profile.name == "alice"
-
-    update_profile(token, name="Alice Smith")
-    profile = get_profile(token)
-    assert profile.name == "Alice Smith"
-
-    create_post(token, "Hello World")
-    posts = get_posts(token)
-    assert len(posts) == 1
-
-    delete_account(token)
-    assert login("alice@test.com", "password123") is None
+def test_async_operation():
+    start_async_task()
+    time.sleep(5)  # Hope it finishes in 5 seconds!
+    result = get_result()
+    assert result.status == "completed"
 ```
 
-**Fix**: Split into focused, independent tests.
+What if the task takes 6 seconds? What if it takes 1 second? You're either waiting too long or not long enough.
 
-## 8. Anti-Pattern: Flaky Tests
-
-A **flaky test** is one that sometimes passes and sometimes fails without any code changes. Flaky tests are *insidious* (隐匿的/有害的) because they *erode* (侵蚀) trust in the test suite.
-
-### Common Causes of Flakiness
-
-| Cause | Example | Fix |
-| --- | --- | --- |
-| **Timing dependencies** | `sleep(1)` then check result | Use explicit waits or polling |
-| **Shared state** | Test A modifies global variable | Reset state in `setUp` |
-| **Order dependency** | Test B assumes Test A ran first | Make each test independent |
-| **Random data** | Using `random.choice()` in tests | Use fixed seeds or deterministic data |
-| **Time-based logic** | Testing code that uses `datetime.now()` | Inject a clock/time provider |
-| **Network calls** | External API is sometimes slow | Mock external dependencies |
-
-### Example: Fixing a Time-Based Flaky Test
+### ✅ Good: Wait for Condition
 
 ```python
-# FLAKY — depends on current time
-def test_greeting_says_good_morning():
-    assert get_greeting() == "Good morning"  # Fails in the afternoon!
+def test_async_operation():
+    start_async_task()
 
-# FIXED — inject the time
-def test_greeting_says_good_morning():
-    morning_time = datetime(2024, 1, 1, 9, 0, 0)
-    assert get_greeting(current_time=morning_time) == "Good morning"
+    # Wait up to 10 seconds for completion
+    for _ in range(100):
+        result = get_result()
+        if result.status == "completed":
+            break
+        time.sleep(0.1)
+
+    assert result.status == "completed"
 ```
 
-### Example: Fixing a Shared State Flaky Test
+Or better yet, use a proper async testing library.
+
+## Anti-Pattern: Testing Private Methods
+
+Don't test private methods directly. Test them through the public API.
+
+### ❌ Bad: Testing Implementation
 
 ```python
-# FLAKY — depends on test execution order
-counter = 0
+class PriceCalculator:
+    def calculate(self, items):
+        subtotal = self._calculate_subtotal(items)
+        tax = self._calculate_tax(subtotal)
+        return subtotal + tax
 
-def test_increment():
-    global counter
-    counter += 1
-    assert counter == 1  # Fails if another test modified counter first!
+    def _calculate_subtotal(self, items):
+        return sum(item.price for item in items)
 
-# FIXED — reset state before each test
-@pytest.fixture(autouse=True)
-def reset_counter():
-    global counter
-    counter = 0
+    def _calculate_tax(self, amount):
+        return amount * 0.1
+
+# Don't do this!
+def test_calculate_subtotal():
+    calc = PriceCalculator()
+    result = calc._calculate_subtotal([Item(10), Item(20)])
+    assert result == 30
 ```
 
-> 句型解析: "Flaky tests are insidious because they erode trust in the test suite." — "insidious" (隐匿有害的) 指表面上看不出问题但暗中造成伤害。flaky tests 会让团队逐渐不信任测试结果，最终忽略测试失败。
-
-## 9. Anti-Pattern: Testing Implementation Details
-
-Tests should verify **what** the code does, not **how** it does it internally:
+### ✅ Good: Testing Behavior
 
 ```python
-# BAD — testing internal implementation
-def test_sort_uses_quicksort():
-    sorter = Sorter()
-    sorter.sort([3, 1, 2])
-    assert sorter._algorithm == "quicksort"  # Testing private state!
+def test_calculate_includes_tax():
+    calc = PriceCalculator()
+    items = [Item(10), Item(20)]
 
-# GOOD — testing observable behavior
-def test_sort_returns_sorted_list():
-    assert Sorter().sort([3, 1, 2]) == [1, 2, 3]
+    total = calc.calculate(items)
+
+    assert total == 33  # 30 + 10% tax
 ```
 
-```javascript
-// BAD — testing internal method calls
-test('calls internal helper', () => {
-  const spy = jest.spyOn(calculator, '_validateInput');
-  calculator.add(2, 3);
-  expect(spy).toHaveBeenCalled();  // Tests HOW, not WHAT
-});
+If you refactor `_calculate_subtotal`, the first test breaks. The second test doesn't care about implementation.
 
-// GOOD — testing the result
-test('adds two numbers', () => {
-  expect(calculator.add(2, 3)).toBe(5);
-});
-```
+## Anti-Pattern: Mocking Everything
 
-## 10. Anti-Pattern: Excessive Setup
+Over-mocking makes tests brittle and meaningless.
 
-If your test requires 30 lines of setup, the code under test might have too many dependencies:
+### ❌ Bad: Excessive Mocking
 
 ```python
-# BAD — excessive setup indicates design problem
-def test_process_payment():
-    db = MockDatabase()
-    cache = MockCache()
-    logger = MockLogger()
-    config = MockConfig()
-    metrics = MockMetrics()
-    validator = InputValidator(config)
-    sanitizer = InputSanitizer(config)
-    gateway = MockPaymentGateway()
-    notifier = MockNotifier(logger)
-    auditor = MockAuditor(db, logger)
-    processor = PaymentProcessor(
-        db, cache, logger, config, metrics,
-        validator, sanitizer, gateway, notifier, auditor
-    )
+def test_order_processing():
+    mock_db = Mock()
+    mock_email = Mock()
+    mock_payment = Mock()
+    mock_inventory = Mock()
+    mock_logger = Mock()
 
-    result = processor.process(amount=100)
-    assert result.success
+    service = OrderService(mock_db, mock_email, mock_payment, mock_inventory, mock_logger)
+    service.process_order(order)
+
+    # What are we even testing here?
+    mock_db.save.assert_called_once()
 ```
 
-**Fix**: The `PaymentProcessor` class has too many dependencies. Refactor it into smaller, focused classes.
-
-## 11. Pattern: Test Isolation Strategies
-
-### Strategy 1: Fresh Instances
-
-Create new objects for every test — the simplest approach:
+### ✅ Good: Mock Only External Dependencies
 
 ```python
-def test_cart_starts_empty():
-    cart = ShoppingCart()  # Fresh instance
-    assert cart.total == 0
+def test_order_processing():
+    fake_db = InMemoryDatabase()
+    mock_payment_gateway = Mock()  # External service
 
-def test_cart_adds_items():
-    cart = ShoppingCart()  # Another fresh instance
-    cart.add_item(Item("Book", 10))
-    assert cart.total == 10
+    service = OrderService(fake_db, mock_payment_gateway)
+    order = Order(items=[Item("Book", 10)])
+
+    service.process_order(order)
+
+    # Verify behavior
+    assert fake_db.orders.count() == 1
+    mock_payment_gateway.charge.assert_called_with(amount=10)
 ```
 
-### Strategy 2: Setup and Teardown
+## Pattern: Parameterized Tests for Similar Cases
+
+Don't copy-paste tests. Use parameterization.
+
+### ❌ Bad: Repetitive Tests
 
 ```python
-class TestUserService:
-    def setup_method(self):
-        self.db = FakeDatabase()
-        self.service = UserService(self.db)
+def test_add_positive_numbers():
+    assert add(2, 3) == 5
 
-    def teardown_method(self):
-        self.db.clear()
+def test_add_negative_numbers():
+    assert add(-2, -3) == -5
 
-    def test_create_user(self):
-        self.service.create("Alice")
-        assert self.db.count("users") == 1
+def test_add_zero():
+    assert add(0, 5) == 5
+
+def test_add_large_numbers():
+    assert add(1000, 2000) == 3000
 ```
 
-### Strategy 3: Database Transactions
+### ✅ Good: Parameterized Test
 
 ```python
-@pytest.fixture
-def db_session():
-    session = create_session()
-    session.begin_nested()
-    yield session
-    session.rollback()
+@pytest.mark.parametrize("a, b, expected", [
+    (2, 3, 5),
+    (-2, -3, -5),
+    (0, 5, 5),
+    (1000, 2000, 3000),
+])
+def test_add(a, b, expected):
+    assert add(a, b) == expected
 ```
 
-## 12. Pattern: Testing Error Paths
+## Pattern: Custom Assertions
 
-Do not just test the happy path — test **every way** things can go wrong:
+For complex assertions, create helpers:
 
 ```python
-class TestWithdrawal:
-    def test_successful_withdrawal(self):
-        account = Account(balance=100)
-        account.withdraw(50)
-        assert account.balance == 50
+def assert_user_valid(user):
+    """Assert that a user object is valid."""
+    assert user is not None, "User should not be None"
+    assert user.id > 0, "User ID should be positive"
+    assert "@" in user.email, "Email should contain @"
+    assert len(user.name) > 0, "Name should not be empty"
 
-    def test_insufficient_funds(self):
-        account = Account(balance=30)
-        with pytest.raises(InsufficientFundsError):
-            account.withdraw(50)
-
-    def test_negative_amount(self):
-        account = Account(balance=100)
-        with pytest.raises(ValueError, match="Amount must be positive"):
-            account.withdraw(-10)
-
-    def test_zero_amount(self):
-        account = Account(balance=100)
-        with pytest.raises(ValueError, match="Amount must be positive"):
-            account.withdraw(0)
-
-    def test_withdrawal_exceeding_daily_limit(self):
-        account = Account(balance=100000, daily_limit=5000)
-        with pytest.raises(DailyLimitExceededError):
-            account.withdraw(6000)
+# Usage
+def test_user_registration():
+    user = register_user("Alice", "alice@test.com")
+    assert_user_valid(user)
 ```
 
-## 13. Pattern: Descriptive Failure Messages
+## Anti-Pattern: Ignoring Flaky Tests
 
-When a test fails, the failure message should tell you **what went wrong** without reading the code:
+A flaky test is one that sometimes passes and sometimes fails, without code changes.
+
+**Never ignore flaky tests.** They're a sign of:
+- Race conditions
+- Timing issues
+- Shared state between tests
+- External dependencies
+
+Fix them or delete them. Don't just re-run until they pass.
+
+## Pattern: Test Naming Convention
+
+Use descriptive names that explain the scenario and expected outcome:
 
 ```python
-# BAD — unhelpful failure message
-def test_discount():
-    assert calculate_discount(100, "VIP") == 80
-    # Failure: assert 90 == 80 — but why?
+# ✅ Good names
+def test_login_with_valid_credentials_succeeds()
+def test_login_with_invalid_password_returns_error()
+def test_login_with_nonexistent_user_returns_error()
+def test_login_with_expired_token_requires_reauth()
 
-# GOOD — descriptive failure message
-def test_vip_discount_is_20_percent():
-    actual = calculate_discount(100, "VIP")
-    expected = 80
-    assert actual == expected, (
-        f"VIP discount should be 20%: "
-        f"expected {expected} for price 100, got {actual}"
-    )
+# ❌ Bad names
+def test_login()
+def test_login_2()
+def test_login_edge_case()
+def test_it_works()
 ```
 
-## 14. Test Smell Checklist
+## Pattern: Given-When-Then Comments
 
-Use this checklist to *audit* (审计/审查) your test suite:
+For complex tests, use Given-When-Then comments:
 
-| Smell | Symptom | Remedy |
-| --- | --- | --- |
-| **Fragile test** | Breaks when *unrelated* code changes | Test behavior, not implementation |
-| **Slow test** | Takes more than 1 second | Mock external dependencies |
-| **Mystery guest** | Test uses data defined elsewhere, unclear where it comes from | Define test data inline or use named fixtures |
-| **Eager test** | Tests multiple behaviors | Split into focused tests |
-| **Obscure test** | Hard to understand what is being tested | Use descriptive names and clear AAA structure |
-| **Conditional logic in test** | Contains `if/else` in test code | Each branch should be a separate test |
-| **Magic numbers** | Uses unexplained numeric values | Use named constants or comments |
-| **Dead test** | Always passes, never fails | Review or delete it |
+```python
+def test_checkout_with_coupon():
+    # Given a cart with items and a valid coupon
+    cart = ShoppingCart()
+    cart.add_item(Item("Book", 100))
+    coupon = Coupon("SAVE20", discount=0.2)
 
-## 15. Key Takeaways
+    # When the user applies the coupon and checks out
+    cart.apply_coupon(coupon)
+    order = cart.checkout()
 
-- Write **one behavior per test** — if a test fails, you should immediately know why
-- Follow **Arrange-Act-Assert** with clear visual separation
-- Use **test data builders** to keep tests clean and focused on what matters
-- **Flaky tests** destroy team trust — fix or delete them immediately
-- Test **behavior** (outputs and side effects), not **implementation** (internal method calls)
-- Test **error paths** as *thoroughly* (全面地) as happy paths
-- Excessive setup is a *design smell* (设计异味) — it tells you the code needs refactoring
-- Use the **test smell checklist** to regularly audit your test suite quality
-- Good tests are **readable**, **reliable**, and **fast** — like good documentation that runs
+    # Then the order total reflects the discount
+    assert order.total == 80
+    assert order.discount_applied == 20
+```
+
+## Key Takeaways
+
+- **One assertion per concept** — test one behavior at a time
+- **Keep AAA phases separate** — visually distinct Arrange, Act, Assert
+- **Use builders and factories** for complex test data
+- **Tests must be independent** — no shared state
+- **Never use sleep()** — wait for specific conditions
+- **Don't test private methods** — test through public API
+- **Don't over-mock** — use fakes for internal dependencies
+- **Parameterize similar tests** — avoid copy-paste
+- **Fix flaky tests** — don't ignore them
+- **Use descriptive names** — explain scenario and outcome
+
+Next up: CI/CD pipelines — automating all of this so you never have to think about it.

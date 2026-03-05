@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Testing REST APIs"
-description: "Validate your backend — request/response testing, status codes, authentication, and contract testing"
+description: "HTTP requests, JSON responses, auth tokens, and all the ways your API can fail — tested"
 lang: en
 level: intermediate
 tags: ["API Testing", "REST", "HTTP", "pytest", "Supertest"]
@@ -17,18 +17,20 @@ next:
   url: "07-end-to-end-testing.html"
 ---
 
-## 1. Why Test APIs?
+## The Contract
 
 APIs are the **contract** between your backend and everything that consumes it — frontends, mobile apps, third-party services. If the API breaks, everything breaks.
 
 API testing sits between unit testing and E2E testing on the testing pyramid. It tests the **HTTP layer** — routes, request parsing, validation, authentication, response formatting — without needing a browser or UI.
 
-> 句型解析: "APIs are the contract between your backend and everything that consumes it." — "contract" (合约) 在这里指 API 定义了一套双方都必须遵守的规则，"consumes" (消费/使用) 指调用 API 的客户端。
+Fast enough to run frequently. Comprehensive enough to catch real bugs.
 
-## 2. What to Test in an API
+> 句型解析: "APIs are the contract between your backend and everything that consumes it." — "contract" (合约) 在这里指 API 定义了一套双方都必须遵守的规则。
+
+## What to Test
 
 | Category | What to Verify | Example |
-| --- | --- | --- |
+|----------|---------------|---------|
 | **Status codes** | Correct HTTP status returned | 200 OK, 201 Created, 404 Not Found |
 | **Response body** | Correct data structure and values | `{"id": 1, "name": "Alice"}` |
 | **Validation** | Invalid input is rejected | Missing required fields → 400 Bad Request |
@@ -37,7 +39,7 @@ API testing sits between unit testing and E2E testing on the testing pyramid. It
 | **Error handling** | Errors return *meaningful* (有意义的) messages | `{"error": "Email already exists"}` |
 | **Edge cases** | Unusual inputs handled gracefully | Empty strings, very long values, special characters |
 
-## 3. Python API Testing with Flask + pytest
+## Python API Testing with Flask + pytest
 
 ### The API Under Test
 
@@ -55,15 +57,20 @@ def create_user():
     global next_id
     data = request.get_json()
 
-    if not data or 'name' not in data or 'email' not in data:
-        return jsonify({"error": "name and email are required"}), 400
+    if not data.get('name'):
+        return jsonify({"error": "Name is required"}), 400
 
-    if any(u['email'] == data['email'] for u in users.values()):
-        return jsonify({"error": "Email already exists"}), 409
+    if not data.get('email'):
+        return jsonify({"error": "Email is required"}), 400
 
-    user = {"id": next_id, "name": data['name'], "email": data['email']}
+    user = {
+        "id": next_id,
+        "name": data['name'],
+        "email": data['email']
+    }
     users[next_id] = user
     next_id += 1
+
     return jsonify(user), 201
 
 @app.route('/users/<int:user_id>', methods=['GET'])
@@ -71,147 +78,144 @@ def get_user(user_id):
     user = users.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
-    return jsonify(user)
+    return jsonify(user), 200
 
-@app.route('/users', methods=['GET'])
-def list_users():
-    return jsonify(list(users.values()))
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    if user_id not in users:
+        return jsonify({"error": "User not found"}), 404
+    del users[user_id]
+    return '', 204
 ```
 
-### The Test Suite
+### The Tests
 
 ```python
-# test_app.py
+# test_api.py
 import pytest
 from app import app
 
 @pytest.fixture
 def client():
+    """Create a test client for the Flask app."""
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
 
-@pytest.fixture(autouse=True)
-def reset_data():
-    """Reset the in-memory store before each test."""
-    from app import users
-    users.clear()
-    import app as app_module
-    app_module.next_id = 1
+def test_create_user_success(client):
+    response = client.post('/users', json={
+        'name': 'Alice',
+        'email': 'alice@example.com'
+    })
 
-class TestCreateUser:
-    def test_creates_user_successfully(self, client):
-        response = client.post('/users', json={
-            "name": "Alice",
-            "email": "alice@example.com"
-        })
+    assert response.status_code == 201
+    data = response.get_json()
+    assert data['name'] == 'Alice'
+    assert data['email'] == 'alice@example.com'
+    assert 'id' in data
 
-        assert response.status_code == 201
-        data = response.get_json()
-        assert data['id'] == 1
-        assert data['name'] == "Alice"
-        assert data['email'] == "alice@example.com"
+def test_create_user_missing_name(client):
+    response = client.post('/users', json={
+        'email': 'alice@example.com'
+    })
 
-    def test_returns_400_when_name_missing(self, client):
-        response = client.post('/users', json={
-            "email": "alice@example.com"
-        })
+    assert response.status_code == 400
+    data = response.get_json()
+    assert 'error' in data
+    assert 'Name' in data['error']
 
-        assert response.status_code == 400
-        assert "name and email are required" in response.get_json()['error']
+def test_create_user_missing_email(client):
+    response = client.post('/users', json={
+        'name': 'Alice'
+    })
 
-    def test_returns_400_when_body_is_empty(self, client):
-        response = client.post('/users',
-                              data='',
-                              content_type='application/json')
+    assert response.status_code == 400
+    data = response.get_json()
+    assert 'error' in data
+    assert 'Email' in data['error']
 
-        assert response.status_code == 400
+def test_get_user_success(client):
+    # Create a user first
+    create_response = client.post('/users', json={
+        'name': 'Alice',
+        'email': 'alice@example.com'
+    })
+    user_id = create_response.get_json()['id']
 
-    def test_returns_409_when_email_duplicate(self, client):
-        client.post('/users', json={
-            "name": "Alice", "email": "alice@example.com"
-        })
-        response = client.post('/users', json={
-            "name": "Bob", "email": "alice@example.com"
-        })
+    # Get the user
+    response = client.get(f'/users/{user_id}')
 
-        assert response.status_code == 409
-        assert "already exists" in response.get_json()['error']
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data['name'] == 'Alice'
 
-class TestGetUser:
-    def test_returns_user_by_id(self, client):
-        client.post('/users', json={
-            "name": "Alice", "email": "alice@example.com"
-        })
+def test_get_user_not_found(client):
+    response = client.get('/users/999')
 
-        response = client.get('/users/1')
+    assert response.status_code == 404
+    data = response.get_json()
+    assert 'error' in data
 
-        assert response.status_code == 200
-        assert response.get_json()['name'] == "Alice"
+def test_delete_user_success(client):
+    # Create a user
+    create_response = client.post('/users', json={
+        'name': 'Alice',
+        'email': 'alice@example.com'
+    })
+    user_id = create_response.get_json()['id']
 
-    def test_returns_404_for_nonexistent_user(self, client):
-        response = client.get('/users/999')
+    # Delete the user
+    response = client.delete(f'/users/{user_id}')
+    assert response.status_code == 204
 
-        assert response.status_code == 404
-        assert "not found" in response.get_json()['error'].lower()
-
-class TestListUsers:
-    def test_returns_empty_list_initially(self, client):
-        response = client.get('/users')
-
-        assert response.status_code == 200
-        assert response.get_json() == []
-
-    def test_returns_all_users(self, client):
-        client.post('/users', json={"name": "Alice", "email": "a@test.com"})
-        client.post('/users', json={"name": "Bob", "email": "b@test.com"})
-
-        response = client.get('/users')
-
-        data = response.get_json()
-        assert len(data) == 2
+    # Verify user is gone
+    get_response = client.get(f'/users/{user_id}')
+    assert get_response.status_code == 404
 ```
 
-## 4. JavaScript API Testing with Express + Supertest
+## JavaScript API Testing with Express + Supertest
 
-### The API Under Test
+### The API
 
 ```javascript
 // app.js
 const express = require('express');
 const app = express();
+
 app.use(express.json());
 
-const users = new Map();
+const users = {};
 let nextId = 1;
 
 app.post('/users', (req, res) => {
   const { name, email } = req.body;
-  if (!name || !email) {
-    return res.status(400).json({ error: 'name and email are required' });
+
+  if (!name) {
+    return res.status(400).json({ error: 'Name is required' });
   }
 
-  for (const user of users.values()) {
-    if (user.email === email) {
-      return res.status(409).json({ error: 'Email already exists' });
-    }
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
   }
 
   const user = { id: nextId++, name, email };
-  users.set(user.id, user);
+  users[user.id] = user;
+
   res.status(201).json(user);
 });
 
 app.get('/users/:id', (req, res) => {
-  const user = users.get(parseInt(req.params.id));
-  if (!user) return res.status(404).json({ error: 'User not found' });
+  const user = users[req.params.id];
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
   res.json(user);
 });
 
 module.exports = app;
 ```
 
-### The Test Suite with Supertest
+### The Tests
 
 ```javascript
 // app.test.js
@@ -219,269 +223,221 @@ const request = require('supertest');
 const app = require('./app');
 
 describe('POST /users', () => {
-  it('creates a user and returns 201', async () => {
-    const res = await request(app)
+  test('creates user successfully', async () => {
+    const response = await request(app)
       .post('/users')
-      .send({ name: 'Alice', email: 'alice@test.com' });
+      .send({ name: 'Alice', email: 'alice@example.com' });
 
-    expect(res.status).toBe(201);
-    expect(res.body).toMatchObject({
-      name: 'Alice',
-      email: 'alice@test.com',
-    });
-    expect(res.body.id).toBeDefined();
+    expect(response.status).toBe(201);
+    expect(response.body.name).toBe('Alice');
+    expect(response.body.email).toBe('alice@example.com');
+    expect(response.body.id).toBeDefined();
   });
 
-  it('returns 400 when name is missing', async () => {
-    const res = await request(app)
+  test('rejects missing name', async () => {
+    const response = await request(app)
       .post('/users')
-      .send({ email: 'alice@test.com' });
+      .send({ email: 'alice@example.com' });
 
-    expect(res.status).toBe(400);
-    expect(res.body.error).toMatch(/required/i);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain('Name');
   });
 
-  it('returns 409 when email is duplicate', async () => {
-    await request(app)
+  test('rejects missing email', async () => {
+    const response = await request(app)
       .post('/users')
-      .send({ name: 'Alice', email: 'same@test.com' });
+      .send({ name: 'Alice' });
 
-    const res = await request(app)
-      .post('/users')
-      .send({ name: 'Bob', email: 'same@test.com' });
-
-    expect(res.status).toBe(409);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain('Email');
   });
 });
 
 describe('GET /users/:id', () => {
-  it('returns 404 for nonexistent user', async () => {
-    const res = await request(app).get('/users/999');
+  test('returns user when found', async () => {
+    // Create user first
+    const createResponse = await request(app)
+      .post('/users')
+      .send({ name: 'Alice', email: 'alice@example.com' });
 
-    expect(res.status).toBe(404);
+    const userId = createResponse.body.id;
+
+    // Get user
+    const response = await request(app).get(`/users/${userId}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.name).toBe('Alice');
+  });
+
+  test('returns 404 when user not found', async () => {
+    const response = await request(app).get('/users/999');
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBeDefined();
   });
 });
 ```
 
-## 5. Testing Authentication
+## Testing Authentication
 
-### Testing JWT-Protected Routes
+Most APIs require authentication. Test it.
+
+### JWT Authentication Example
 
 ```python
 import jwt
+import pytest
+from datetime import datetime, timedelta
 
-@pytest.fixture
-def auth_token():
-    """Generate a valid JWT token for testing."""
-    return jwt.encode(
-        {"user_id": 1, "role": "admin"},
-        "test-secret",
-        algorithm="HS256"
-    )
+SECRET_KEY = "test-secret"
+
+def create_token(user_id):
+    payload = {
+        'user_id': user_id,
+        'exp': datetime.utcnow() + timedelta(hours=1)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
 def test_protected_route_requires_token(client):
-    response = client.get('/admin/dashboard')
+    response = client.get('/protected')
     assert response.status_code == 401
 
-def test_protected_route_accepts_valid_token(client, auth_token):
-    response = client.get('/admin/dashboard',
-                         headers={"Authorization": f"Bearer {auth_token}"})
+def test_protected_route_rejects_invalid_token(client):
+    response = client.get('/protected', headers={
+        'Authorization': 'Bearer invalid-token'
+    })
+    assert response.status_code == 401
+
+def test_protected_route_accepts_valid_token(client):
+    token = create_token(user_id=1)
+    response = client.get('/protected', headers={
+        'Authorization': f'Bearer {token}'
+    })
     assert response.status_code == 200
 
 def test_protected_route_rejects_expired_token(client):
-    expired_token = jwt.encode(
-        {"user_id": 1, "exp": 0},  # Already expired
-        "test-secret",
-        algorithm="HS256"
-    )
-    response = client.get('/admin/dashboard',
-                         headers={"Authorization": f"Bearer {expired_token}"})
+    # Create token that expired 1 hour ago
+    payload = {
+        'user_id': 1,
+        'exp': datetime.utcnow() - timedelta(hours=1)
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+    response = client.get('/protected', headers={
+        'Authorization': f'Bearer {token}'
+    })
     assert response.status_code == 401
 ```
 
-### Testing Role-Based Authorization
+## Testing Edge Cases
+
+Don't just test the happy path. Test the weird stuff.
 
 ```python
-def test_regular_user_cannot_access_admin_route(client):
-    token = create_token(user_id=2, role="user")
+def test_create_user_with_very_long_name(client):
+    long_name = "A" * 10000
+    response = client.post('/users', json={
+        'name': long_name,
+        'email': 'alice@example.com'
+    })
+    # Should either accept it or reject with 400, not crash
+    assert response.status_code in [201, 400]
 
-    response = client.get('/admin/dashboard',
-                         headers={"Authorization": f"Bearer {token}"})
+def test_create_user_with_special_characters(client):
+    response = client.post('/users', json={
+        'name': "Alice <script>alert('xss')</script>",
+        'email': 'alice@example.com'
+    })
+    assert response.status_code == 201
+    # Verify special characters are escaped
+    data = response.get_json()
+    assert '<script>' not in data['name']
 
-    assert response.status_code == 403  # Forbidden, not 401
+def test_create_user_with_unicode(client):
+    response = client.post('/users', json={
+        'name': '张三',
+        'email': 'zhangsan@example.com'
+    })
+    assert response.status_code == 201
+    data = response.get_json()
+    assert data['name'] == '张三'
 
-def test_admin_can_access_admin_route(client):
-    token = create_token(user_id=1, role="admin")
+def test_create_user_with_empty_strings(client):
+    response = client.post('/users', json={
+        'name': '',
+        'email': ''
+    })
+    assert response.status_code == 400
+```
 
-    response = client.get('/admin/dashboard',
-                         headers={"Authorization": f"Bearer {token}"})
+## Testing Rate Limiting
 
+If your API has rate limiting, test it.
+
+```python
+def test_rate_limiting(client):
+    # Make 100 requests
+    for i in range(100):
+        response = client.get('/api/data')
+        if i < 50:
+            assert response.status_code == 200
+        else:
+            # After 50 requests, should be rate limited
+            assert response.status_code == 429
+```
+
+## Contract Testing with Pact
+
+For APIs consumed by multiple clients, use **contract testing** to ensure compatibility.
+
+```python
+from pact import Consumer, Provider
+
+pact = Consumer('Frontend').has_pact_with(Provider('Backend'))
+
+def test_get_user_contract():
+    expected = {
+        'id': 1,
+        'name': 'Alice',
+        'email': 'alice@example.com'
+    }
+
+    (pact
+     .given('user 1 exists')
+     .upon_receiving('a request for user 1')
+     .with_request('GET', '/users/1')
+     .will_respond_with(200, body=expected))
+
+    with pact:
+        response = requests.get('http://localhost:1234/users/1')
+        assert response.json() == expected
+```
+
+## Testing with Real HTTP Calls
+
+Sometimes you need to test against a real running server.
+
+```python
+import requests
+
+def test_api_health_check():
+    response = requests.get('http://localhost:5000/health')
     assert response.status_code == 200
+    assert response.json()['status'] == 'healthy'
+
+def test_api_returns_json():
+    response = requests.get('http://localhost:5000/users/1')
+    assert response.headers['Content-Type'] == 'application/json'
 ```
 
-> 句型解析: "Forbidden, not 401" — 401 Unauthorized 表示"未认证"（没有提供身份），403 Forbidden 表示"未授权"（身份已确认，但没有权限）。这两个状态码经常被混淆。
+## Key Takeaways
 
-## 6. Testing Request Validation
+- **API tests** verify the HTTP layer without needing a UI
+- Test **status codes**, **response bodies**, **validation**, **auth**, and **error handling**
+- Use **test clients** (Flask test_client, Supertest) for fast in-process testing
+- Test **authentication** explicitly — tokens, expiration, invalid credentials
+- Test **edge cases** — long inputs, special characters, unicode, empty strings
+- Use **contract testing** for APIs consumed by multiple clients
+- API tests are faster than E2E tests but more comprehensive than unit tests
 
-```python
-class TestInputValidation:
-    def test_rejects_email_without_at_sign(self, client):
-        response = client.post('/users', json={
-            "name": "Alice",
-            "email": "not-an-email"
-        })
-        assert response.status_code == 400
-
-    def test_rejects_name_exceeding_max_length(self, client):
-        response = client.post('/users', json={
-            "name": "A" * 256,
-            "email": "alice@test.com"
-        })
-        assert response.status_code == 400
-
-    def test_rejects_negative_price(self, client):
-        response = client.post('/products', json={
-            "name": "Widget",
-            "price": -10
-        })
-        assert response.status_code == 400
-        assert "price" in response.get_json()['error'].lower()
-
-    def test_handles_missing_content_type(self, client):
-        response = client.post('/users', data='{"name":"Alice"}')
-        # Should either parse or return a clear error
-        assert response.status_code in (400, 415)
-```
-
-## 7. Contract Testing
-
-**Contract testing** ensures that the API producer and consumer agree on the *interface contract* (接口合约) — request format, response structure, and status codes.
-
-### Response Schema Validation
-
-```python
-from jsonschema import validate
-
-USER_SCHEMA = {
-    "type": "object",
-    "required": ["id", "name", "email"],
-    "properties": {
-        "id": {"type": "integer"},
-        "name": {"type": "string", "minLength": 1},
-        "email": {"type": "string", "format": "email"},
-    },
-    "additionalProperties": False
-}
-
-def test_user_response_matches_schema(client):
-    client.post('/users', json={"name": "Alice", "email": "a@test.com"})
-
-    response = client.get('/users/1')
-
-    validate(instance=response.get_json(), schema=USER_SCHEMA)
-```
-
-### Snapshot Testing for APIs
-
-```javascript
-test('user response matches snapshot', async () => {
-  const res = await request(app)
-    .post('/users')
-    .send({ name: 'Alice', email: 'alice@test.com' });
-
-  expect(res.body).toMatchSnapshot({
-    id: expect.any(Number),     // ID changes, so use a matcher
-    name: 'Alice',
-    email: 'alice@test.com',
-  });
-});
-```
-
-> 句型解析: "Contract testing ensures that the API producer and consumer agree on the interface contract." — 合约测试确保 API 的提供方和消费方对接口格式达成一致。如果 API 返回的数据结构发生变化，合约测试会立即发现。
-
-## 8. Testing Pagination and Filtering
-
-```python
-class TestPagination:
-    @pytest.fixture(autouse=True)
-    def seed_data(self, client):
-        """Create 25 users for pagination tests."""
-        for i in range(25):
-            client.post('/users', json={
-                "name": f"User {i}",
-                "email": f"user{i}@test.com"
-            })
-
-    def test_default_page_returns_10_items(self, client):
-        response = client.get('/users')
-        data = response.get_json()
-        assert len(data['items']) == 10
-        assert data['total'] == 25
-        assert data['page'] == 1
-
-    def test_second_page(self, client):
-        response = client.get('/users?page=2')
-        data = response.get_json()
-        assert len(data['items']) == 10
-        assert data['page'] == 2
-
-    def test_last_page_has_remaining_items(self, client):
-        response = client.get('/users?page=3')
-        data = response.get_json()
-        assert len(data['items']) == 5
-
-    def test_invalid_page_returns_400(self, client):
-        response = client.get('/users?page=-1')
-        assert response.status_code == 400
-
-    def test_filter_by_name(self, client):
-        response = client.get('/users?name=User 1')
-        data = response.get_json()
-        assert all("User 1" in item['name'] for item in data['items'])
-```
-
-## 9. Performance Considerations
-
-### Testing Response Time
-
-```python
-import time
-
-def test_list_users_responds_within_200ms(client):
-    # Seed 1000 users
-    for i in range(1000):
-        client.post('/users', json={
-            "name": f"User {i}", "email": f"u{i}@test.com"
-        })
-
-    start = time.time()
-    response = client.get('/users?page=1')
-    elapsed = time.time() - start
-
-    assert response.status_code == 200
-    assert elapsed < 0.2, f"Response took {elapsed:.3f}s, expected < 0.2s"
-```
-
-### Testing Rate Limiting
-
-```python
-def test_rate_limit_returns_429(client):
-    """API should return 429 Too Many Requests after exceeding limit."""
-    for _ in range(100):
-        client.get('/users')
-
-    response = client.get('/users')
-    assert response.status_code == 429
-    assert "rate limit" in response.get_json()['error'].lower()
-```
-
-## 10. Key Takeaways
-
-- API tests validate the **HTTP contract** — status codes, response bodies, headers
-- Test the **happy path**, **validation errors**, **authentication**, and **edge cases**
-- Use **test clients** (Flask's `test_client`, Express + Supertest) — no need to start a real server
-- Test **authentication** (401) and **authorization** (403) separately — they are different concepts
-- Use **schema validation** to ensure response structure does not drift over time
-- **Contract testing** protects against breaking changes between API producer and consumer
-- Test **pagination**, **filtering**, and **sorting** — these are common sources of bugs
-- Include basic **performance assertions** for critical endpoints
+Next up: End-to-End testing — browser automation, Playwright, Cypress, and testing like a real user.

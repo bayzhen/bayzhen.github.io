@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Testing in CI/CD Pipelines"
-description: "Automating quality — GitHub Actions, test stages, quality gates, and shift-left testing"
+description: "Automate everything — GitHub Actions, quality gates, and never shipping broken code again"
 lang: en
 level: advanced
 tags: ["CI/CD", "GitHub Actions", "Automation", "Quality Gates"]
@@ -14,24 +14,30 @@ prev:
   url: "09-testing-patterns.html"
 ---
 
-## 1. Why Automate Testing?
+## The Manual Testing Problem
 
-Throughout this series, we have learned how to write unit tests, integration tests, E2E tests, and more. But tests are only valuable if they **run consistently**. If developers have to remember to run tests manually before every commit, tests will be skipped.
+You've written unit tests, integration tests, E2E tests. Your test suite is comprehensive. But there's a problem:
+
+**Tests only work if people run them.**
+
+And people forget. Or they're in a hurry. Or they think "this is just a small change, it'll be fine."
+
+Then production breaks.
 
 **CI/CD** (Continuous Integration / Continuous Delivery) solves this by running tests **automatically** — on every push, every pull request, every deployment. No human *intervention* (介入) needed.
 
 | Without CI/CD | With CI/CD |
-| --- | --- |
+|---------------|------------|
 | "I forgot to run the tests" | Tests run automatically on every push |
 | "It works on my machine" | Tests run in a consistent environment |
 | "Who broke the build?" | Broken commit is identified immediately |
 | "Can we deploy this?" | Green pipeline = safe to deploy |
 
-> 句型解析: "Tests are only valuable if they run consistently." — 测试只有在持续运行时才有价值。如果开发者需要手动记得运行测试，那么测试迟早会被跳过。
+> 句型解析: "Tests are only valuable if they run consistently." — 测试只有在持续运行时才有价值。
 
-## 2. The CI/CD Pipeline
+## The CI/CD Pipeline
 
-A typical CI/CD pipeline for a project with good testing looks like this:
+A typical pipeline with good testing looks like this:
 
 ```
 ┌─────────┐   ┌──────────┐   ┌─────────────┐   ┌──────────┐   ┌────────┐
@@ -47,9 +53,9 @@ A typical CI/CD pipeline for a project with good testing looks like this:
 
 Each stage acts as a **quality gate** — if any stage fails, the pipeline stops and the team is notified.
 
-## 3. GitHub Actions — Your First Pipeline
+## GitHub Actions — Your First Pipeline
 
-**GitHub Actions** is the most popular CI/CD platform for open-source projects. Let us build a complete testing pipeline.
+**GitHub Actions** is the most popular CI/CD platform for open-source projects. Let's build a complete testing pipeline.
 
 ### Basic Python Pipeline
 
@@ -78,27 +84,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install pytest pytest-cov
 
-      - name: Run linter
+      - name: Run tests with coverage
         run: |
-          flake8 src/ tests/
-          black --check src/ tests/
+          pytest --cov=src --cov-report=xml --cov-report=term
 
-      - name: Run unit tests with coverage
-        run: |
-          pytest tests/unit/ --cov=src --cov-report=xml --cov-fail-under=80
-
-      - name: Run integration tests
-        run: |
-          pytest tests/integration/ -m integration
-
-      - name: Upload coverage report
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
+          fail_ci_if_error: true
 ```
 
 ### Basic JavaScript Pipeline
@@ -118,39 +115,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - name: Run linter
         run: npm run lint
 
-      - name: Unit tests
-        run: npm test -- --coverage --ci
+      - name: Run tests with coverage
+        run: npm test -- --coverage
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
 ```
 
-## 4. Multi-Stage Pipeline
+## Multi-Stage Pipeline
 
-For larger projects, separate test types into **different stages** that run in *parallel* (并行) or *sequentially* (顺序地):
+Separate fast tests from slow tests:
 
 ```yaml
-name: Full Test Suite
+name: CI Pipeline
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+on: [push, pull_request]
 
 jobs:
   lint:
@@ -160,359 +153,358 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install flake8 black
-      - run: flake8 src/
-      - run: black --check src/
+      - name: Install linters
+        run: pip install black flake8 mypy
+      - name: Run black
+        run: black --check .
+      - name: Run flake8
+        run: flake8 .
+      - name: Run mypy
+        run: mypy src/
 
   unit-tests:
     runs-on: ubuntu-latest
-    needs: lint
+    needs: lint  # Only run if lint passes
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: pytest tests/unit/ --cov=src --cov-report=xml
-      - uses: codecov/codecov-action@v4
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run unit tests
+        run: pytest tests/unit/ -v
 
   integration-tests:
     runs-on: ubuntu-latest
-    needs: lint
+    needs: unit-tests  # Only run if unit tests pass
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: testdb
-          POSTGRES_USER: testuser
-          POSTGRES_PASSWORD: testpass
-        ports:
-          - 5432:5432
+          POSTGRES_PASSWORD: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: pytest tests/integration/
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run integration tests
+        run: pytest tests/integration/ -v
         env:
-          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
-          REDIS_URL: redis://localhost:6379
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
 
   e2e-tests:
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests]
+    needs: integration-tests  # Only run if integration tests pass
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npm run build
-      - run: npx playwright test
-      - uses: actions/upload-artifact@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      - name: Run E2E tests
+        run: npx playwright test
+      - name: Upload test results
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
 ```
 
-> 句型解析: "Each stage acts as a quality gate — if any stage fails, the pipeline stops and the team is notified." — 每个阶段都是一个质量关卡，任何阶段失败都会阻止流水线继续执行，并通知团队。
+## Testing Multiple Versions
 
-## 5. Quality Gates
-
-A **quality gate** is a set of conditions that must be met before code can *proceed* (继续前进) to the next stage:
-
-| Gate | Condition | Tool |
-| --- | --- | --- |
-| **Lint** | No style violations | ESLint, Flake8, Black |
-| **Type check** | No type errors | mypy, TypeScript compiler |
-| **Unit tests** | All pass | pytest, Jest |
-| **Coverage** | Above threshold (e.g., 80%) | coverage.py, Istanbul |
-| **Security** | No known *vulnerabilities* (漏洞) | Snyk, Dependabot, Bandit |
-| **Integration tests** | All pass | pytest, Jest |
-| **E2E tests** | Critical flows pass | Playwright, Cypress |
-| **Performance** | No performance regression | Lighthouse, k6 |
-
-### Enforcing Quality Gates in GitHub
-
-```yaml
-# Branch protection rules (set in GitHub Settings)
-# Require these checks to pass before merging:
-# - lint
-# - unit-tests
-# - integration-tests
-# - e2e-tests
-```
-
-## 6. Test Parallelization
-
-Running tests in *parallel* (并行) dramatically reduces pipeline duration:
-
-### Parallel Jobs in GitHub Actions
+Test against multiple Python/Node versions:
 
 ```yaml
 jobs:
-  unit-tests:
+  test:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        shard: [1, 2, 3, 4]
-    runs-on: ubuntu-latest
+        python-version: ['3.10', '3.11', '3.12']
+
     steps:
       - uses: actions/checkout@v4
-      - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: |
-          pytest tests/unit/ \
-            --splits 4 \
-            --group ${{ matrix.shard }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: pytest
 ```
 
-### Parallel Playwright Tests
+This creates 3 parallel jobs, one for each Python version.
+
+## Quality Gates
+
+Enforce quality standards:
+
+### Coverage Threshold
 
 ```yaml
-- name: Run Playwright tests
-  run: npx playwright test --workers=4
+- name: Check coverage threshold
+  run: |
+    pytest --cov=src --cov-fail-under=80
 ```
 
-### pytest-xdist for Parallel Python Tests
+Build fails if coverage drops below 80%.
 
-```bash
-pip install pytest-xdist
-
-# Run tests across 4 CPU cores
-pytest -n 4 tests/
-```
-
-## 7. Caching for Faster Pipelines
-
-CI pipelines install dependencies from scratch every run. **Caching** saves time by reusing previous installations:
+### No Failing Tests
 
 ```yaml
-- name: Cache pip dependencies
+- name: Run tests
+  run: pytest --maxfail=1 --strict-markers
+```
+
+Stop at first failure.
+
+### Linting Must Pass
+
+```yaml
+- name: Lint code
+  run: |
+    black --check .
+    flake8 .
+    mypy src/
+```
+
+## Caching Dependencies
+
+Speed up builds by caching dependencies:
+
+```yaml
+- name: Cache pip packages
   uses: actions/cache@v4
   with:
     path: ~/.cache/pip
-    key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
     restore-keys: |
       ${{ runner.os }}-pip-
 
-- name: Cache npm dependencies
-  uses: actions/cache@v4
+- name: Install dependencies
+  run: pip install -r requirements.txt
+```
+
+## Running Tests in Docker
+
+For consistent environments:
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: pytest
+```
+
+## Parallel Test Execution
+
+Speed up slow test suites:
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest-xdist
+      - name: Run tests (shard ${{ matrix.shard }}/4)
+        run: |
+          pytest --splits 4 --group ${{ matrix.shard }}
+```
+
+This splits tests into 4 groups and runs them in parallel.
+
+## Deployment Pipeline
+
+Only deploy if all tests pass:
+
+```yaml
+jobs:
+  test:
+    # ... test jobs ...
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, integration-tests, e2e-tests]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production..."
+          # Your deployment script here
+
+      - name: Notify team
+        if: success()
+        run: |
+          curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+            -H 'Content-Type: application/json' \
+            -d '{"text":"✅ Deployment successful!"}'
+```
+
+## Handling Flaky Tests
+
+Retry flaky tests automatically:
+
+```yaml
+- name: Run E2E tests with retry
+  uses: nick-fields/retry@v3
   with:
-    path: ~/.npm
-    key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+    timeout_minutes: 10
+    max_attempts: 3
+    command: npx playwright test
 ```
 
-### Impact of Caching
+But remember: **fix flaky tests, don't just retry them**.
 
-| Step | Without Cache | With Cache |
-| --- | --- | --- |
-| `pip install` | 45 seconds | 5 seconds |
-| `npm ci` | 30 seconds | 8 seconds |
-| `playwright install` | 60 seconds | 10 seconds |
+## Test Reports
 
-## 8. Test Reporting
-
-### JUnit XML Format
-
-Most CI systems understand JUnit XML test reports:
-
-```bash
-# pytest
-pytest --junitxml=test-results.xml
-
-# Jest
-npm test -- --reporters=jest-junit
-```
-
-### Uploading Test Reports
+Generate and publish test reports:
 
 ```yaml
 - name: Run tests
   run: pytest --junitxml=test-results.xml
-  continue-on-error: true
 
 - name: Publish test results
-  uses: dorny/test-reporter@v1
+  uses: EnricoMi/publish-unit-test-result-action@v2
   if: always()
   with:
-    name: Test Results
-    path: test-results.xml
-    reporter: java-junit
+    files: test-results.xml
 ```
 
-### Coverage Badges
+## Security Scanning
 
-Add a coverage badge to your README:
-
-```markdown
-![Coverage](https://codecov.io/gh/username/repo/branch/main/graph/badge.svg)
-```
-
-## 9. Handling Flaky Tests in CI
-
-Flaky tests are especially *damaging* (有破坏力的) in CI because they block the entire team:
-
-### Strategy 1: Automatic Retries
+Add security checks to your pipeline:
 
 ```yaml
-# Retry failed tests up to 3 times
-- name: Run tests with retry
-  run: pytest --reruns 3 --reruns-delay 2
+- name: Run security scan
+  run: |
+    pip install bandit safety
+    bandit -r src/
+    safety check
 ```
 
-```javascript
-// Playwright retry configuration
-// playwright.config.js
-module.exports = {
-  retries: process.env.CI ? 2 : 0, // Retry in CI, not locally
-};
-```
+## Performance Testing
 
-### Strategy 2: Quarantine Flaky Tests
-
-```python
-@pytest.mark.flaky
-def test_sometimes_fails():
-    ...
-```
-
-```bash
-# Run stable tests in the main pipeline
-pytest -m "not flaky"
-
-# Run flaky tests separately (non-blocking)
-pytest -m flaky || true
-```
-
-### Strategy 3: Track and Fix
-
-Use tools like **Datadog** or **BuildPulse** to track which tests are flaky over time. Set a team rule: **flaky tests must be fixed or deleted within one week**.
-
-## 10. Pre-Commit Hooks — Shift Left Further
-
-Run tests **before** the code even reaches CI by using Git pre-commit hooks:
+Run performance tests in CI:
 
 ```yaml
-# .pre-commit-config.yaml
-repos:
-  - repo: local
-    hooks:
-      - id: pytest
-        name: Run unit tests
-        entry: pytest tests/unit/ -x -q
-        language: system
-        pass_filenames: false
-        always_run: true
+- name: Run performance tests
+  run: |
+    pytest tests/performance/ --benchmark-only
 
-      - id: lint
-        name: Lint with flake8
-        entry: flake8
-        language: system
-        types: [python]
-
-      - id: format
-        name: Format with black
-        entry: black --check
-        language: system
-        types: [python]
+- name: Check performance regression
+  run: |
+    pytest-benchmark compare --fail-if-slower=10%
 ```
 
-```bash
-# Install pre-commit hooks
-pip install pre-commit
-pre-commit install
+## Branch Protection Rules
+
+On GitHub, enforce that tests must pass before merging:
+
+1. Go to Settings → Branches
+2. Add branch protection rule for `main`
+3. Enable "Require status checks to pass before merging"
+4. Select your test workflows
+
+Now no one can merge code that breaks tests.
+
+## Notifications
+
+Get notified when builds fail:
+
+```yaml
+- name: Notify on failure
+  if: failure()
+  uses: 8398a7/action-slack@v3
+  with:
+    status: ${{ job.status }}
+    text: 'Tests failed on ${{ github.ref }}'
+    webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 ```
 
-Now every `git commit` automatically runs linting and unit tests. If they fail, the commit is *rejected* (拒绝).
+## Best Practices
 
-## 11. The Complete Testing Strategy
+### 1. Fast Feedback
 
-Putting it all together — here is a complete testing strategy from development to deployment:
+Run fast tests first (lint, unit tests), slow tests last (E2E).
 
-```
-Developer's Machine          CI/CD Pipeline              Production
-┌──────────────────┐   ┌─────────────────────┐   ┌──────────────────┐
-│ 1. Write code    │   │ 4. Lint + Format     │   │ 8. Smoke tests   │
-│ 2. Run unit tests│──▶│ 5. Unit tests (80%+) │──▶│ 9. Health checks │
-│ 3. git push      │   │ 6. Integration tests │   │ 10. Monitoring   │
-│                  │   │ 7. E2E tests         │   │                  │
-│ Pre-commit hooks │   │ Quality gates        │   │ Alerting         │
-└──────────────────┘   └─────────────────────┘   └──────────────────┘
-```
+### 2. Fail Fast
 
-| Layer | What It Catches | Speed |
-| --- | --- | --- |
-| **Pre-commit hooks** | Syntax errors, formatting, basic logic | Seconds |
-| **Unit tests in CI** | Business logic bugs, edge cases | Minutes |
-| **Integration tests** | Data flow bugs, API contract breaks | Minutes |
-| **E2E tests** | User flow regressions, cross-system issues | 5–15 minutes |
-| **Production monitoring** | Performance degradation, real-world failures | Ongoing |
+Stop the pipeline at the first failure. Don't waste time running E2E tests if unit tests fail.
 
-## 12. Metrics to Track
+### 3. Keep Builds Fast
 
-### Pipeline Metrics
+Target: under 10 minutes for the full pipeline. Use caching, parallelization, and selective test execution.
 
-| Metric | Target | Why It Matters |
-| --- | --- | --- |
-| **Pipeline duration** | < 15 minutes | Slow pipelines reduce productivity |
-| **Test pass rate** | > 99% | Low pass rate indicates flaky tests |
-| **Coverage trend** | Increasing | Ensures new code is tested |
-| **Mean Time to Repair** (MTTR) | < 1 hour | How fast broken builds get fixed |
-| **Deployment frequency** | Daily or more | Green pipelines enable frequent releases |
+### 4. Test in Production-Like Environments
 
-### Dashboard Example
+Use Docker containers that match your production environment.
 
-```
-┌────────────────────────────────────────────────┐
-│ Build Dashboard — Last 30 Days                 │
-├──────────────────────┬─────────────────────────┤
-│ Total builds         │ 342                     │
-│ Pass rate            │ 97.4%                   │
-│ Avg duration         │ 8m 23s                  │
-│ Flaky test count     │ 3 (quarantined)         │
-│ Coverage             │ 84.2% (+1.3%)           │
-│ Last failed build    │ 2h ago (fixed)          │
-└──────────────────────┴─────────────────────────┘
-```
+### 5. Monitor Build Times
 
-## 13. Key Takeaways
+Track how long builds take. If they're getting slower, investigate.
 
-- **CI/CD** runs tests automatically on every push — no human intervention needed
-- Build pipelines with **multiple stages**: lint → unit tests → integration → E2E
-- Each stage is a **quality gate** — code cannot proceed unless the gate passes
-- Use **parallel execution** and **caching** to keep pipelines fast (< 15 minutes)
-- Handle **flaky tests** with retries, *quarantine* (隔离), and a fix-or-delete policy
-- **Pre-commit hooks** catch issues before code reaches CI — the ultimate "shift left"
-- Track pipeline **metrics**: duration, pass rate, coverage trend, MTTR
-- The goal is **confidence**: a green pipeline means it is safe to deploy
-- Testing is not a *burden* (负担) — it is the **engineering discipline** that lets you move fast without breaking things
+## Key Takeaways
 
----
+- **CI/CD automates testing** — no more "I forgot to run tests"
+- **GitHub Actions** is the easiest way to get started
+- **Multi-stage pipelines** run fast tests first, slow tests last
+- **Quality gates** enforce standards (coverage, linting, security)
+- **Cache dependencies** to speed up builds
+- **Run tests in parallel** to reduce total time
+- **Only deploy if tests pass** — green pipeline = safe to deploy
+- **Branch protection** prevents merging broken code
+- **Fast feedback** is critical — aim for under 10 minutes
 
-## Series Complete
+## You Made It
 
-Congratulations! You have completed the **Software Testing Mastery** series. Here is what we covered:
+Congratulations! You've completed the Software Testing Mastery series.
 
-1. **Why Testing Matters** — The cost of bugs, testing pyramid, shift-left philosophy
-2. **Unit Testing Fundamentals** — AAA pattern, assertions, test organization
-3. **Test Doubles** — Mocks, stubs, fakes, spies, and dependency injection
-4. **Test-Driven Development** — Red-Green-Refactor cycle, three laws of TDD
-5. **Integration Testing** — Database testing, Docker, test isolation
-6. **Testing REST APIs** — HTTP testing, authentication, contract testing
-7. **End-to-End Testing** — Playwright, Cypress, Page Object Model
-8. **Code Coverage** — Metrics, mutation testing, coverage traps
-9. **Testing Patterns** — Best practices, anti-patterns, test smells
-10. **CI/CD Pipelines** — GitHub Actions, quality gates, automation
+You now know:
+- Why testing matters and how to build a testing culture
+- How to write unit tests with the AAA pattern
+- When to use mocks, stubs, fakes, and spies
+- How to practice TDD with Red-Green-Refactor
+- How to test databases, APIs, and browsers
+- What code coverage really means (and doesn't mean)
+- Common patterns and anti-patterns
+- How to automate everything with CI/CD
 
-Testing is a skill that separates *professional* (专业的) developers from hobbyists. The investment you make in learning to test well will pay *dividends* (回报/红利) throughout your entire career. Write tests. Write them first. Write them always.
+**The next step is practice.** Pick a project and start writing tests. Start small — one function, one test. Then build from there.
+
+Testing is a skill. Like any skill, it improves with deliberate practice.
+
+Now go write some tests. Your future self will thank you.

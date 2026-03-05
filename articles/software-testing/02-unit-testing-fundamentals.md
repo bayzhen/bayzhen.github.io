@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Unit Testing Fundamentals"
-description: "Writing your first unit tests — AAA pattern, assertions, test runners, and organizing test suites"
+description: "Your first unit test — AAA pattern, assertions, test runners, and the art of testing one thing at a time"
 lang: en
 level: beginner
 tags: ["Unit Testing", "pytest", "Jest", "Fundamentals"]
@@ -17,17 +17,21 @@ next:
   url: "03-test-doubles.html"
 ---
 
-## 1. What Is a Unit Test?
+## The Brick Analogy
 
-A **unit test** is a piece of code that tests the smallest *testable* unit of your application — usually a single function, method, or class. The word "unit" means **one thing in isolation**.
+A **unit test** tests the smallest *testable* unit of your application — usually a single function, method, or class. The word "unit" means **one thing in isolation**.
 
 Think of it like checking a single brick before building a wall. If every brick is solid, the wall will be strong. If you skip checking individual bricks and only test the finished wall, a single cracked brick can bring everything down.
 
-> 句型解析: "If you skip checking individual bricks and only test the finished wall, a single cracked brick can bring everything down." — 条件句，用砖和墙的比喻说明单元测试的必要性：如果只测试整体而忽略个体，一个缺陷就可能导致全部崩溃。
+And when the wall collapses, good luck figuring out which brick was the problem.
 
-## 2. The AAA Pattern
+> 句型解析: "If you skip checking individual bricks and only test the finished wall, a single cracked brick can bring everything down." — 条件句，用砖和墙的比喻说明单元测试的必要性。
 
-Every unit test follows a three-step structure called **AAA** — Arrange, Act, Assert:
+## The AAA Pattern
+
+Every unit test follows a three-step structure called **AAA** — Arrange, Act, Assert.
+
+This is not a suggestion. This is the pattern. Learn it, use it, love it.
 
 ```python
 def test_addition():
@@ -43,10 +47,10 @@ def test_addition():
 ```
 
 | Step | Purpose | What You Do |
-| --- | --- | --- |
+|------|---------|-------------|
 | **Arrange** | Prepare inputs and expected outputs | Create objects, set variables |
 | **Act** | Execute the code under test | Call the function or method |
-| **Assert** | Verify the outcome | Check return values, state changes, or side effects |
+| **Assert** | Verify the outcome | Check return values, state changes, side effects |
 
 This pattern makes tests **readable** and **consistent**. Every test tells a story: "Given this setup, when I do this action, then I expect this result."
 
@@ -66,9 +70,11 @@ test('addition works correctly', () => {
 });
 ```
 
-## 3. Writing Your First Tests with pytest
+See? Same pattern, different syntax. Once you learn AAA, you can write tests in any language.
 
-**pytest** is the most popular testing framework for Python. Let us write a complete example.
+## Your First Test with pytest
+
+**pytest** is the most popular testing framework for Python. Let's write a complete example.
 
 ### The Production Code
 
@@ -135,9 +141,27 @@ pytest test_calculator.py
 pytest test_calculator.py::test_add_positive_numbers
 ```
 
-## 4. Assertions — The Heart of Testing
+Output:
 
-An *assertion* (断言) is a statement that checks whether a condition is true. If the condition is false, the test fails. Assertions are the **core mechanism** of every test.
+```
+test_calculator.py::test_add_positive_numbers PASSED
+test_calculator.py::test_add_negative_numbers PASSED
+test_calculator.py::test_add_zero PASSED
+test_calculator.py::test_subtract PASSED
+test_calculator.py::test_multiply PASSED
+test_calculator.py::test_divide PASSED
+test_calculator.py::test_divide_by_zero_raises_error PASSED
+
+7 passed in 0.03s
+```
+
+That's it. You just wrote and ran your first unit tests.
+
+## Assertions — The Heart of Testing
+
+An *assertion* (断言) is a statement that checks whether a condition is true. If the condition is false, the test fails.
+
+Assertions are the **core mechanism** of every test. Without assertions, you're just running code, not testing it.
 
 ### Python Assertions with pytest
 
@@ -193,14 +217,16 @@ expect(array).toHaveLength(3);
 expect(() => dangerousFunction()).toThrow('error message');
 ```
 
-## 5. Test Naming Conventions
+## Test Naming — The Most Underrated Skill
 
 Good test names describe **what** is being tested and **what** the expected outcome is. A reader should understand the test without reading the code.
+
+Bad test names are *vague* (模糊的). Good test names are *specific* (具体的).
 
 ### Pattern: `test_[method]_[scenario]_[expected_result]`
 
 ```python
-# Good names — descriptive and specific
+# ✅ Good names — descriptive and specific
 def test_divide_by_zero_raises_value_error():
     ...
 
@@ -210,7 +236,7 @@ def test_login_with_wrong_password_returns_false():
 def test_cart_total_with_discount_applies_percentage():
     ...
 
-# Bad names — vague and uninformative
+# ❌ Bad names — vague and uninformative
 def test_divide():         # What scenario? What result?
     ...
 
@@ -248,11 +274,13 @@ describe('ShoppingCart', () => {
 });
 ```
 
-> 句型解析: "A reader should understand the test without reading the code." — 读者应该仅通过测试名称就能理解测试的目的，而不需要阅读测试代码本身。这是好的测试命名的标准。
+The `describe` blocks create a hierarchy. The `it` blocks read like sentences: "ShoppingCart calculateTotal should return 0 for an empty cart."
 
-## 6. Test Fixtures — Sharing Setup Code
+> 句型解析: "A reader should understand the test without reading the code." — 读者应该仅通过测试名称就能理解测试的目的，而不需要阅读测试代码本身。
 
-When multiple tests need the same setup, you can use *fixtures* (测试夹具) to avoid *duplication* (重复).
+## Test Fixtures — Don't Repeat Yourself
+
+When multiple tests need the same setup, use *fixtures* (测试夹具) to avoid *duplication* (重复).
 
 ### Python Fixtures with pytest
 
@@ -282,6 +310,8 @@ def test_find_user_by_email(sample_users):
     result = find_by_email(sample_users, "alice@test.com")
     assert result.name == "Alice"
 ```
+
+pytest automatically injects fixtures into test functions that request them by name. Magic? No, just good design.
 
 ### JavaScript Setup with `beforeEach`
 
@@ -319,9 +349,9 @@ def db_connection():
     ...
 ```
 
-> 句型解析: "When multiple tests need the same setup, you can use fixtures to avoid duplication." — "fixtures" (夹具) 在测试中指的是预先准备好的测试数据或环境配置，多个测试可以共享使用，避免每个测试都重复写相同的准备代码。
+> 句型解析: "When multiple tests need the same setup, you can use fixtures to avoid duplication." — fixtures (夹具) 在测试中指的是预先准备好的测试数据或环境配置。
 
-## 7. Parameterized Tests — Testing Multiple Inputs
+## Parameterized Tests — One Test, Many Inputs
 
 Instead of writing separate tests for each input, use *parameterized* (参数化的) tests to run the same logic with different data.
 
@@ -357,43 +387,7 @@ test.each([
 });
 ```
 
-## 8. Organizing Test Files
-
-A well-organized test structure mirrors your source code:
-
-```
-project/
-├── src/
-│   ├── models/
-│   │   ├── user.py
-│   │   └── order.py
-│   ├── services/
-│   │   ├── auth_service.py
-│   │   └── order_service.py
-│   └── utils/
-│       └── validators.py
-├── tests/
-│   ├── models/
-│   │   ├── test_user.py
-│   │   └── test_order.py
-│   ├── services/
-│   │   ├── test_auth_service.py
-│   │   └── test_order_service.py
-│   └── utils/
-│       └── test_validators.py
-├── conftest.py              # Shared fixtures
-└── pytest.ini               # pytest configuration
-```
-
-### Naming Conventions
-
-| Language | Test File | Test Function |
-| --- | --- | --- |
-| Python | `test_module.py` or `module_test.py` | `def test_something():` |
-| JavaScript | `module.test.js` or `module.spec.js` | `test('something', ...)` or `it('should ...', ...)` |
-| Java | `ModuleTest.java` | `@Test void shouldDoSomething()` |
-
-## 9. Edge Cases and Boundary Testing
+## Edge Cases — Where Bugs Hide
 
 Good tests cover not just the "happy path" but also *edge cases* (边界情况) — unusual or extreme inputs that are likely to cause bugs.
 
@@ -442,12 +436,48 @@ Use **ZOMBIES** to remember which scenarios to test:
 - **Z**ero — empty collections, zero values, null
 - **O**ne — single element, first/last item
 - **M**any — multiple elements, typical usage
-- **B**oundary — min/max values, off-by-one
+- **B**oundary — min/max values, off-by-one errors
 - **I**nterface — public API contracts
 - **E**xceptions — error conditions, invalid inputs
 - **S**imple — the simplest happy path
 
-## 10. Running Tests Effectively
+## Organizing Test Files
+
+A well-organized test structure mirrors your source code:
+
+```
+project/
+├── src/
+│   ├── models/
+│   │   ├── user.py
+│   │   └── order.py
+│   ├── services/
+│   │   ├── auth_service.py
+│   │   └── order_service.py
+│   └── utils/
+│       └── validators.py
+├── tests/
+│   ├── models/
+│   │   ├── test_user.py
+│   │   └── test_order.py
+│   ├── services/
+│   │   ├── test_auth_service.py
+│   │   └── test_order_service.py
+│   └── utils/
+│       └── test_validators.py
+├── conftest.py              # Shared fixtures
+└── pytest.ini               # pytest configuration
+```
+
+### Naming Conventions
+
+| Language | Test File | Test Function |
+|----------|-----------|---------------|
+| Python | `test_module.py` or `module_test.py` | `def test_something():` |
+| JavaScript | `module.test.js` or `module.spec.js` | `test('something', ...)` or `it('should ...', ...)` |
+| Java | `ModuleTest.java` | `@Test void shouldDoSomething()` |
+
+## Configuration Files
 
 ### pytest Configuration (`pytest.ini`)
 
@@ -476,7 +506,7 @@ module.exports = {
 };
 ```
 
-### Useful pytest Commands
+## Useful pytest Commands
 
 ```bash
 # Run tests and stop at first failure
@@ -495,7 +525,7 @@ pytest --lf
 pytest --cov=src --cov-report=html
 ```
 
-## 11. Key Takeaways
+## Key Takeaways
 
 - A unit test tests the **smallest unit** of code in isolation
 - Follow the **AAA pattern**: Arrange → Act → Assert
@@ -503,5 +533,7 @@ pytest --cov=src --cov-report=html
 - Use **fixtures** to share setup code and avoid duplication
 - Use **parameterized tests** to run one test with multiple inputs
 - **Mirror** your source structure in your test directory
-- Test **edge cases** using the ZOMBIES mnemonic: Zero, One, Many, Boundary, Interface, Exceptions, Simple
+- Test **edge cases** using the ZOMBIES mnemonic
 - Well-organized tests are *maintainable* (可维护的) and serve as living documentation
+
+Next up: test doubles — mocks, stubs, and fakes. Because sometimes you need to lie to your code.
