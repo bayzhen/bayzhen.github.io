@@ -61,3 +61,8 @@
   title: "Resident Evil 9: English Reading"
   description: "Explore the world of Resident Evil 9 through English articles — CET-6 level, with vocabulary annotations"
   order: 11
+
+- id: cuda-programming
+  title: "CUDA Programming: English Reading"
+  description: "Understand GPU computing and CUDA through English articles — CET-6 level, with vocabulary annotations"
+  order: 12
