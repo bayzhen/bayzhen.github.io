@@ -18,6 +18,7 @@ What if you could describe a game and an AI builds it for you? This series follo
 - **Article 4 — Where It Breaks** Latency, token waste, and the reflection trap
 - **Article 5 — The Wrong Target** Plot twist: maybe the problem isn't MCP — it's the engine
 - **Article 6 — The Real Ceiling** The deepest insight: AI's limit is our own understanding of game design
+- **Article 7 — A Practical Path Forward** Three concrete techniques that bridge AI and game engines today
 
 ## How to Use This Series
 

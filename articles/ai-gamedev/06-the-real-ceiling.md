@@ -10,6 +10,9 @@ order: 6
 prev:
   title: "The Wrong Target"
   url: "05-wrong-target.html"
+next:
+  title: "A Practical Path Forward"
+  url: "07-practical-path.html"
 ---
 
 We have traveled a long arc. AI can build games — the dream is real. MCP provides the tools — the protocol works. But Unreal Engine resists — the target is wrong. An AI-native engine would help — but even then, something limits what AI can build. That something is us.
