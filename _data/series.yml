@@ -57,7 +57,7 @@
   description: "A veteran game developer's honest take on AI — CET-6 level, with vocabulary annotations"
   order: 10
 
-- id: unreal-engine-mcp
-  title: "Unreal Engine MCP: English Reading"
-  description: "How AI talks to Unreal Engine through Model Context Protocol — CET-6 level, with vocabulary annotations"
+- id: ai-gamedev
+  title: "AI-Accelerated Game Dev: English Reading"
+  description: "Can AI actually build games? A journey from dream to reality — CET-6 level, with vocabulary annotations"
   order: 11
