@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Test Doubles — Mocks, Stubs, Fakes, and Spies"
-description: "How to test code that talks to databases, APIs, and other things you can't control — without actually talking to them"
+description: "Master the art of isolating code under test using mocks, stubs, fakes, and spies"
 lang: en
 level: intermediate
 tags: ["Test Doubles", "Mocking", "Isolation", "pytest", "Jest"]
@@ -17,37 +17,36 @@ next:
   url: "04-test-driven-development.html"
 ---
 
-## The Problem
+## 1. The Problem: External Dependencies
 
-You're writing a function that sends an email. How do you test it without actually sending emails?
+Real-world code rarely works in isolation. A function might call a database, send an HTTP request, read a file, or depend on the current time. These *external dependencies* (外部依赖) make testing difficult because:
 
-You're testing a payment processor. How do you test it without charging real credit cards?
+- They are **slow** — network calls take hundreds of milliseconds
+- They are **unreliable** — external services can be down
+- They are **non-deterministic** (不确定的) — results change between runs
+- They have **side effects** — sending real emails in tests is a bad idea
 
-You're building a weather app. How do you test it without waiting for the weather to change?
+The solution is to replace these dependencies with **test doubles** — objects that *simulate* (模拟) the behavior of real dependencies.
 
-**Answer: You lie.**
+> 句型解析: "The solution is to replace these dependencies with test doubles — objects that simulate the behavior of real dependencies." — 破折号后面是对 "test doubles" 的解释，即用模拟真实依赖行为的替代对象来代替真正的外部依赖。
 
-Not to your users. To your tests. You replace real dependencies with fake ones that behave exactly how you need them to. These fakes are called **test doubles**.
-
-## The Five Types of Test Doubles
+## 2. The Five Types of Test Doubles
 
 The term "test double" comes from the movie industry, where a *stunt double* (替身演员) replaces the real actor for dangerous scenes. In testing, a test double replaces a real dependency.
 
-| Type | Purpose | Returns Data? | Records Calls? | Complexity |
-|------|---------|---------------|----------------|------------|
-| **Dummy** | Fills a parameter slot, never used | No | No | Trivial |
-| **Stub** | Returns *predetermined* (预设的) values | Yes | No | Simple |
-| **Fake** | Has a working implementation, but simplified | Yes | No | Medium |
-| **Spy** | Wraps the real object, records calls | Yes (real) | Yes | Medium |
-| **Mock** | Pre-programmed with expectations | Yes (configured) | Yes | Complex |
+| Type | Purpose | Returns Data? | Records Calls? |
+| --- | --- | --- | --- |
+| **Dummy** | Fills a parameter slot, never actually used | No | No |
+| **Stub** | Returns *predetermined* (预设的) values | Yes | No |
+| **Fake** | Has a working implementation, but simplified | Yes | No |
+| **Spy** | Wraps the real object, records calls | Yes (real) | Yes |
+| **Mock** | Pre-programmed with expectations | Yes (configured) | Yes |
 
-Let's examine each one with real examples.
+Let us examine each one with concrete examples.
 
-> 句型解析: "The term 'test double' comes from the movie industry, where a stunt double replaces the real actor for dangerous scenes." — "where" 引导定语从句，解释 movie industry 中 stunt double 的作用。
+## 3. Dummy Objects
 
-## Dummy Objects — Just Filling Space
-
-A **dummy** is the simplest test double. It's passed as an argument but never actually used. Its only purpose is to satisfy a *function signature* (函数签名).
+A **dummy** is the simplest test double. It is passed as an argument but never actually used. Its only purpose is to satisfy a *function signature* (函数签名).
 
 ```python
 class DummyLogger:
@@ -63,9 +62,9 @@ def test_process_order_calculates_total():
     assert total == 12
 ```
 
-In this test, we don't care about logging. The `DummyLogger` exists only because `process_order` requires a logger parameter. If the function tries to call a method on it, the test will fail — which is fine, because that means the function is doing something we didn't expect.
+In this test, we do not care about logging. The `DummyLogger` exists only because `process_order` requires a logger parameter.
 
-## Stubs — Returning Canned Answers
+## 4. Stubs — Returning Predetermined Values
 
 A **stub** provides *canned answers* (预设答案) to calls made during the test. It replaces a dependency that would normally fetch data from an external source.
 
@@ -86,8 +85,6 @@ def test_outdoor_activity_recommendation():
     assert result == "Go for a walk in the park"
 ```
 
-The stub doesn't care what city you pass. It always returns sunny weather. This makes the test *deterministic* (确定性的) — it produces the same result every time.
-
 ### JavaScript Example
 
 ```javascript
@@ -105,307 +102,303 @@ test('recommends outdoor activity when weather is sunny', () => {
 
 ### When to Use Stubs
 
-- Testing code that depends on external APIs
-- Simulating different scenarios (success, failure, timeout)
-- Making tests fast and repeatable
+- You need to **control** what a dependency returns
+- You want the test to be **deterministic** — same input, same output, every time
+- The real dependency is **slow** or **unavailable** in the test environment
 
-## Fakes — Simplified Working Implementations
+## 5. Fakes — Simplified Implementations
 
-A **fake** has a working implementation, but it's simplified for testing. The classic example is an in-memory database.
+A **fake** has a working implementation, but takes shortcuts that make it unsuitable for production. The most common example is an **in-memory database** that replaces a real database.
 
 ```python
-class FakeDatabase:
-    """In-memory database for testing."""
+class FakeUserRepository:
+    """In-memory storage — behaves like a real database but uses a dict."""
     def __init__(self):
-        self.users = {}
+        self._users = {}
+        self._next_id = 1
 
-    def save_user(self, user):
-        self.users[user.id] = user
+    def save(self, user):
+        user.id = self._next_id
+        self._users[self._next_id] = user
+        self._next_id += 1
+        return user
 
-    def get_user(self, user_id):
-        return self.users.get(user_id)
+    def find_by_id(self, user_id):
+        return self._users.get(user_id)
 
-    def delete_user(self, user_id):
-        if user_id in self.users:
-            del self.users[user_id]
+    def find_by_email(self, email):
+        for user in self._users.values():
+            if user.email == email:
+                return user
+        return None
 
-def test_user_repository():
-    fake_db = FakeDatabase()
-    repo = UserRepository(fake_db)
+    def count(self):
+        return len(self._users)
 
-    # Save a user
-    user = User(id=1, name="Alice")
-    repo.save(user)
+def test_register_user():
+    fake_repo = FakeUserRepository()
+    service = UserService(repository=fake_repo)
 
-    # Retrieve the user
-    retrieved = repo.get(1)
-    assert retrieved.name == "Alice"
+    user = service.register("Alice", "alice@example.com")
 
-    # Delete the user
-    repo.delete(1)
-    assert repo.get(1) is None
+    assert user.id == 1
+    assert user.name == "Alice"
+    assert fake_repo.count() == 1
+    assert fake_repo.find_by_email("alice@example.com").name == "Alice"
 ```
 
-The `FakeDatabase` behaves like a real database, but it stores data in memory instead of on disk. This makes tests **fast** and **isolated** — no need to set up a real database.
+> 句型解析: "A fake has a working implementation, but takes shortcuts that make it unsuitable for production." — "take shortcuts" (走捷径) 意思是简化实现，例如用内存字典代替真正的数据库，功能可用但不适合生产环境。
 
-### JavaScript Example
+### Fakes vs. Stubs
 
-```javascript
-class FakeUserService {
-  constructor() {
-    this.users = new Map();
-  }
+| Aspect | Stub | Fake |
+| --- | --- | --- |
+| Complexity | Very simple — returns fixed values | Has real logic, simplified |
+| State | Stateless | Stateful — remembers data |
+| Use case | Single-response scenarios | Scenarios requiring CRUD operations |
 
-  async createUser(user) {
-    this.users.set(user.id, user);
-    return user;
-  }
+## 6. Spies — Recording Interactions
 
-  async getUser(id) {
-    return this.users.get(id);
-  }
+A **spy** wraps the real object and records how it was called — which methods, with what arguments, and how many times. It lets the real implementation run while *observing* (观察) the interactions.
 
-  async deleteUser(id) {
-    this.users.delete(id);
-  }
-}
-
-test('user repository saves and retrieves users', async () => {
-  const fakeService = new FakeUserService();
-  const repo = new UserRepository(fakeService);
-
-  await repo.save({ id: 1, name: 'Alice' });
-  const user = await repo.get(1);
-
-  expect(user.name).toBe('Alice');
-});
-```
-
-### When to Use Fakes
-
-- Replacing databases, file systems, or other infrastructure
-- When you need realistic behavior but don't want external dependencies
-- When stubs are too simple and mocks are too complex
-
-## Spies — Recording What Happened
-
-A **spy** wraps the real object and records how it was used. You can then assert that certain methods were called with specific arguments.
-
-### Python Example with unittest.mock
+### Python: Using `unittest.mock`
 
 ```python
-from unittest.mock import Mock
+from unittest.mock import patch, call
 
-def test_order_processor_sends_confirmation_email():
-    spy_email_service = Mock()
-    processor = OrderProcessor(email_service=spy_email_service)
+class EmailService:
+    def send(self, to, subject, body):
+        # Real implementation sends actual email
+        ...
 
-    order = Order(customer_email="alice@example.com", total=100)
-    processor.process(order)
+def test_order_confirmation_sends_email():
+    email_service = EmailService()
 
-    # Verify the email service was called
-    spy_email_service.send_email.assert_called_once_with(
-        to="alice@example.com",
-        subject="Order Confirmation",
-        body="Your order of $100 has been processed."
-    )
+    with patch.object(email_service, 'send', wraps=email_service.send) as spy:
+        order_processor = OrderProcessor(email_service)
+        order_processor.complete_order(order_id=42, email="user@test.com")
+
+        # Verify the spy recorded the call
+        spy.assert_called_once_with(
+            "user@test.com",
+            "Order Confirmation",
+            "Your order #42 has been confirmed."
+        )
 ```
 
-The spy doesn't prevent the real method from being called — it just records the call so you can verify it later.
-
-### JavaScript Example with Jest
+### JavaScript: Using Jest Spies
 
 ```javascript
-test('order processor sends confirmation email', () => {
-  const spyEmailService = {
-    sendEmail: jest.fn(),
-  };
+test('logs a warning when discount exceeds 50%', () => {
+  const logger = { warn: jest.fn() };
+  const cart = new ShoppingCart(logger);
 
-  const processor = new OrderProcessor(spyEmailService);
-  const order = { customerEmail: 'alice@example.com', total: 100 };
+  cart.applyDiscount(0.75); // 75% discount
 
-  processor.process(order);
-
-  expect(spyEmailService.sendEmail).toHaveBeenCalledWith({
-    to: 'alice@example.com',
-    subject: 'Order Confirmation',
-    body: 'Your order of $100 has been processed.',
-  });
+  expect(logger.warn).toHaveBeenCalledWith(
+    'Discount exceeds 50%: 0.75'
+  );
+  expect(logger.warn).toHaveBeenCalledTimes(1);
 });
 ```
 
 ### When to Use Spies
 
-- Verifying that a method was called
-- Checking the arguments passed to a method
-- Counting how many times a method was called
+- You want to verify **side effects** — "was this method called?"
+- You need to check **call arguments** — "was it called with the right data?"
+- You want to count **call frequency** — "was it called exactly once?"
 
-## Mocks — Pre-Programmed Expectations
+## 7. Mocks — Pre-Programmed Expectations
 
-A **mock** is pre-programmed with expectations about how it should be used. If those expectations aren't met, the test fails.
+A **mock** is the most powerful test double. It is pre-programmed with *expectations* (预期行为) — what methods should be called, with what arguments, and what to return. If expectations are not met, the test fails.
 
-Mocks are the most powerful test double, but also the most *brittle* (脆弱的). Use them sparingly.
-
-### Python Example
+### Python: Using `unittest.mock.Mock`
 
 ```python
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
-def test_payment_processor_charges_correct_amount():
-    mock_payment_gateway = Mock()
-    mock_payment_gateway.charge.return_value = {"status": "success", "transaction_id": "12345"}
+def test_payment_processing():
+    # Create a mock payment gateway
+    mock_gateway = Mock()
+    mock_gateway.charge.return_value = {"status": "success", "transaction_id": "txn_123"}
 
-    processor = PaymentProcessor(mock_payment_gateway)
-    result = processor.process_payment(amount=100, card="4111111111111111")
+    # Use the mock
+    processor = PaymentProcessor(gateway=mock_gateway)
+    result = processor.process_payment(amount=99.99, card="4111111111111111")
 
-    # Verify the gateway was called correctly
-    mock_payment_gateway.charge.assert_called_once_with(
-        amount=100,
-        card="4111111111111111"
+    # Verify behavior
+    mock_gateway.charge.assert_called_once_with(
+        amount=99.99,
+        card_number="4111111111111111"
     )
-
-    assert result["status"] == "success"
+    assert result.transaction_id == "txn_123"
 ```
 
-### JavaScript Example
+### Python: Using `patch` as a Decorator
+
+```python
+from unittest.mock import patch
+
+@patch('myapp.services.requests.get')
+def test_fetch_user_profile(mock_get):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {
+        "name": "Alice",
+        "email": "alice@example.com"
+    }
+
+    profile = fetch_user_profile(user_id=1)
+
+    assert profile.name == "Alice"
+    mock_get.assert_called_once_with("https://api.example.com/users/1")
+```
+
+### JavaScript: Using Jest Mocks
 
 ```javascript
-test('payment processor charges correct amount', () => {
-  const mockPaymentGateway = {
-    charge: jest.fn().mockResolvedValue({
-      status: 'success',
-      transactionId: '12345',
-    }),
-  };
+// Mock an entire module
+jest.mock('./emailService');
 
-  const processor = new PaymentProcessor(mockPaymentGateway);
-  const result = await processor.processPayment({
-    amount: 100,
-    card: '4111111111111111',
+const { sendEmail } = require('./emailService');
+
+test('sends welcome email on registration', async () => {
+  sendEmail.mockResolvedValue({ delivered: true });
+
+  const result = await registerUser('alice@test.com', 'password123');
+
+  expect(sendEmail).toHaveBeenCalledWith({
+    to: 'alice@test.com',
+    subject: 'Welcome!',
+    template: 'welcome',
   });
-
-  expect(mockPaymentGateway.charge).toHaveBeenCalledWith({
-    amount: 100,
-    card: '4111111111111111',
-  });
-
-  expect(result.status).toBe('success');
+  expect(result.success).toBe(true);
 });
 ```
 
-### When to Use Mocks
+## 8. Choosing the Right Test Double
 
-- Verifying interactions with external services
-- Testing error handling (simulate failures)
-- Ensuring specific methods are called in a specific order
+Use this decision tree:
 
-## The Danger of Over-Mocking
+```
+Do you need the dependency at all?
+├── No → Use a DUMMY
+└── Yes
+    ├── Do you need it to return specific data?
+    │   ├── Simple, fixed data → Use a STUB
+    │   └── Needs CRUD / state → Use a FAKE
+    └── Do you need to verify interactions?
+        ├── Just check calls → Use a SPY
+        └── Configure returns + check calls → Use a MOCK
+```
 
-Mocks are powerful, but they come with a cost: **they couple your tests to implementation details**.
+### A Practical Rule of Thumb
 
-### Bad Example — Testing Implementation
+> *Prefer stubs and fakes over mocks.* Stubs and fakes test **what** your code produces (output). Mocks test **how** your code does it (behavior). Testing output is more *resilient* (有弹性的) to *refactoring* (重构) than testing behavior.
+
+> 句型解析: "Testing output is more resilient to refactoring than testing behavior." — 测试输出结果比测试具体行为更能适应代码重构。如果你只检查"结果是否正确"，内部实现改变时测试仍然通过；但如果你检查"是否调用了某个方法"，一旦重构就可能导致测试失败。
+
+## 9. Dependency Injection — Making Code Testable
+
+The key to using test doubles effectively is **Dependency Injection** (DI, 依赖注入) — passing dependencies into a class or function instead of creating them internally.
+
+### Bad: Hard-Coded Dependency (Hard to Test)
 
 ```python
-def test_user_service_saves_to_database():
-    mock_db = Mock()
-    service = UserService(mock_db)
+class OrderService:
+    def __init__(self):
+        self.db = PostgresDatabase()      # Hard-coded!
+        self.email = SmtpEmailService()    # Hard-coded!
 
-    service.create_user("Alice", "alice@example.com")
-
-    # ❌ This test knows too much about how the service works internally
-    mock_db.execute.assert_called_with(
-        "INSERT INTO users (name, email) VALUES (?, ?)",
-        ("Alice", "alice@example.com")
-    )
+    def place_order(self, order):
+        self.db.save(order)
+        self.email.send(order.user_email, "Order placed")
 ```
 
-If you refactor the `UserService` to use an ORM instead of raw SQL, this test breaks — even though the behavior didn't change.
-
-### Good Example — Testing Behavior
+### Good: Injected Dependencies (Easy to Test)
 
 ```python
-def test_user_service_creates_user():
-    fake_db = FakeDatabase()
-    service = UserService(fake_db)
+class OrderService:
+    def __init__(self, db, email_service):
+        self.db = db                       # Injected!
+        self.email = email_service         # Injected!
 
-    user = service.create_user("Alice", "alice@example.com")
+    def place_order(self, order):
+        self.db.save(order)
+        self.email.send(order.user_email, "Order placed")
 
-    # ✅ This test only cares about the outcome
-    assert user.name == "Alice"
-    assert user.email == "alice@example.com"
-    assert fake_db.get_user(user.id) is not None
+# In production
+service = OrderService(PostgresDatabase(), SmtpEmailService())
+
+# In tests
+service = OrderService(FakeDatabase(), Mock())
 ```
 
-This test is *resilient* (有韧性的) — it survives refactoring because it tests behavior, not implementation.
+## 10. Common Mocking Mistakes
 
-> 句型解析: "Mocks couple your tests to implementation details." — "couple" 在这里是动词，意为"使耦合"，即 mocks 会让测试与实现细节紧密绑定。
-
-## Practical Guidelines
-
-### Use This Decision Tree
-
-```
-Need to replace a dependency?
-│
-├─ Never actually used? → Dummy
-│
-├─ Just need return values? → Stub
-│
-├─ Need realistic behavior? → Fake
-│
-├─ Need to verify calls? → Spy
-│
-└─ Need to verify call order/arguments? → Mock
-```
-
-### Prefer Fakes Over Mocks
-
-Fakes are more *maintainable* (可维护的) because they test behavior, not implementation. Mocks are more *fragile* (脆弱的) because they break when you refactor.
-
-### Don't Mock What You Don't Own
-
-Never mock third-party libraries directly. Instead, wrap them in your own interface and mock that.
+### Mistake 1: Over-Mocking
 
 ```python
-# ❌ Bad — mocking a third-party library
-mock_requests = Mock()
-mock_requests.get.return_value = Mock(status_code=200, json=lambda: {"data": "..."})
+# BAD: Mocking everything, testing nothing
+def test_process_data():
+    mock_reader = Mock()
+    mock_transformer = Mock()
+    mock_writer = Mock()
+    mock_reader.read.return_value = "data"
+    mock_transformer.transform.return_value = "transformed"
 
-# ✅ Good — wrap the library in your own interface
-class HTTPClient:
+    process_data(mock_reader, mock_transformer, mock_writer)
+
+    mock_writer.write.assert_called_with("transformed")
+    # This test only verifies that mocks are wired together!
+```
+
+### Mistake 2: Mocking What You Don't Own
+
+Do not mock third-party libraries directly. Instead, create a thin *wrapper* (包装器) around them and mock the wrapper.
+
+```python
+# BAD: Mocking requests directly everywhere
+@patch('requests.get')
+def test_fetch_data(mock_get):
+    ...
+
+# GOOD: Wrap the HTTP client and mock the wrapper
+class HttpClient:
     def get(self, url):
-        response = requests.get(url)
-        return response.json()
+        return requests.get(url)
 
-fake_http_client = FakeHTTPClient()
+# Now mock HttpClient in tests
 ```
 
-## Tools of the Trade
+### Mistake 3: Not Resetting Mocks
 
-### Python
+```javascript
+// BAD: Shared mock state leaks between tests
+const mockFn = jest.fn();
 
-- **unittest.mock** — built-in mocking library
-- **pytest-mock** — pytest plugin for easier mocking
-- **responses** — mock HTTP requests
-- **freezegun** — mock datetime
+test('first test', () => {
+  mockFn('hello');
+  expect(mockFn).toHaveBeenCalledTimes(1);
+});
 
-### JavaScript
+test('second test', () => {
+  // FAILS! mockFn was already called once
+  expect(mockFn).toHaveBeenCalledTimes(0);
+});
 
-- **Jest** — built-in mocking with `jest.fn()` and `jest.mock()`
-- **Sinon** — standalone mocking library
-- **nock** — mock HTTP requests
-- **MockDate** — mock Date objects
+// GOOD: Reset in beforeEach
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+```
 
-## Key Takeaways
+## 11. Key Takeaways
 
-- **Test doubles** replace real dependencies to make tests fast, isolated, and repeatable
-- **Dummies** fill parameter slots but are never used
-- **Stubs** return predetermined values
-- **Fakes** have simplified working implementations
-- **Spies** record how they were used
-- **Mocks** are pre-programmed with expectations
-- **Prefer fakes over mocks** — they're more maintainable
-- **Don't mock what you don't own** — wrap third-party libraries first
-- **Test behavior, not implementation** — avoid coupling tests to internal details
-
-Next up: Test-Driven Development (TDD) — writing tests before code. Sounds crazy, but it works.
+- **Test doubles** replace real dependencies to make tests fast, isolated, and deterministic
+- There are five types: **Dummy**, **Stub**, **Fake**, **Spy**, and **Mock**
+- **Stubs** return predetermined values — use them to control test inputs
+- **Fakes** have simplified but working implementations — use them for stateful dependencies like databases
+- **Spies** record interactions — use them to verify side effects
+- **Mocks** combine configured returns with call verification — use them *sparingly* (谨慎地)
+- **Dependency Injection** is the key technique that makes code testable
+- *Prefer testing outputs over interactions* — it makes your tests more resilient to refactoring

@@ -52,17 +52,7 @@
   description: "Comprehensive guide to software testing in English, with CET-6 annotations"
   order: 9
 
-- id: ecommerce-startup
-  title: "E-commerce Startup Guide"
-  description: "Build, launch, and monetize your independent online store from scratch"
+- id: game-dev-ai-era
+  title: "Game Dev in the AI Era: English Reading"
+  description: "A veteran game developer's honest take on AI — CET-6 level, with vocabulary annotations"
   order: 10
-
-- id: resident-evil-9
-  title: "Resident Evil 9: English Reading"
-  description: "Explore the world of Resident Evil 9 through English articles — CET-6 level, with vocabulary annotations"
-  order: 11
-
-- id: cuda-programming
-  title: "CUDA Programming: English Reading"
-  description: "Understand GPU computing and CUDA through English articles — CET-6 level, with vocabulary annotations"
-  order: 12

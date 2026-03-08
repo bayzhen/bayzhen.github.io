@@ -1,7 +1,7 @@
 ---
 layout: article
 title: "Code Coverage & Test Quality"
-description: "The metric everyone uses and everyone misunderstands — why 100% coverage doesn't mean your tests are good"
+description: "Measuring test effectiveness — coverage metrics, mutation testing, and the difference between quantity and quality"
 lang: en
 level: intermediate
 tags: ["Code Coverage", "Mutation Testing", "Test Quality", "Metrics"]
@@ -17,7 +17,7 @@ next:
   url: "09-testing-patterns.html"
 ---
 
-## The Most Misunderstood Metric
+## 1. What Is Code Coverage?
 
 **Code coverage** measures what *percentage* (百分比) of your code is executed when your tests run. It answers the question: "How much of my code is tested?"
 
@@ -27,33 +27,9 @@ Lines executed by tests:   750
 Code coverage:             75%
 ```
 
-Coverage is the most widely used *metric* (指标) for test quality. It's also the most *misunderstood* (被误解的).
+Coverage is the most widely used *metric* (指标) for test quality — but it is also the most *misunderstood* (被误解的). High coverage does not guarantee good tests, and low coverage does not always mean bad tests. Let us explore why.
 
-Here's the uncomfortable truth: **high coverage doesn't guarantee good tests, and low coverage doesn't always mean bad tests**.
-
-Let me show you why.
-
-## The Useless Test
-
-```python
-def calculate_discount(price, is_member):
-    if is_member:
-        discount = price * 0.2
-    else:
-        discount = 0
-    return price - discount
-
-def test_calculate_discount():
-    calculate_discount(100, True)
-    calculate_discount(100, False)
-    # No assertions!
-```
-
-This test achieves **100% code coverage**. Every line is executed. But it doesn't verify anything. It's completely useless.
-
-Coverage measures **execution**, not **verification**.
-
-## Types of Coverage Metrics
+## 2. Types of Coverage Metrics
 
 ### Line Coverage (Statement Coverage)
 
@@ -73,107 +49,125 @@ If your test only calls `calculate_discount(100, True)`:
 - **Lines executed**: 1, 2, 4 (3 out of 4)
 - **Line coverage**: 75%
 
-Line 3 was never executed.
-
 ### Branch Coverage
 
-More sophisticated — what percentage of decision branches were taken?
+Measures whether every *branch* (分支) of every decision has been taken.
 
 ```python
 def calculate_discount(price, is_member):
-    if is_member:               # Branch point
-        discount = price * 0.2  # Branch A
+    if is_member:           # Branch: True ✓, False ?
+        discount = price * 0.2
     else:
-        discount = 0            # Branch B
+        discount = 0
     return price - discount
 ```
 
-To achieve 100% branch coverage, you need tests for both branches:
+With only `calculate_discount(100, True)`:
 
-```python
-def test_member_discount():
-    assert calculate_discount(100, True) == 80
+- **Branches taken**: True branch only (1 out of 2)
+- **Branch coverage**: 50%
 
-def test_non_member_discount():
-    assert calculate_discount(100, False) == 100
-```
-
-Branch coverage is more meaningful than line coverage.
+You need both `calculate_discount(100, True)` and `calculate_discount(100, False)` for 100% branch coverage.
 
 ### Function Coverage
 
-What percentage of functions were called?
+Measures what percentage of functions/methods have been called at least once.
+
+### Path Coverage
+
+Measures what percentage of all possible *execution paths* (执行路径) have been followed. This is the most *thorough* (全面的) but also the most expensive metric.
 
 ```python
-# 3 functions defined
-def add(a, b):
-    return a + b
-
-def subtract(a, b):
-    return a - b
-
-def multiply(a, b):
-    return a * b
-
-# Only 2 functions tested
-def test_add():
-    assert add(2, 3) == 5
-
-def test_subtract():
-    assert subtract(5, 3) == 2
-
-# Function coverage: 66% (2 out of 3)
+def process(a, b):
+    if a > 0:     # Branch 1: True/False
+        x = 1
+    else:
+        x = 2
+    if b > 0:     # Branch 2: True/False
+        y = 1
+    else:
+        y = 2
+    return x + y
 ```
 
-### Condition Coverage
+- **Branch coverage** needs 2 tests (one for each `if`)
+- **Path coverage** needs 4 tests (every combination: TT, TF, FT, FF)
 
-What percentage of boolean sub-expressions were evaluated to both true and false?
+> 句型解析: "Path coverage needs 4 tests (every combination: TT, TF, FT, FF)" — 路径覆盖要求测试所有可能的路径组合，TT表示两个条件都为True，TF表示第一个True第二个False，以此类推。
 
-```python
-def can_vote(age, is_citizen):
-    if age >= 18 and is_citizen:
-        return True
-    return False
-```
+## 3. Measuring Coverage in Python
 
-To achieve 100% condition coverage, you need tests where:
-- `age >= 18` is both true and false
-- `is_citizen` is both true and false
-
-```python
-def test_can_vote_yes():
-    assert can_vote(20, True) == True
-
-def test_can_vote_too_young():
-    assert can_vote(16, True) == False
-
-def test_can_vote_not_citizen():
-    assert can_vote(20, False) == False
-```
-
-## Measuring Coverage
-
-### Python with coverage.py
+### Using `pytest-cov`
 
 ```bash
 # Install
-pip install coverage pytest-cov
+pip install pytest-cov
 
-# Run tests with coverage
-pytest --cov=src --cov-report=html
+# Run with coverage
+pytest --cov=src tests/
 
-# View report
-open htmlcov/index.html
+# Generate HTML report
+pytest --cov=src --cov-report=html tests/
 ```
 
-### JavaScript with Jest
+### Output Example
+
+```
+---------- coverage: ----------
+Name                    Stmts   Miss  Cover
+-------------------------------------------
+src/calculator.py          12      2    83%
+src/user_service.py        45      8    82%
+src/validator.py           30      0   100%
+-------------------------------------------
+TOTAL                      87     10    89%
+```
+
+### Configuration (`.coveragerc`)
+
+```ini
+[run]
+source = src
+omit =
+    */tests/*
+    */migrations/*
+    */__init__.py
+
+[report]
+show_missing = true
+fail_under = 80
+
+[html]
+directory = htmlcov
+```
+
+## 4. Measuring Coverage in JavaScript
+
+### Using Jest's Built-in Coverage
+
+```bash
+# Run with coverage
+npx jest --coverage
+```
+
+### Output Example
+
+```
+----------|---------|----------|---------|---------|
+File      | % Stmts | % Branch | % Funcs | % Lines |
+----------|---------|----------|---------|---------|
+All files |   85.71 |    66.67 |     100 |   85.71 |
+ cart.js  |   85.71 |    66.67 |     100 |   85.71 |
+----------|---------|----------|---------|---------|
+```
+
+### Configuration in `jest.config.js`
 
 ```javascript
-// jest.config.js
 module.exports = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  coverageReporters: ['html', 'text', 'lcov'],
+  coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
     global: {
       branches: 80,
@@ -182,219 +176,244 @@ module.exports = {
       statements: 80,
     },
   },
+  collectCoverageFrom: [
+    'src/**/*.{js,ts}',
+    '!src/**/*.test.{js,ts}',
+    '!src/index.{js,ts}',
+  ],
 };
 ```
 
-```bash
-# Run tests with coverage
-npm test -- --coverage
-```
+## 5. The Coverage Trap
 
-## The Coverage Trap
+Here is the most important lesson about coverage: **100% coverage does not mean your code is well-tested.**
 
-### Trap 1: Chasing 100%
-
-Teams often set arbitrary coverage targets: "We need 80% coverage!" or "We must reach 100%!"
-
-This leads to **coverage theater** — writing tests just to increase the number, not to verify behavior.
-
-```python
-# Coverage theater — tests that don't test anything
-def test_user_creation():
-    user = User("Alice", "alice@example.com")
-    # No assertions! But coverage goes up!
-
-def test_order_processing():
-    order = Order([Item("Book", 10)])
-    order.calculate_total()
-    # No assertions! But coverage goes up!
-```
-
-These tests are worse than no tests — they give false confidence.
-
-### Trap 2: Ignoring Uncovered Code
-
-Low coverage doesn't always mean bad tests. Sometimes it means:
-
-- **Dead code** — code that's never used and should be deleted
-- **Error handling** — hard-to-trigger edge cases
-- **Defensive code** — "this should never happen" branches
+### Example: 100% Coverage, Zero Confidence
 
 ```python
 def divide(a, b):
-    if b == 0:
-        # This is good defensive code
-        # But hard to test without mocking
-        logger.critical("Division by zero attempted!")
-        raise ValueError("Cannot divide by zero")
     return a / b
+
+def test_divide():
+    divide(10, 2)   # 100% line coverage — but NO assertion!
 ```
 
-Don't write bad tests just to cover defensive code.
+This test has **100% coverage** but tests **nothing**. It calls the function but never checks the result. It would not catch a bug like `return a * b`.
 
-### Trap 3: Testing Implementation, Not Behavior
+### The Real Goal
 
-```python
-# ❌ BAD — testing internal implementation
-def test_user_service_uses_cache():
-    service = UserService()
-    service.get_user(1)
-    assert service._cache_hits == 1  # Testing internal state!
+Coverage tells you what code is **not tested** (useful). It does not tell you if the tested code is **well tested** (dangerous to assume).
 
-# ✅ GOOD — testing behavior
-def test_user_service_returns_user():
-    service = UserService()
-    user = service.get_user(1)
-    assert user.id == 1
-    assert user.name == "Alice"
+Think of coverage as a **necessary but not sufficient** condition:
+
+- **Low coverage** = definitely undertested
+- **High coverage** = *possibly* well-tested (but not guaranteed)
+
+> 句型解析: "Coverage tells you what code is not tested. It does not tell you if the tested code is well tested." — 覆盖率能告诉你哪些代码没有被测试（有用），但不能告诉你被测试的代码是否测试得好（容易被误导）。
+
+## 6. Setting Coverage Targets
+
+### Reasonable Targets by Project Type
+
+| Project Type | Recommended Coverage | Rationale |
+| --- | --- | --- |
+| **Libraries / SDKs** | 90–95% | Used by many consumers, must be reliable |
+| **Business applications** | 75–85% | Balance between quality and development speed |
+| **Prototypes / MVPs** | 50–60% | Focus on critical paths, move fast |
+| **Legacy code** | Start at current %, increase gradually | Do not try to reach 80% overnight |
+
+### What to Exclude from Coverage
+
+```ini
+# .coveragerc
+[run]
+omit =
+    */tests/*            # Test files themselves
+    */migrations/*       # Database migrations
+    */config/*           # Configuration files
+    */generated/*        # Auto-generated code
+    */__main__.py        # Entry points
 ```
 
-The first test has high coverage but is *brittle* (脆弱的) — it breaks when you refactor.
+### Ratcheting — Only Go Up
 
-## What Coverage Actually Tells You
+A powerful strategy is **coverage ratcheting**: set your coverage threshold to the **current level**, and only allow it to go up. This prevents *regression* (回退) without demanding an unrealistic jump.
 
-Coverage is a **negative indicator**, not a positive one:
+```bash
+# In CI pipeline
+pytest --cov=src --cov-fail-under=82
+# Next sprint: --cov-fail-under=83
+# Next sprint: --cov-fail-under=84
+```
 
-- **Low coverage** → definitely a problem (untested code)
-- **High coverage** → maybe good, maybe not (could be useless tests)
+## 7. Mutation Testing — The Real Quality Metric
 
-Think of it like a smoke detector. It tells you when there's a fire, but it doesn't tell you if your house is well-built.
+**Mutation testing** is a technique that goes beyond coverage. It modifies your source code in small ways (called *mutations* (变异)) and checks whether your tests catch the changes.
 
-## Mutation Testing — The Real Quality Metric
+### How It Works
 
-**Mutation testing** measures test quality by introducing bugs and checking if tests catch them.
-
-Here's how it works:
-
-1. Tool mutates your code (changes `+` to `-`, `>` to `<`, etc.)
-2. Runs your tests against the mutated code
-3. If tests still pass, your tests are weak
+1. The tool creates a **mutant** — a version of your code with one small change
+2. It runs your test suite against the mutant
+3. If the tests **fail** → the mutant is **killed** (good — your tests caught the change)
+4. If the tests **pass** → the mutant **survived** (bad — your tests missed the change)
 
 ### Example
 
 Original code:
 
 ```python
-def calculate_discount(price, is_member):
-    if is_member:
-        return price * 0.8  # 20% discount
-    return price
+def is_adult(age):
+    return age >= 18
 ```
 
-Mutation 1: Change `0.8` to `0.9`:
+Mutations:
 
-```python
-def calculate_discount(price, is_member):
-    if is_member:
-        return price * 0.9  # Mutated!
-    return price
-```
+| Mutant | Change | Your Tests Should... |
+| --- | --- | --- |
+| `return age > 18` | Changed `>=` to `>` | Fail (catches the boundary bug) |
+| `return age >= 19` | Changed `18` to `19` | Fail (catches the off-by-one) |
+| `return age <= 18` | Changed `>=` to `<=` | Fail (logic is inverted) |
+| `return True` | Returns constant | Fail (always returns True) |
 
-If your test still passes, it's not checking the discount amount.
-
-### Python Mutation Testing with mutmut
+### Using `mutmut` (Python)
 
 ```bash
 # Install
 pip install mutmut
 
 # Run mutation testing
-mutmut run
+mutmut run --paths-to-mutate=src/
 
 # View results
 mutmut results
-mutmut show
+
+# See a specific surviving mutant
+mutmut show 42
 ```
 
-### JavaScript Mutation Testing with Stryker
+### The Mutation Score
+
+```
+Total mutants:     100
+Killed:             85
+Survived:           12
+Timed out:           3
+
+Mutation score:    85% (killed / total)
+```
+
+A **mutation score of 85%** means your tests caught 85% of the injected bugs. This is a much more *meaningful* (有意义的) metric than line coverage.
+
+> 句型解析: "Mutation testing modifies your source code in small ways and checks whether your tests catch the changes." — 变异测试通过对源代码进行微小修改来检验你的测试是否能捕获这些变化。如果测试仍然通过（变异存活），说明测试覆盖有盲区。
+
+## 8. Coverage Reports in Practice
+
+### HTML Coverage Reports
+
+Both `coverage.py` and Istanbul generate interactive HTML reports. Open them in a browser to see:
+
+- **Green lines**: covered by tests
+- **Red lines**: not covered
+- **Yellow branches**: partially covered (only one branch taken)
 
 ```bash
-# Install
-npm install -D @stryker-mutator/core @stryker-mutator/jest-runner
+# Python
+pytest --cov=src --cov-report=html
+open htmlcov/index.html
 
-# Run mutation testing
-npx stryker run
+# JavaScript
+npx jest --coverage
+open coverage/lcov-report/index.html
 ```
 
-Mutation testing is slow, but it's the best way to measure test quality.
+### Identifying Untested Code
 
-## Practical Coverage Guidelines
+Focus your attention on red lines in these areas:
 
-### 1. Aim for 70-80%, Not 100%
+1. **Error handling** — `catch` blocks that were never triggered
+2. **Edge cases** — branches for null, empty, or extreme values
+3. **Feature flags** — dead code behind disabled flags
+4. **Complex conditionals** — nested `if` statements with untested combinations
 
-100% coverage is rarely worth the effort. Focus on critical code.
+## 9. Coverage Anti-Patterns
 
-### 2. Prioritize by Risk
+### Anti-Pattern 1: Coverage as a KPI
 
-Cover high-risk code first:
-- **Business logic** — calculations, validations, workflows
-- **Security code** — authentication, authorization, encryption
-- **Data transformations** — parsing, serialization, migrations
-
-Skip low-risk code:
-- **Getters/setters** — trivial property access
-- **Configuration** — static data
-- **Generated code** — protobuf, GraphQL schemas
-
-### 3. Use Coverage to Find Gaps
-
-Run coverage, then ask: "Why isn't this code covered?"
-
-- **Should be tested** → write a test
-- **Dead code** → delete it
-- **Hard to test** → refactor to make it testable
-
-### 4. Track Coverage Over Time
-
-Don't let coverage decrease:
-
-```yaml
-# .github/workflows/test.yml
-- name: Check coverage
-  run: |
-    pytest --cov=src --cov-fail-under=75
-```
-
-This fails the build if coverage drops below 75%.
-
-## What Good Tests Look Like
-
-Forget coverage for a moment. Good tests have these properties:
-
-1. **Test behavior, not implementation**
-2. **Have clear assertions**
-3. **Are easy to understand**
-4. **Fail when behavior changes**
-5. **Pass when behavior is correct**
+Making coverage a *Key Performance Indicator* (关键绩效指标) for developers leads to **gaming** — writing tests that boost coverage without adding value.
 
 ```python
-# ✅ GOOD TEST
-def test_member_receives_discount():
-    """Members should receive a 20% discount on all purchases."""
-    calculator = PriceCalculator()
-
-    original_price = 100
-    member_price = calculator.calculate(original_price, is_member=True)
-
-    assert member_price == 80
-    assert calculator.discount_applied == 20
+# This "test" exists only to increase coverage numbers
+def test_nothing_useful():
+    result = complex_function(1, 2, 3)
+    # No assertions — just calling the function
 ```
 
-This test:
-- Has a clear purpose (docstring)
-- Tests behavior (discount calculation)
-- Has meaningful assertions
-- Would fail if the discount logic broke
+### Anti-Pattern 2: 100% Coverage Obsession
 
-## Key Takeaways
+Chasing 100% coverage wastes time on *diminishing returns* (递减回报). The last 5% often covers trivial code (getters, setters, constructors) that rarely contains bugs.
 
-- **Coverage measures execution, not verification** — high coverage doesn't mean good tests
-- **Line coverage** is the simplest metric, **branch coverage** is more meaningful
-- **Don't chase 100%** — aim for 70-80% and focus on critical code
-- **Use coverage to find gaps**, not as a quality metric
-- **Mutation testing** is the real measure of test quality
-- **Good tests** verify behavior, not implementation
-- Coverage is a **negative indicator** — low coverage is bad, high coverage is... maybe good
-- **Track coverage over time** to prevent regression
+### Anti-Pattern 3: Ignoring Branch Coverage
 
-Next up: testing patterns and anti-patterns — reusable solutions and common mistakes.
+Focusing only on line coverage and ignoring branch coverage misses half the picture.
+
+```python
+def validate(value):
+    if value is not None and len(value) > 0:
+        return True
+    return False
+
+# This test gives 100% line coverage but only 50% branch coverage
+def test_validate():
+    assert validate("hello") == True
+    # Missing: validate(None), validate("")
+```
+
+## 10. Practical Guidelines
+
+### The "Coverage + Mutation" Strategy
+
+1. Set a **coverage threshold** (e.g., 80%) as a *baseline* (基准线)
+2. Use **mutation testing** on critical modules to measure true test quality
+3. Focus manual review on **surviving mutants** — these are the real gaps
+4. Review coverage reports to find **completely untested** code paths
+
+### What High-Quality Tests Look Like
+
+```python
+def test_discount_for_member():
+    # Clear arrangement
+    price = 100
+    is_member = True
+
+    # Clear action
+    result = calculate_discount(price, is_member)
+
+    # Specific assertion
+    assert result == 80  # 20% discount applied
+
+def test_no_discount_for_non_member():
+    result = calculate_discount(100, False)
+    assert result == 100  # Full price
+
+def test_zero_price_returns_zero():
+    result = calculate_discount(0, True)
+    assert result == 0  # 20% of 0 is still 0
+
+def test_negative_price_raises_error():
+    with pytest.raises(ValueError):
+        calculate_discount(-50, True)
+```
+
+Each test has a **clear name**, **one scenario**, and a **specific assertion**. This is quality.
+
+## 11. Key Takeaways
+
+- **Code coverage** measures what percentage of code is executed by tests
+- Four types: **line**, **branch**, **function**, and **path** coverage
+- Coverage is a **necessary but not sufficient** indicator of test quality
+- **100% coverage does not mean well-tested** — assertions matter more than execution
+- **Mutation testing** is the gold standard for measuring test *effectiveness* (有效性)
+- Set **reasonable coverage targets**: 80% for most projects, 90%+ for libraries
+- Use **coverage ratcheting** — only allow coverage to increase, never decrease
+- Avoid **coverage as a KPI** — it leads to gaming and meaningless tests
+- Focus on testing **behavior** and **edge cases**, not just hitting coverage numbers

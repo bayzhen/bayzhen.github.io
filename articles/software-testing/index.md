@@ -1,45 +1,30 @@
 ---
 layout: series-index
 title: "Software Testing Mastery"
-description: "Stop shipping bugs. Learn to write tests that actually matter — from your first unit test to a bulletproof CI/CD pipeline"
+description: "A comprehensive guide to writing effective tests in real-world software development — from unit tests to CI/CD pipelines"
 series_id: software-testing
 title_suffix: "陈栢成"
 lang: en
 ---
 
-## The Uncomfortable Truth
+## Series Overview
 
-Most production code has no tests. Developers know they *should* write tests, but they don't. Why? Because testing is taught like eating vegetables — "it's good for you" — instead of what it really is: **a superpower that lets you move fast without breaking things**.
+Modern software development moves fast, but many teams still treat testing as an *afterthought* (事后才想到的事). This series aims to change that mindset. Across **10 articles**, we will cover every major aspect of software testing — from writing your first unit test to building a fully automated quality pipeline.
 
-This series will change how you think about testing. Not by guilt-tripping you, but by showing you how tests make you a faster, more confident developer.
+All articles are written in CET-6 level English with Chinese annotations for difficult vocabulary and complex sentences.
 
-## What You'll Learn
-
-Across 10 articles, you'll go from "I don't know how to test this" to "I can test anything". We'll cover:
-
-- **Unit testing** — the foundation of everything
-- **Test doubles** — mocks, stubs, and when to use each
-- **TDD** — writing tests first (yes, it actually works)
-- **Integration testing** — when units meet reality
-- **API testing** — REST endpoints, auth, edge cases
-- **E2E testing** — browser automation without the pain
-- **Code coverage** — the metric everyone misunderstands
-- **Testing patterns** — reusable solutions to common problems
-- **CI/CD** — automating the entire pipeline
-
-All examples use **Python** (pytest) and **JavaScript/TypeScript** (Jest/Vitest) — the two most popular testing ecosystems.
-
-## Reading Guide
+### Reading Guide
 
 - **Difficult vocabulary** is *italicized* with Chinese translation in parentheses
 - **Complex sentences** are followed by a `> 句型解析:` block with Chinese explanation
-- **Code examples** are real-world, not toy problems
-- **CET-6 level English** — challenging but readable
+- Code examples use **Python** and **JavaScript/TypeScript** — the two most popular testing ecosystems
 
-## Who This Is For
+### Content Structure
 
-- Developers who know they should write tests but don't know where to start
-- Teams drowning in manual QA and production bugs
-- Anyone who's ever said "I'll add tests later" (and never did)
+**Part I — Foundations** (Articles 01–03): Why testing matters, unit testing basics, and the art of test doubles.
 
-Let's fix that.
+**Part II — Methodology** (Articles 04–05): Test-Driven Development and integration testing strategies.
+
+**Part III — Specialized Testing** (Articles 06–07): REST API testing and end-to-end browser testing.
+
+**Part IV — Quality & Automation** (Articles 08–10): Code coverage metrics, testing patterns, and CI/CD pipeline automation.
