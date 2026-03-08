@@ -10,6 +10,9 @@ order: 5
 prev:
   title: "Reflection as the Bridge"
   url: "04-reflection-bridge.html"
+next:
+  title: "Do We Actually Need MCP?"
+  url: "06-do-we-need-mcp.html"
 ---
 
 Current Unreal Engine MCP projects are impressive proofs of concept. They demonstrate that AI can create actors, set properties, and manipulate scenes. But there are significant gaps between what exists today and what would make this technology truly useful in production.

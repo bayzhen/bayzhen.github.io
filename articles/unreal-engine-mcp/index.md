@@ -17,6 +17,7 @@ Large language models like Claude can write code, answer questions, and reason a
 - **Article 3 — Inside unreal-mcp** Architecture deep dive into the most popular implementation
 - **Article 4 — Reflection as the Bridge** How Unreal's reflection system enables AI-driven property editing
 - **Article 5 — What's Missing** Gaps in current implementations and the opportunity ahead
+- **Article 6 — Do We Actually Need MCP?** A contrarian reflection on whether MCP is the right direction
 
 ## How to Use This Series
 
