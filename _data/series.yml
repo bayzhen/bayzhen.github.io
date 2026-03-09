@@ -66,3 +66,8 @@
   title: "Game Server Networking: English Reading"
   description: "How a distributed Python game server handles networking — RPC, mailboxes, stubs, and async I/O. CET-6 level, with vocabulary annotations"
   order: 12
+
+- id: gpu-rendering
+  title: "GPU Rendering: English Reading"
+  description: "From GPU basics to Unreal Engine internals — rendering pipeline, shaders, Lumen, Nanite, and optimization. CET-6 level, with vocabulary annotations"
+  order: 13
