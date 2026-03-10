@@ -88,9 +88,19 @@ In practice, expect the fallback to trigger on fewer than 1% of frames — possi
 > - *neck and neck* — 不相上下，势均力敌。"The two candidates were neck and neck in the polls."
 > - *genuine* /ˈdʒenjuɪn/ — 真正的。"This is a genuine improvement, not just a workaround."
 
+## Catch Problems During Training, Not After
+
+You do not have to wait until launch to know if this works. Monitor the fallback trigger rate during training itself. As the entropy penalty takes effect, the model's outputs become increasingly decisive over the course of training. In a typical ten-hour training run, the fallback rate drops steadily — and in the final two or three hours, it may reach zero entirely. If the model is producing zero ambiguous frames in late-stage training, you already have strong evidence that it will behave the same way in production.
+
+This shifts validation left — problems surface during training when adjusting `alpha` costs nothing, rather than after deployment when a hotfix costs everything.
+
+> **Word Notes**
+> - *shift left* — 前移（软件工程术语）。"Shift testing left to catch bugs earlier in the pipeline."
+> - *hotfix* /ˈhɑːtfɪks/ — 热修复，紧急补丁。"Shipping a hotfix on launch day is every developer's nightmare."
+
 ## Validate Before You Ship
 
-This approach provides statistical determinism, not mathematical proof. That means you must validate it with large-scale testing before launch. The test is straightforward:
+Even with clean training metrics, large-scale cross-device testing is still necessary. The test is straightforward:
 
 Run the same match on two devices with different chip architectures. Each frame, both devices compute a hash of their full game state. Compare the hashes. If they diverge at any frame, you have a desync. Run tens of thousands of matches over several days. If zero desyncs occur, you have strong evidence that the system works.
 
