@@ -36,15 +36,15 @@ When the model is confident, floating-point differences cannot change the argmax
 
 ## Setting the Threshold
 
-The threshold must be larger than the maximum possible floating-point divergence across platforms. For a four-layer MLP using float32, the accumulated output difference is typically in the range of `1e-4` to `1e-3`. A threshold of `0.01` provides roughly a 10x safety margin.
+The threshold must be larger than the maximum possible floating-point divergence across platforms. For a four-layer MLP using float32, the accumulated output difference is typically in the range of `1e-4` to `1e-3`. But do not set the threshold too close to this range — remember, the threshold comparison itself is a floating-point operation. If one device computes a gap of `0.0101` and another computes `0.0099`, they will disagree on which side of `0.01` they fall on.
 
-But you do not need to guess. Run the same batch of inputs on a handful of devices covering major chip architectures — x86, ARM with NEON, and Apple Silicon. Record the maximum output difference. Multiply by 10 for safety. That is your threshold.
+The solution is simple: set the threshold generously. A value of `0.05` gives a massive safety margin. The gap between the model's top two outputs is almost never hovering near `0.05` — it is either clearly above (the model is confident) or clearly below (the model is hesitating). Entropy penalty training reinforces this separation.
 
-You only need three to five devices because floating-point behavior depends on chip architecture, not the specific phone model. All ARM NEON chips behave the same way. Testing a hundred phones would just confirm what three already told you.
+You can also measure the divergence empirically. Run the same batch of inputs on a handful of devices covering major chip architectures — x86, ARM with NEON, and Apple Silicon. You only need three to five devices because floating-point behavior depends on chip architecture, not the specific phone model. Record the maximum output difference, then set your threshold well above it.
 
 > **Word Notes**
 > - *divergence* /daɪˈvɜːrdʒəns/ — 分歧，偏差。"Monitor divergence between predicted and actual values."
-> - *margin* /ˈmɑːrdʒɪn/ — 余量。"Always design with a safety margin."
+> - *hovering* /ˈhʌvərɪŋ/ — 徘徊。"The value kept hovering near zero without settling."
 
 ## Train for Confidence
 
@@ -88,12 +88,28 @@ In practice, expect the fallback to trigger on fewer than 1% of frames — possi
 > - *neck and neck* — 不相上下，势均力敌。"The two candidates were neck and neck in the polls."
 > - *genuine* /ˈdʒenjuɪn/ — 真正的。"This is a genuine improvement, not just a workaround."
 
+## Validate Before You Ship
+
+This approach provides statistical determinism, not mathematical proof. That means you must validate it with large-scale testing before launch. The test is straightforward:
+
+Run the same match on two devices with different chip architectures. Each frame, both devices compute a hash of their full game state. Compare the hashes. If they diverge at any frame, you have a desync. Run tens of thousands of matches over several days. If zero desyncs occur, you have strong evidence that the system works.
+
+If a desync does appear, the hash trail tells you exactly which frame it happened on. Inspect that frame's model output, check the gap between the top two probabilities, and you will immediately see whether the threshold needs adjusting or the entropy penalty needs strengthening.
+
+Every approach needs this kind of validation — integer quantization included. The difference is that integer quantization trades development complexity for theoretical certainty, while the confidence fallback trades testing effort for engineering simplicity. Testing is cheaper than building and maintaining a custom inference engine.
+
+> **Word Notes**
+> - *validate* /ˈvælɪdeɪt/ — 验证。"Always validate assumptions with real data."
+> - *trail* /treɪl/ — 轨迹，踪迹。"The hash trail made debugging trivial."
+
 ## Key Takeaways
 
 - Floating-point differences only matter when two outputs are nearly tied — detect and avoid those cases
-- A confidence threshold of `0.01` with "repeat last action" fallback eliminates desync risk in practice
+- Set the threshold generously (e.g. `0.05`) so the comparison itself is never ambiguous
 - Entropy penalty during training makes the model naturally more decisive, reducing fallback to under 1%
 - The fallback is trivially simple: one line of code, zero gameplay impact, invisible at 60 FPS
+- Validate with large-scale cross-device testing — tens of thousands of matches, hash every frame
+- You are trading testing effort for development effort — and testing is the cheaper option
 - This approach preserves full access to ONNX Runtime, hardware acceleration, and standard tooling
 
 *Do not rebuild the engine to fix a loose screw. Just tighten the screw.*
