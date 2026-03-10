@@ -71,3 +71,13 @@
   title: "GPU Rendering: English Reading"
   description: "From GPU basics to Unreal Engine internals — rendering pipeline, shaders, Lumen, Nanite, and optimization. CET-6 level, with vocabulary annotations"
   order: 13
+
+- id: game-server-gameplay
+  title: "Game Server Gameplay Framework: English Reading"
+  description: "How a distributed Python game server structures gameplay — entities, components, properties, and persistence. CET-6 level, with vocabulary annotations"
+  order: 14
+
+- id: engine-glue-code
+  title: "Engine Glue Code: English Reading"
+  description: "How Python stubs bridge a C++ game engine — bindings, type hints, entity-component wrappers, and type marshalling. CET-6 level, with vocabulary annotations"
+  order: 15
