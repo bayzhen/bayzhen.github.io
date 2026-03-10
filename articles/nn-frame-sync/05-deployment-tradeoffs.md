@@ -10,6 +10,9 @@ order: 5
 prev:
   title: "From Imitation to Reinforcement Learning"
   url: "04-reinforcement-learning.html"
+next:
+  title: "The Confidence Fallback: A Better Way"
+  url: "06-confidence-fallback.html"
 ---
 
 Training a great model is only half the battle. Shipping it inside a live game — where it must run on millions of devices, inside a frame-sync loop, without crashing or lagging — is a different kind of challenge entirely. This article explores the engineering trade-offs that shape real-world deployment.

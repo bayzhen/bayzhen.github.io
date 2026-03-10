@@ -17,6 +17,7 @@ Competitive multiplayer games like football or basketball simulators often use *
 - Teaching AI to play through behavior cloning (supervised learning)
 - The journey from imitation learning to reinforcement learning with PPO and self-play
 - Real-world engineering trade-offs when deploying ML models in live games
+- The confidence fallback approach — a simpler, better alternative to integer quantization
 
 ## How to Use This Series
 
