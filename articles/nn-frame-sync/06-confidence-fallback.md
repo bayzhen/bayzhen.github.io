@@ -25,10 +25,10 @@ top1, top2 = sorted(probs)[-2:]
 if top1 - top2 > threshold:
     action = argmax(probs)      # confident — use the model
 else:
-    action = rule_fallback(state)  # ambiguous — use deterministic rules
+    action = last_action         # ambiguous — just repeat last frame
 ```
 
-When the model is confident, floating-point differences cannot change the argmax. When the model is uncertain, a simple rule-based fallback takes over — and rule-based logic is perfectly deterministic. Desync risk drops to nearly zero.
+When the model is confident, floating-point differences cannot change the argmax. When the model is uncertain, the simplest possible fallback kicks in: repeat the previous frame's action. No rule engine needed, no complex logic — just one line of code. At 60 FPS, repeating a single frame is completely invisible to the player. The character was already running forward; it keeps running forward for one more frame. Nobody notices.
 
 > **Word Notes**
 > - *runner-up* /ˈrʌnər ʌp/ — 亚军，第二名。"The runner-up was only 0.001 points behind."
@@ -78,11 +78,22 @@ Compare this approach to integer quantization:
 
 The integer approach trades away the entire modern ML ecosystem to achieve absolute determinism. The confidence fallback achieves the same practical result while keeping everything else.
 
+## How Often Does the Fallback Trigger?
+
+With entropy penalty training, the model learns to be decisive. Most frames produce outputs like `0.75 vs 0.12` — not even close. The ambiguous cases where two actions are genuinely neck and neck are rare by nature, and entropy training makes them rarer still.
+
+In practice, expect the fallback to trigger on fewer than 1% of frames — possibly much less. And those frames are precisely the moments where "either choice is fine." The model is hesitating between passing left and passing right because both are equally good moves. Repeating the last action for one-sixtieth of a second is a perfectly reasonable response to genuine uncertainty.
+
+> **Word Notes**
+> - *neck and neck* — 不相上下，势均力敌。"The two candidates were neck and neck in the polls."
+> - *genuine* /ˈdʒenjuɪn/ — 真正的。"This is a genuine improvement, not just a workaround."
+
 ## Key Takeaways
 
 - Floating-point differences only matter when two outputs are nearly tied — detect and avoid those cases
-- A confidence threshold of `0.01` with rule-based fallback eliminates desync risk in practice
-- Entropy penalty during training makes the model naturally more decisive, reducing fallback frequency
+- A confidence threshold of `0.01` with "repeat last action" fallback eliminates desync risk in practice
+- Entropy penalty during training makes the model naturally more decisive, reducing fallback to under 1%
+- The fallback is trivially simple: one line of code, zero gameplay impact, invisible at 60 FPS
 - This approach preserves full access to ONNX Runtime, hardware acceleration, and standard tooling
 
 *Do not rebuild the engine to fix a loose screw. Just tighten the screw.*
