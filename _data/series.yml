@@ -81,3 +81,8 @@
   title: "Engine Glue Code: English Reading"
   description: "How Python stubs bridge a C++ game engine — bindings, type hints, entity-component wrappers, and type marshalling. CET-6 level, with vocabulary annotations"
   order: 15
+
+- id: nn-frame-sync
+  title: "Neural Networks in Frame-Sync Games: English Reading"
+  description: "Why multiplayer games need deterministic AI, integer quantization, behavior cloning, and the road to reinforcement learning. CET-6 level, with vocabulary annotations"
+  order: 16
