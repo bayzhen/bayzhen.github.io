@@ -116,3 +116,8 @@
   title: "Multiplayer Netcode: English Reading"
   description: "Latency, prediction, rollback, and authoritative servers — how online games stay in sync across the internet. CET-6 level, with vocabulary annotations"
   order: 22
+
+- id: game-animation
+  title: "Game Animation Programming: English Reading"
+  description: "Skeletal animation, blend trees, IK solvers, and motion matching — how games bring characters to life. CET-6 level, with vocabulary annotations"
+  order: 23
