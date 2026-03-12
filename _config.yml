@@ -24,3 +24,8 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-seo-tag

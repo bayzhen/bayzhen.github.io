@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% if page.description %}<meta name="description" content="{{ page.description }}">{% endif %}
     <title>{{ page.title }}{% if page.title_suffix %} - {{ page.title_suffix }}{% endif %}</title>
     <link rel="stylesheet" href="/assets/css/main.css">
+    {% seo %}
+    {% feed_meta %}
 </head>
 <body>
+    <a href="#main-content" class="skip-link">跳转到内容</a>
     {% include nav.html %}
-    {{ content }}
+    <main id="main-content">
+        {{ content }}
+    </main>
 </body>
 </html>

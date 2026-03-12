@@ -77,6 +77,29 @@
     }
 }
 
+/* === Skip Link === */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.skip-link:focus {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: auto;
+    height: auto;
+    padding: 8px 16px;
+    background: var(--bg-nav);
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    z-index: 1000;
+}
+
 /* === Base Reset & Typography === */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
