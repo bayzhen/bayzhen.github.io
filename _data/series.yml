@@ -101,3 +101,8 @@
   title: "Resident Evil 9: English Reading"
   description: "Explore the world of Resident Evil 9 through short English articles — CET-6 level, with vocabulary annotations"
   order: 19
+
+- id: game-economy
+  title: "Game Economy Design: English Reading"
+  description: "Virtual currencies, gacha systems, and monetization — the economics behind game design. CET-6 level, with vocabulary annotations"
+  order: 20
