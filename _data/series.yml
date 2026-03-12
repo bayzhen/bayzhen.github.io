@@ -86,3 +86,18 @@
   title: "Neural Networks in Frame-Sync Games: English Reading"
   description: "Why multiplayer games need deterministic AI, integer quantization, behavior cloning, and the road to reinforcement learning. CET-6 level, with vocabulary annotations"
   order: 16
+
+- id: cuda-programming
+  title: "CUDA Programming: English Reading"
+  description: "Understand GPU computing and CUDA through English articles — CET-6 level, with vocabulary annotations"
+  order: 17
+
+- id: ecommerce-startup
+  title: "E-commerce Startup Guide"
+  description: "Build, launch, and monetize your independent online store from scratch"
+  order: 18
+
+- id: resident-evil-9
+  title: "Resident Evil 9: English Reading"
+  description: "Explore the world of Resident Evil 9 through short English articles — CET-6 level, with vocabulary annotations"
+  order: 19
