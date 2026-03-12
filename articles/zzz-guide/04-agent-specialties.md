@@ -1,11 +1,19 @@
 ---
 layout: article
 title: "Agent Specialties & Roles(角色专精与定位)"
+description: "The six agent specialties — Attack, Stun, Anomaly, Support, Defense, and Rupture — with synergies and team role guidance"
 level: intermediate
+tags: ["ZZZ", "Agent Roles", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 4
+prev:
+  title: "Attributes & Anomaly System(属性与异常系统)"
+  url: "03-attributes-anomaly.html"
+next:
+  title: "Team Building Guide(组队指南)"
+  url: "05-team-building.html"
 ---
 
 Intermediate | 8-10 min read

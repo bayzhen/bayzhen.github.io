@@ -1,11 +1,19 @@
 ---
 layout: article
 title: "W-Engines Guide(W引擎指南)"
+description: "W-Engine components, specialty matching, upgrade systems, and recommended weapons for every agent specialty"
 level: intermediate
+tags: ["ZZZ", "W-Engines", "Equipment", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 7
+prev:
+  title: "Drive Discs Equipment(驱动盘装备)"
+  url: "06-drive-discs.html"
+next:
+  title: "Bangboo Companions(邦布伙伴)"
+  url: "08-bangboo.html"
 ---
 
 Intermediate | 8-10 min read

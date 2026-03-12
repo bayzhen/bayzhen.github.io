@@ -1,11 +1,19 @@
 ---
 layout: article
 title: "Bangboo Companions(邦布伙伴)"
+description: "Bangboo combat roles, faction resonance bonuses, notable S-Rank and A-Rank Bangboo, and team selection guide"
 level: intermediate
+tags: ["ZZZ", "Bangboo", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 8
+prev:
+  title: "W-Engines Guide(W引擎指南)"
+  url: "07-w-engines.html"
+next:
+  title: "Endgame Content(终局内容)"
+  url: "09-endgame-content.html"
 ---
 
 Beginner | 6-8 min read

@@ -1,11 +1,19 @@
 ---
 layout: article
 title: "Combat System Basics(战斗系统基础)"
+description: "ZZZ combat mechanics — Daze system, chain attacks, perfect dodge, defensive assist, and energy system with Chinese annotations"
 level: intermediate
+tags: ["ZZZ", "Combat System", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 2
+prev:
+  title: "Game Overview(游戏概述)"
+  url: "01-game-overview.html"
+next:
+  title: "Attributes & Anomaly System(属性与异常系统)"
+  url: "03-attributes-anomaly.html"
 ---
 
 Beginner | 8-10 min read

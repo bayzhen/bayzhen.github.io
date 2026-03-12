@@ -1,11 +1,19 @@
 ---
 layout: article
 title: "Endgame Content(终局内容)"
+description: "Shiyu Defense, Deadly Assault, and Hollow Zero — unlock requirements, rewards, key mechanics, and progression tips"
 level: intermediate
+tags: ["ZZZ", "Endgame", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 9
+prev:
+  title: "Bangboo Companions(邦布伙伴)"
+  url: "08-bangboo.html"
+next:
+  title: "Advanced Tips & Meta(进阶技巧与元游戏)"
+  url: "10-advanced-tips.html"
 ---
 
 Advanced | 12-15 min read

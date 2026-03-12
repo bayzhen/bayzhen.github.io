@@ -1,11 +1,19 @@
 ---
 layout: article
 title: "Drive Discs Equipment(驱动盘装备)"
+description: "Drive Disc slot system, set bonuses, sub stat priorities, and popular sets for Attack, Anomaly, Stun, and Support agents"
 level: intermediate
+tags: ["ZZZ", "Drive Discs", "Equipment", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 6
+prev:
+  title: "Team Building Guide(组队指南)"
+  url: "05-team-building.html"
+next:
+  title: "W-Engines Guide(W引擎指南)"
+  url: "07-w-engines.html"
 ---
 
 Intermediate | 10-12 min read

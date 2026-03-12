@@ -1,11 +1,19 @@
 ---
 layout: article
 title: "Team Building Guide(组队指南)"
+description: "Team archetypes — Standard DPS, Disorder, Hypercarry, Quickswap — with faction synergies, sample compositions, and Bangboo selection"
 level: intermediate
+tags: ["ZZZ", "Team Building", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 5
+prev:
+  title: "Agent Specialties & Roles(角色专精与定位)"
+  url: "04-agent-specialties.html"
+next:
+  title: "Drive Discs Equipment(驱动盘装备)"
+  url: "06-drive-discs.html"
 ---
 
 Intermediate | 10-12 min read

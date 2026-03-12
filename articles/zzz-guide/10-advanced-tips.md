@@ -1,11 +1,16 @@
 ---
 layout: article
 title: "Advanced Tips & Meta(进阶技巧与元游戏)"
+description: "Animation canceling, CRIT ratio optimization, resource management, meta trends, and common mistakes to avoid"
 level: intermediate
+tags: ["ZZZ", "Advanced Tips", "Meta", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 10
+prev:
+  title: "Endgame Content(终局内容)"
+  url: "09-endgame-content.html"
 ---
 
 Advanced | 10-12 min read

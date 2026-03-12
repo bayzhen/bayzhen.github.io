@@ -1,11 +1,19 @@
 ---
 layout: article
 title: "Attributes & Anomaly System(属性与异常系统)"
+description: "The five core attributes, anomaly buildup, Disorder damage, and special attributes like Frost and Auric Ink — with Chinese annotations"
 level: intermediate
+tags: ["ZZZ", "Attributes", "Anomaly", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 3
+prev:
+  title: "Combat System Basics(战斗系统基础)"
+  url: "02-combat-basics.html"
+next:
+  title: "Agent Specialties & Roles(角色专精与定位)"
+  url: "04-agent-specialties.html"
 ---
 
 Beginner | 8-10 min read

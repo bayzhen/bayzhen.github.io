@@ -1,11 +1,16 @@
 ---
 layout: article
 title: "Game Overview(游戏概述)"
+description: "Introduction to Zenless Zone Zero — setting, factions, gacha system, and core gameplay loop explained with Chinese annotations"
 level: intermediate
+tags: ["ZZZ", "Game Overview", "English Reading"]
 series: zzz-guide
 series_title: "ZZZ Guide"
 title_suffix: "ZZZ Guide"
 order: 1
+next:
+  title: "Combat System Basics(战斗系统基础)"
+  url: "02-combat-basics.html"
 ---
 
 Beginner | 5-8 min read
