@@ -121,3 +121,8 @@
   title: "Game Animation Programming: English Reading"
   description: "Skeletal animation, blend trees, IK solvers, and motion matching — how games bring characters to life. CET-6 level, with vocabulary annotations"
   order: 23
+
+- id: rl-learner
+  title: "RL Learner: English Reading"
+  description: "Inside an AI-generated reinforcement learning system — PPO, GPU environments, performance tuning, and the unsolved football challenge. CET-6 level, with vocabulary annotations"
+  order: 24
