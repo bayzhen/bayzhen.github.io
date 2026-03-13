@@ -37,7 +37,10 @@ The engineering layer. Architecture, physics, UI/UX. Code examples included.
 **Part IV — Multiplayer & Abilities** (12)
 Network architecture and Gameplay Ability Systems for online football games.
 
-**Part V — Reference** (11)
+**Part V — Quality Assurance** (13)
+Automated testing pipelines — test case modeling, per-frame data recording, regression detection, and database-backed analysis.
+
+**Part VI — Reference** (11)
 A glossary of football and game dev terms. Use it when you're confused.
 
 ## Real-World Examples

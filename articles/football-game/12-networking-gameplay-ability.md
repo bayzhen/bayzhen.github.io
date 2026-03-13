@@ -12,6 +12,9 @@ order: 12
 prev:
   title: "Football & Football Game Glossary"
   url: "11-glossary.html"
+next:
+  title: "Automated Testing Pipelines"
+  url: "13-automated-testing-pipeline.html"
 ---
 
 ## 1. Introduction
