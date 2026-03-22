@@ -126,3 +126,8 @@
   title: "RL Learner: English Reading"
   description: "Inside an AI-generated reinforcement learning system — PPO, GPU environments, performance tuning, and the unsolved football challenge. CET-6 level, with vocabulary annotations"
   order: 24
+
+- id: nvidia-warp
+  title: "NVIDIA Warp: English Reading"
+  description: "GPU-accelerated simulation in Python — kernels, differentiable physics, and AI-driven workflows with NVIDIA Warp. CET-6 level, with vocabulary annotations"
+  order: 25
