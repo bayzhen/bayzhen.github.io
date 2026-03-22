@@ -131,3 +131,8 @@
   title: "NVIDIA Warp: English Reading"
   description: "GPU-accelerated simulation in Python — kernels, differentiable physics, and AI-driven workflows with NVIDIA Warp. CET-6 level, with vocabulary annotations"
   order: 25
+
+- id: compare-electric-cars
+  title: "新能源车选购指南"
+  description: "20万以内新能源家庭SUV深度对比分析"
+  order: 26
