@@ -136,3 +136,8 @@
   title: "新能源车选购指南"
   description: "20万以内新能源家庭SUV深度对比分析"
   order: 26
+
+- id: demand-and-decision
+  title: "Demand & Decision Science: English Reading"
+  description: "A systematic discipline for producing high-quality demands — anatomy model, quality filter, discovery methods, and training curriculum. CET-6 level, with vocabulary annotations"
+  order: 27
