@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" font-family="'Microsoft YaHei', 'PingFang SC', sans-serif">
+  <rect width="800" height="320" rx="16" fill="#f8f9fa"/>
+  <text x="400" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#2c3e50">每天的开工流程（只要4步！）</text>
+
+  <!-- Step 1 -->
+  <rect x="30" y="65" width="160" height="120" rx="14" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="110" y="100" text-anchor="middle" font-size="32">🖥️</text>
+  <text x="110" y="130" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565c0">第1步</text>
+  <text x="110" y="150" text-anchor="middle" font-size="12" fill="#1976d2">打开 VS Code</text>
+  <text x="110" y="170" text-anchor="middle" font-size="10" fill="#666">双击桌面图标</text>
+
+  <!-- Arrow 1 -->
+  <path d="M 195 125 L 225 125" stroke="#90a4ae" stroke-width="2.5" marker-end="url(#arrowG)"/>
+
+  <!-- Step 2 -->
+  <rect x="230" y="65" width="160" height="120" rx="14" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+  <text x="310" y="100" text-anchor="middle" font-size="32">🚪</text>
+  <text x="310" y="130" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">第2步</text>
+  <text x="310" y="150" text-anchor="middle" font-size="12" fill="#388e3c">连接到 Ubuntu</text>
+  <text x="310" y="170" text-anchor="middle" font-size="10" fill="#666">左下角绿色按钮</text>
+
+  <!-- Arrow 2 -->
+  <path d="M 395 125 L 425 125" stroke="#90a4ae" stroke-width="2.5" marker-end="url(#arrowG)"/>
+
+  <!-- Step 3 -->
+  <rect x="430" y="65" width="160" height="120" rx="14" fill="#fff3e0" stroke="#fb8c00" stroke-width="2"/>
+  <text x="510" y="100" text-anchor="middle" font-size="32">📂</text>
+  <text x="510" y="130" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">第3步</text>
+  <text x="510" y="150" text-anchor="middle" font-size="12" fill="#f57c00">打开工作文件夹</text>
+  <text x="510" y="170" text-anchor="middle" font-size="10" fill="#666">选择你的项目</text>
+
+  <!-- Arrow 3 -->
+  <path d="M 595 125 L 625 125" stroke="#90a4ae" stroke-width="2.5" marker-end="url(#arrowG)"/>
+
+  <!-- Step 4 -->
+  <rect x="630" y="65" width="140" height="120" rx="14" fill="#f3e5f5" stroke="#8e24aa" stroke-width="2"/>
+  <text x="700" y="100" text-anchor="middle" font-size="32">🤖</text>
+  <text x="700" y="130" text-anchor="middle" font-size="13" font-weight="bold" fill="#6a1b9a">第4步</text>
+  <text x="700" y="150" text-anchor="middle" font-size="12" fill="#8e24aa">启动 Claude Code</text>
+  <text x="700" y="170" text-anchor="middle" font-size="10" fill="#666">终端输入 claude</text>
+
+  <!-- Bottom tips -->
+  <rect x="50" y="210" width="700" height="90" rx="12" fill="#fff9c4" stroke="#f9a825" stroke-width="1"/>
+  <text x="400" y="238" text-anchor="middle" font-size="14" font-weight="bold" fill="#f57f17">💡 小贴士</text>
+  <text x="400" y="262" text-anchor="middle" font-size="12" fill="#666">整个过程不到1分钟！熟练以后就像打开微信一样自然</text>
+  <text x="400" y="282" text-anchor="middle" font-size="12" fill="#666">如果 VS Code 左下角已经显示绿色的 "WSL: Ubuntu"，第2步可以跳过</text>
+
+  <defs>
+    <marker id="arrowG" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#90a4ae"/>
+    </marker>
+  </defs>
+</svg>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="'Microsoft YaHei', 'PingFang SC', sans-serif">
+  <!-- Background -->
+  <rect width="800" height="500" rx="16" fill="#f8f9fa"/>
+
+  <!-- Title -->
+  <text x="400" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#2c3e50">你的电脑里发生了什么？</text>
+
+  <!-- Windows Layer (House) -->
+  <rect x="50" y="70" width="700" height="400" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="400" y="100" text-anchor="middle" font-size="18" font-weight="bold" fill="#1976d2">🏠 Windows（你的房子）</text>
+
+  <!-- Encrypted Zone -->
+  <rect x="80" y="120" width="280" height="160" rx="12" fill="#ffebee" stroke="#e53935" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="220" y="150" text-anchor="middle" font-size="14" font-weight="bold" fill="#e53935">🔒 公司加密区域</text>
+  <text x="220" y="180" text-anchor="middle" font-size="12" fill="#c62828">所有文件都被加密</text>
+  <text x="220" y="205" text-anchor="middle" font-size="12" fill="#c62828">Claude Code 没法直接用</text>
+  <!-- Sad face -->
+  <circle cx="220" cy="250" r="20" fill="#ffcdd2"/>
+  <text x="220" y="257" text-anchor="middle" font-size="20">😢</text>
+
+  <!-- Arrow -->
+  <path d="M 370 200 L 420 200" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="395" y="190" text-anchor="middle" font-size="11" fill="#666">所以要用</text>
+
+  <!-- WSL/Ubuntu Layer (Secret Room) -->
+  <rect x="430" y="120" width="300" height="330" rx="16" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+  <text x="580" y="150" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">🚪 WSL 密室（Ubuntu）</text>
+  <text x="580" y="175" text-anchor="middle" font-size="11" fill="#388e3c">房子里的一个独立小房间</text>
+  <text x="580" y="195" text-anchor="middle" font-size="11" fill="#388e3c">公司加密管不到这里！</text>
+
+  <!-- VS Code in WSL -->
+  <rect x="460" y="215" width="240" height="70" rx="10" fill="#fff3e0" stroke="#fb8c00" stroke-width="1.5"/>
+  <text x="580" y="245" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">💻 VS Code</text>
+  <text x="580" y="268" text-anchor="middle" font-size="11" fill="#bf360c">你的工作台 / 万能遥控器</text>
+
+  <!-- Claude Code in WSL -->
+  <rect x="460" y="300" width="240" height="70" rx="10" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+  <text x="580" y="330" text-anchor="middle" font-size="14" font-weight="bold" fill="#6a1b9a">🤖 Claude Code</text>
+  <text x="580" y="353" text-anchor="middle" font-size="11" fill="#4a148c">住在密室里的AI助手</text>
+
+  <!-- Arrow between VS Code and Claude -->
+  <path d="M 580 285 L 580 300" stroke="#666" stroke-width="1.5" marker-end="url(#arrow2)"/>
+
+  <!-- Happy face -->
+  <rect x="460" y="385" width="240" height="45" rx="8" fill="#c8e6c9"/>
+  <text x="580" y="413" text-anchor="middle" font-size="13" fill="#1b5e20">✨ 在这里自由工作！</text>
+
+  <!-- Legend at bottom -->
+  <text x="220" y="320" text-anchor="middle" font-size="12" fill="#666">← 加密区域进不去</text>
+  <text x="220" y="345" text-anchor="middle" font-size="12" fill="#2e7d32">→ 密室里可以自由使用 AI</text>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+    <marker id="arrow2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+</svg>

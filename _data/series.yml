@@ -141,3 +141,8 @@
   title: "Demand & Decision Science: English Reading"
   description: "A systematic discipline for producing high-quality demands — anatomy model, quality filter, discovery methods, and training curriculum. CET-6 level, with vocabulary annotations"
   order: 27
+
+- id: wsl-claude-guide
+  title: "小白AI助手指南"
+  description: "零基础也能用！手把手教你在Windows上使用Claude Code"
+  order: 28

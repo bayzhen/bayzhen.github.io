@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="'Microsoft YaHei', 'PingFang SC', sans-serif">
+  <rect width="800" height="500" rx="16" fill="#f8f9fa"/>
+  <text x="400" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#2c3e50">遇到问题？看这张图！</text>
+
+  <!-- Problem 1 -->
+  <rect x="30" y="60" width="350" height="120" rx="12" fill="#ffebee" stroke="#e53935" stroke-width="1.5"/>
+  <text x="50" y="88" font-size="20">😱</text>
+  <text x="80" y="90" font-size="13" font-weight="bold" fill="#c62828">左下角没有绿色标志！</text>
+  <text x="50" y="115" font-size="11" fill="#666">说明 VS Code 没有连接到 Ubuntu</text>
+
+  <path d="M 385 120 L 425 120" stroke="#43a047" stroke-width="2" marker-end="url(#arrT)"/>
+
+  <rect x="430" y="60" width="340" height="120" rx="12" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+  <text x="450" y="88" font-size="20">✅</text>
+  <text x="480" y="90" font-size="13" font-weight="bold" fill="#2e7d32">解决方法</text>
+  <text x="450" y="115" font-size="11" fill="#333">1. 点左下角蓝色 ><  按钮</text>
+  <text x="450" y="135" font-size="11" fill="#333">2. 选"连接到 WSL"</text>
+  <text x="450" y="155" font-size="11" fill="#333">3. 等几秒钟就好了</text>
+
+  <!-- Problem 2 -->
+  <rect x="30" y="200" width="350" height="120" rx="12" fill="#ffebee" stroke="#e53935" stroke-width="1.5"/>
+  <text x="50" y="228" font-size="20">😱</text>
+  <text x="80" y="230" font-size="13" font-weight="bold" fill="#c62828">输入 claude 没反应！</text>
+  <text x="50" y="255" font-size="11" fill="#666">Claude Code 可能没装好或没登录</text>
+
+  <path d="M 385 260 L 425 260" stroke="#43a047" stroke-width="2" marker-end="url(#arrT)"/>
+
+  <rect x="430" y="200" width="340" height="120" rx="12" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+  <text x="450" y="228" font-size="20">✅</text>
+  <text x="480" y="230" font-size="13" font-weight="bold" fill="#2e7d32">解决方法</text>
+  <text x="450" y="255" font-size="11" fill="#333">1. 先确认左下角是绿色 WSL</text>
+  <text x="450" y="275" font-size="11" fill="#333">2. 关掉终端，重新打开一个</text>
+  <text x="450" y="295" font-size="11" fill="#333">3. 还不行？→ 找老公！</text>
+
+  <!-- Problem 3 -->
+  <rect x="30" y="340" width="350" height="120" rx="12" fill="#ffebee" stroke="#e53935" stroke-width="1.5"/>
+  <text x="50" y="368" font-size="20">😱</text>
+  <text x="80" y="370" font-size="13" font-weight="bold" fill="#c62828">找不到我的文件了！</text>
+  <text x="50" y="395" font-size="11" fill="#666">可能打开了错误的文件夹</text>
+
+  <path d="M 385 400 L 425 400" stroke="#43a047" stroke-width="2" marker-end="url(#arrT)"/>
+
+  <rect x="430" y="340" width="340" height="120" rx="12" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+  <text x="450" y="368" font-size="20">✅</text>
+  <text x="480" y="370" font-size="13" font-weight="bold" fill="#2e7d32">解决方法</text>
+  <text x="450" y="395" font-size="11" fill="#333">1. 菜单 → 文件 → 打开文件夹</text>
+  <text x="450" y="415" font-size="11" fill="#333">2. 导航到你的工作目录</text>
+  <text x="450" y="435" font-size="11" fill="#333">3. 左侧就能看到所有文件了</text>
+
+  <defs>
+    <marker id="arrT" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#43a047"/>
+    </marker>
+  </defs>
+</svg>
