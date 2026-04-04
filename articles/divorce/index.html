@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>离婚后，前夫他后悔了 - 在线阅读</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.6; color: #333; background-color: #f5f5f5;
+        }
+        nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        nav .nav-inner { max-width: 900px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 30px; }
+        nav a { color: #ecf0f1; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #3498db; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+
+        /* Header */
+        .book-header {
+            text-align: center; margin-bottom: 30px;
+            background: #fff; border-radius: 12px; padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .book-header h1 { font-size: 1.8em; color: #2c3e50; margin-bottom: 8px; }
+        .book-header .meta { color: #7f8c8d; font-size: 0.9em; }
+        .book-header .progress-info { margin-top: 12px; font-size: 0.85em; color: #3498db; }
+        .progress-bar-wrap { margin-top: 8px; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #3498db, #2ecc71); border-radius: 3px; transition: width 0.3s; }
+
+        /* Views */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* Chapter list */
+        .chapter-list {
+            background: #fff; border-radius: 12px; padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .chapter-list h2 { font-size: 1.2em; color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; }
+        .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 4px; }
+        .chapter-item {
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9em;
+            color: #555; transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .chapter-item:hover { background: #e8f4fd; color: #2c3e50; }
+        .chapter-item.read { color: #95a5a6; }
+        .chapter-item.current { background: #3498db; color: #fff; font-weight: 600; }
+
+        /* Reader */
+        .reader-wrap {
+            background: #fff; border-radius: 12px; padding: 30px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08); min-height: 400px;
+        }
+        .reader-title { font-size: 1.4em; color: #2c3e50; text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
+        .reader-content { font-size: 1.05em; line-height: 2; color: #333; }
+        .reader-content p { text-indent: 2em; margin-bottom: 0.8em; }
+        .reader-loading { text-align: center; padding: 60px 0; color: #95a5a6; }
+
+        /* Navigation */
+        .reader-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; padding-top: 20px; border-top: 2px solid #f0f0f0; gap: 10px; }
+        .reader-nav button {
+            padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.95em; font-weight: 500; transition: all 0.2s;
+        }
+        .btn-prev, .btn-next { background: #3498db; color: #fff; }
+        .btn-prev:hover, .btn-next:hover { background: #2980b9; }
+        .btn-prev:disabled, .btn-next:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .btn-toc { background: #ecf0f1; color: #2c3e50; }
+        .btn-toc:hover { background: #d5dbdb; }
+
+        /* Chapter selector in reader */
+        .chapter-select-wrap { text-align: center; margin-bottom: 15px; }
+        .chapter-select {
+            padding: 6px 12px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 0.9em; color: #2c3e50; background: #fff; max-width: 300px;
+        }
+
+        /* Settings bar */
+        .settings-bar {
+            display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .settings-bar button {
+            padding: 6px 14px; border: 1px solid #ddd; border-radius: 6px; background: #fff;
+            cursor: pointer; font-size: 0.85em; color: #555; transition: all 0.2s;
+        }
+        .settings-bar button:hover { border-color: #3498db; color: #3498db; }
+        .settings-bar button.active { background: #3498db; color: #fff; border-color: #3498db; }
+
+        /* Font size classes */
+        .font-small .reader-content { font-size: 0.95em; }
+        .font-medium .reader-content { font-size: 1.05em; }
+        .font-large .reader-content { font-size: 1.2em; }
+
+        /* Dark mode */
+        body.dark { background: #1a1a2e; color: #e0e0e0; }
+        body.dark nav { background: #16213e; }
+        body.dark .book-header, body.dark .chapter-list, body.dark .reader-wrap { background: #16213e; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        body.dark .book-header h1, body.dark .chapter-list h2, body.dark .reader-title { color: #e0e0e0; }
+        body.dark .reader-content { color: #ccc; }
+        body.dark .chapter-item { color: #aaa; }
+        body.dark .chapter-item:hover { background: #1a1a3e; color: #e0e0e0; }
+        body.dark .chapter-item.current { background: #3498db; color: #fff; }
+        body.dark .btn-toc { background: #1a1a2e; color: #e0e0e0; }
+        body.dark .settings-bar button { background: #1a1a2e; color: #aaa; border-color: #333; }
+        body.dark .settings-bar button.active { background: #3498db; color: #fff; }
+        body.dark .reader-title, body.dark .reader-nav { border-color: #333; }
+        body.dark .chapter-list h2 { border-color: #333; }
+        body.dark .chapter-select { background: #1a1a2e; color: #e0e0e0; border-color: #333; }
+        body.dark .progress-bar-wrap { background: #333; }
+
+        @media (max-width: 600px) {
+            .reader-wrap { padding: 20px 15px; }
+            .chapter-grid { grid-template-columns: 1fr; }
+            .reader-nav { flex-wrap: wrap; justify-content: center; }
+            .reader-nav button { flex: 1; min-width: 80px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/">首页</a>
+            <a href="/articles/divorce/" style="color:#3498db;">小说阅读</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="book-header">
+            <h1>离婚后，前夫他后悔了</h1>
+            <div class="meta">全559章</div>
+            <div class="progress-info" id="progressInfo">阅读进度：0 / 559</div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+        </div>
+
+        <div class="settings-bar">
+            <button onclick="setFont('small')">小字</button>
+            <button onclick="setFont('medium')" class="active" id="btnMedium">中字</button>
+            <button onclick="setFont('large')">大字</button>
+            <button onclick="toggleDark()" id="btnDark">夜间模式</button>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="view active" id="tocView">
+            <div class="chapter-list">
+                <h2>目录</h2>
+                <div class="chapter-grid" id="chapterGrid"></div>
+            </div>
+        </div>
+
+        <!-- Reader -->
+        <div class="view" id="readerView">
+            <div class="chapter-select-wrap">
+                <select class="chapter-select" id="chapterSelect" onchange="goChapter(+this.value)"></select>
+            </div>
+            <div class="reader-wrap" id="readerWrap">
+                <h2 class="reader-title" id="readerTitle"></h2>
+                <div class="reader-content" id="readerContent">
+                    <div class="reader-loading">加载中...</div>
+                </div>
+            </div>
+            <div class="reader-nav">
+                <button class="btn-prev" id="btnPrev" onclick="prevChapter()">上一章</button>
+                <button class="btn-toc" onclick="showToc()">目录</button>
+                <button class="btn-next" id="btnNext" onclick="nextChapter()">下一章</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const TOTAL = 559;
+    const TITLES = ["第1章 她该清醒了","第2章 太太收拾东西回国了","第3章 不再给他们打电话","第4章 准备离婚了","第5章 太太去出差了","第6章 谁允许你过来的？","第7章 一起回国","第8章 没必要了","第9章 她没在家","第10章 注意到她的转变","第11章 怎么撮合都没用","第12章 是容辞在，不想回房吗？","第13章 林芜确实有吸引你的资本","第14章 妈妈你很烦知不知道？","第15章 又偷偷一起吃饭不带我","第16章 封庭深会为她著迷，是有道理的","第17章 可惜他哥不喜欢","第18章 她连封庭深都放弃了","第19章 她还没回来？","第20章 别动","第21章 她在你面前，一文不值","第22章 给你介绍个天才","第23章 这事没完","第24章 居然没有找她兴师问罪","第25章 心心同学有两个妈妈吗？","第26章 被男人花言巧语捧惯","第27章 这是你老婆新琢磨出来的追夫套路？","第28章 要她付出代价","第29章 又觉得我跟踪你们？","第30章 妈妈有事，下次吧","第31章 太太难不成是有外遇了？","第32章 把她给忘了","第33章 要去哪？我送你","第34章 亮出她封太太的身份","第35章 他是在对她笑？","第36章 他看不上我","第37章 相谈甚欢","第38章 你决定就好","第39章 投怀送抱","第40章 赶都赶不走","第41章 约会不想被打扰","第42章 不用避讳林小姐","第43章 他没有回来","第44章 异常惹眼","第45章 她懒得关心","第46章 抱在了一起","第47章 这就是区别","第48章 爸爸看见了","第49章 无处可去","第50章 心心你也没有妈妈吗？","第51章 什么条件我都答应","第52章 擦掉她眼角的泪","第53章 男友衬衫感","第54章 奶奶让我来接你","第55章 给她房本","第56章 约我的人，是封庭深","第57章 管封庭深怎么想","第58章 上楼去叫妈妈下来吃饭","第59章 没一个人是真的欢迎她","第60章 我去叫她","第61章 你老公声音好好听","第62章 请帖","第63章 他给的邀请函","第64章 任戟风","第65章 封总，给个面子？","第66章 她挺有意思的","第67章 两个锦盒","第68章 以夫妻名义送出","第69章 应激反应","第70章 没有误会","第71章 今天也是孙家的乔迁宴","第72章 我帮你摇个人来","第73章 庭深还没到吗","第74章 抱歉，我来晚了","第75章 奉长辈之命过去坐一坐","第76章 夜里风冷，进去吧","第77章 同样的话","第78章 连容辞的边都够不著","第79章 觉得她在勾引郁默勋？","第80章 容小姐，滑雪可以吗？","第81章 帮舅舅保密","第82章 下次你也别回来了","第83章 小辞有男朋友了吗？","第84章 等一个人","第85章 冬营","第86章 妈妈去露营居然没带她","第87章 连吵架都不会吵","第88章 我对赛车不感兴趣","第89章 电话那边的人","第90章 我有事想跟你说","第91章 如果没有异议，就签了吧","第92章 离婚协议","第93章 她要去见律师","第94章 绝对对你有利","第95章 可能关机了","第96章 多方合作来电","第97章 季倾越","第98章 你觉得是我不让她过来看孩子？","第99章 没有限制","第100章 独一份的气质","第101章 可以邀请你跳支舞吗？","第102章 交换舞伴","第103章 近段时间还好吗？","第104章 舍近求远","第105章 心心想见你","第106章 抹除她所有痕迹","第107章 我妈妈昨天明明就在家","第108章 这位就是你老公啊？","第109章 帮她拿包","第110章 割裂感","第111章 倾越你跟她聊一下？","第112章 就当叔叔欠你一个人情","第113章 什么时候正式领离婚证？","第114章 把它们拍卖了","第115章 季老画展","第116章 过去打个招呼","第117章 小辞，我们又见面了","第118章 懂一点","第119章 跟我来一局？","第120章 他们早已认识","第121章 另眼相待","第122章 遇到季倾越","第123章 她是庭深的女儿","第124章 让封庭深警告我？","第125章 她挺想你去看她的","第126章 妈妈，我好想你哦","第127章 你们要破镜重圆了？","第128章 她对你态度转变了好多","第129章 防止她纠缠","第130章 房产位置","第131章 出去一趟","第132章 留在容家","第133章 招商发布会","第134章 小蛋糕","第135章 不再回封家","第136章 不见封庭深妻子","第137章 我看到你妈妈了","第138章 孤零零的一个人","第139章 别不打招呼就把人送过来","第140章 他怎么会一大早出现在这里？","第141章 你也是南致知的学生，对吗？","第142章 容小姐和封总原来是男女朋友？","第143章 贺长柏的冷淡","第144章 他们的离婚手续什么时候可以办好？","第145章 任总","第146章 另一杯是给林小姐的？","第147章 送她烟花","第148章 就不能把抚养权给小辞吗？","第149章 妈妈你什么时候回来啊？","第150章 你们离婚了？","第151章 我想跟心心视频","第152章 幸福的一家三口","第153章 没有空位了，几位请回吧","第154章 他们除夕居然去","第155章 郁总也是去旅游吗？","第156章 你结婚的对象是封庭深？","第157章 吃准了你心软","第158章 一个挡箭牌而已","第159章 容辞和郁默勋闹掰了？","第160章 座谈会","第161章 他们已经离婚了吧？","第162章 对她特别","第163章 坐他的车","第164章 没必要再联系","第165章 情人节的玫瑰花","第166章 大人物约见","第167章 深厚人脉","第168章 带她回老宅见老太太","第169章 叫上庭深一起","第170章 过段时间就好了","第171章 他叫她太太","第172章 容小姐厉害又漂亮","第173章 她居然这么厉害的吗？","第174章 给她送伞","第175章 打肿脸充胖子","第176章 表妹是吗？","第177章 去长柏公司吧","第178章 只好过来堵人","第179章 找你的目的","第180章 没特意关注","第181章 他妥协了","第182章 我就不去参加了","第183章 我和小辞给您准备的礼物","第184章 封庭深前妻","第185章 我和庭深女儿相处得挺好的","第186章 新的离婚协议","第187章 先斩后奏把离婚证领了","第188章 你想怎么面试？","第189章 想要什么样的男朋友？","第190章 追到手再狠狠甩掉","第191章 容辞被郁默勋抛弃了","第192章 去我外祖母家","第193章 妈妈你是要回家了吗？","第194章 给股权","第195章 不爱前妻","第196章 长柏和他们的关系越来越好了","第197章 真的以为顾延喜欢上她了？","第198章 合作共赢","第199章 不比他差","第200章 不知道他们的关系","第201章 我们挺熟的","第202章 盯进度","第203章 多人来电","第204章 看到了容辞和贺长柏他们","第205章 他喜欢容辞什么？","第206章 这么偏心？","第207章 无话可说","第208章 庭深能处理好","第209章 你做得了长墨的主？","第210章 没那么通情达理","第211章 被带偏了","第212章 把矛盾转移一下","第213章 跟庭深说一下吧","第214章 庭深没怪我","第215章 想从她这里入手？","第216章 不会再轻敌","第217章 没有转圜余地","第218章 一起吃个饭？","第219章 缺席","第220章 没陪你过来","第221章 你不愿意我不问就是了","第222章 妈妈是不是不爱我了？","第223章 不怕南先生对你失望吗？","第224章 是非不分？","第225章 你和封庭深眼光都不怎么样","第226章 不给","第227章 从郁家人入手呢？","第228章 帮我劝一下郁总","第229章 做多错多","第230章 好事将近？","第231章 隐瞒已婚事实","第232章 不能伸手要","第233章 最好的选择","第234章 玷污了南致知的名声","第235章 有空陪林芜没空陪女儿？","第236章 不希望有第二次","第237章 技术大牛","第238章 新一代领军人物","第239章 是她无法到达的高度","第240章 她不是我孙女","第241章 无条件信任她","第242章 谢谢你救了我","第243章 容小姐有男朋友了吗？","第244章 高看她一眼","第245章 最新一期NMI期刊发布了","第246章 对，就是容辞","第247章 有不懂的可以跟小辞请教","第248章 眼里始终没有她","第249章 放任她被其他男人伤害","第250章 真的不介意","第251章 她攀上了大人物","第252章 只有她在状况之外","第253章 必争之地","第254章 也就只有这样了","第255章 正常待遇","第256章 舍不得她离开","第257章 没他们以为的这么厉害","第258章 座谈会2","第259章 容辞是有实力的","第260章 谁输谁赢还不一定","第261章 可以正式办离婚手续了","第262章 正式办离婚手续","第263章 季倾越？他怎么会给你打电话？","第264章 答案是一样的","第265章 是我的手机","第266章 追人追到公司来了？","第267章 容辞老公","第268章 爸爸说你会很忙","第269章 没开口拦著她离开","第270章 容辞和南致知","第271章 容比我厉害","第272章 已经有孩子了","第273章 真的不考虑一下吗？","第274章 信任","第275章 不公平","第276章 我跟他吵不起来","第277章 骂他出气","第278章 现在知道了","第279章 价值千亿","第280章 不能对不起自己","第281章 不会是被打击到了吧？","第282章 不能对容辞怎么样","第283章 她没这个能耐","第284章 他肯定会同意的！","第285章 你比不了","第286章 加急买回来的","第287章 跟她说了吧","第288章 他们怎么会在这里","第289章 故意刺激","第290章 坐一起","第291章 封庭深对容辞有些特别","第292章 我先离开了","第293章 当时那个不是我女朋友","第294章 各自有了对象","第295章 无人驾驶汽车发布会","第296章 众人膜拜","第297章 被大佬包围的容辞","第298章 引起轰动","第299章 封庭深居然什么都没有说","第300章 如鲠在喉","第301章 真的配得上她吗？","第302章 没再联系过她","第303章 是她对不起她","第304章 辛苦的日子已经过去了","第305章 特跑过去见容辞","第306章 容辞身价千亿？","第307章 冷静期结束","第308章 你们正式领证了吗","第309章 你爸爸什么时候回来？","第310章 贺长柏认识容辞老公？","第311章 隔阂","第312章 今天晚上辛苦你了","第313章 必然会赶回来","第314章 她的丈夫","第315章 冷淡","第316章 周一见","第317章 我对这位容小姐充满了兴趣","第318章 我没有理由不喜欢她","第319章 他的不舍","第320章 我周一有时间","第321章 小容辞，好久不见","第322章 目前情况不明","第323章 推辞几天","第324章 他的感情，早已全数给了容辞","第325章 周年庆邀请函","第326章 放下你了","第327章 如果他知道","第328章 钻石拍卖会","第329章 容辞居然举牌？","第330章 十亿","第331章 她哪来这么多钱？","第332章 没有太深的仇恨","第333章 你喜欢怎么样的","第334章 试探","第335章 挑衅","第336章 坦然接受","第337章 不挽留","第338章 你怎么知道我理解的是哪个意思？","第339章 更喜欢她","第340章 保留一点情分","第341章 不把她放眼里","第342章 迁怒","第343章 相顾无言","第344章 掩藏不在","第345章 他和容辞想法不谋而合","第346章 纯粹的欣赏","第347章 真正在意的人还是林芜","第348章 同样在意","第349章 做好了准备","第350章 周一有空吗？","第351章 连再见都没说","第352章 回y市","第353章 快要结婚了","第354章 迫不及待跟她离婚","第355章 戳中痛处","第356章 无限托举","第357章 撞了个正著","第358章 他们应该没有交集才是","第359章 深深留意","第360章 晕倒","第361章 抱她","第362章 口红印","第363章 洗过澡了","第364章 回老宅","第365章 妈妈在生爸爸的气","第366章 给她他的电脑","第367章 妈妈为什么不回爸爸房间","第368章 发烧","第369章 照顾她","第370章 没变","第371章 帮她","第372章 发生异状","第373章 现在都是爸爸主动跟妈妈说话","第374章 对容辞的态度确实和过去不一样了","第375章 我送你去公司","第376章 故意接近","第377章 难道是为了参加长墨周年庆","第378章 还不知道","第379章 周年庆","第380章 容辞是不是一直很配合？","第381章 他只是不告诉他们而已","第382章 出尽风头","第383章 久仰大名","第384章 关注著容辞","第385章 平起平坐","第386章 怎么可能有这个实力？","第387章 被撞见","第388章 一家三口","第389章 拉她的手","第390章 明天有空吗？","第391章 我帮你","第392章 猜猜我看到谁了","第393章 改变主意","第394章 要不要一起？","第395章 左右为男","第396章 别为难自己","第397章 阴魂不散","第398章 季少怎么可能喜欢她？","第399章 他的心不在焉","第400章 真的喜欢容辞","第401章 那个男人是谁？","第402章 与过去割裂，重新开始","第403章 什么时候离婚","第404章 封庭深就是不想跟容辞离婚","第405章 中午有空吗？","第406章 变化","第407章 只是反应过激？","第408章 你觉得我会拖著不离婚吗？","第409章 偶遇","第410章 不接她电话","第411章 没去跟封庭深领证？","第412章 一定要在她生日这天离婚？","第413章 封庭深的礼物","第414章 收下","第415章 再拖一段时间","第416章 生气了？","第417章 没有消息","第418章 他故意的吧？","第419章 他真的没空吗？","第420章 没想好就别急","第421章 封景心的电话","第422章 我们后天去办离婚手续","第423章 对不起，我来晚了","第424章 陪我去一个地方","第425章 她们不认识？","第426章 第一次见","第427章 安排时间","第428章 和容辞有关","第429章 就是去看容辞的","第430章 想聊什么？","第431章 不可能对她有不一样的感情","第432章 真的只是配合吗？","第433章 爸爸特意给你买的","第434章 会失落的","第435章 生日快乐","第436章 已经不在一个段位上","第437章 求婚？","第438章 没表示","第439章 巨大落差","第440章 对比","第441章 陪著","第442章 先她一步","第443章 我们是夫妻","第444章 戒指","第445章 送给妈妈","第446章 答应一起吃饭","第447章 和容家走得这么近","第448章 送她回去休息","第449章 没有离开","第450章 他是在干什么？","第451章 推迟","第452章 我知道了一件事","第453章 小芜知道吗？","第454章 闭口不提","第455章 我会起诉离婚","第456章 300亿","第457章 等消息","第458章 是容辞想离婚","第459章 是容辞想离","第460章 没空","第461章 进了容家大门","第462章 不可能亲近","第463章 不让外界知道","第464章 凑在一起带孩子","第465章 y菜馆","第466章 都喜欢容辞","第467章 得意","第468章 没想到他会来","第469章 不一样了","第470章 改变","第471章 爸爸，我们走吧","第472章 三人出去逛街","第473章 被撞见了","第474章 她结婚了","第475章 等她离婚很久了","第476章 没见到","第477章 说一下容辞","第478章 刻意竞争","第479章 妈妈，爸爸找你","第480章 不谈他与她","第481章 挽回他","第482章 态度转变","第483章 夫妻距离感","第484章 爸爸，你和妈妈的结婚证在哪？","第485章 妈妈，我想你回家住","第486章 我确定","第487章 出国","第488章 帮爸爸跟你妈妈说晚安","第489章 心寒","第490章 满世界飞","第491章 妈妈，我们一起回家吧","第492章 没叫上她","第493章 那个男人，是不是就是容总的老公啊？","第494章 有些惊讶","第495章 冷情","第496章 很难去爱一个人","第497章 多关心孩子的身心健康","第498章 暂时","第499章 不欢迎？","第500章 段位高","第501章 心机深沉","第502章 不在乎","第503章 再聚","第504章 压一头","第505章 不能放弃","第506章 更重要","第507章 新鲜","第508章 打听","第509章 拿封景心当借口","第510章 找机会","第511章 没有怪我","第512章 需要回来过年","第513章 封总女儿","第514章 够会装的","第515章 碰见容小姐和封总亲密地靠在一起","第516章 聚餐","第517章 演得挺逼真啊","第518章 跟她划清界限","第519章 你人呢？","第520章 都没出现","第521章 没察觉不妥","第522章 我想跟你谈一下","第523章 都没有出现","第524章 跟你妈妈发脾气了？","第525章 妈妈不爱我","第526章 留在容家吃年夜饭","第527章 来电","第528章 立场","第529章 又一年的兔子灯笼","第530章 介绍妈妈给你认识","第531章 没有变化","第532章 喜年快乐","第533章 夫妻店","第534章 不冷不热","第535章 避重就轻","第536章 想办法让容辞和郁默勋定下来","第537章 怕露馅","第538章 不跟你们一起了","第539章 他们怎么在一起","第540章 难道感情真的出了问题？","第541章 妈妈，这些花都是别人送你的吗？","第542章 你把人送回去？","第543章 他把人带到家里去了？","第544章 受伤","第545章 松口","第546章 回到过去","第547章 天天过来哦","第548章 去一趟民政局","第549章 看不出","第550章 只是意外吗？","第551章 叔叔","第552章 见林芜了？","第553章 同意了","第554章 犯愁","第555章 困住一辈子","第556章 烦闷","第557章 误会了","第558章 责任在封庭深","第559章 等离婚"];
+
+    const STORAGE_KEY = 'divorce_novel_progress';
+    let currentChapter = 0;
+    let readChapters = new Set();
+    let chapterCache = {};
+
+    // Load saved state
+    function loadState() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const data = JSON.parse(saved);
+                currentChapter = data.current || 0;
+                readChapters = new Set(data.read || []);
+            }
+        } catch(e) {}
+    }
+
+    function saveState() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                current: currentChapter,
+                read: [...readChapters]
+            }));
+        } catch(e) {}
+    }
+
+    function updateProgress() {
+        const count = readChapters.size;
+        document.getElementById('progressInfo').textContent = `阅读进度：${count} / ${TOTAL}`;
+        document.getElementById('progressBar').style.width = (count / TOTAL * 100) + '%';
+    }
+
+    // Build TOC
+    function buildToc() {
+        const grid = document.getElementById('chapterGrid');
+        grid.innerHTML = '';
+        for (let i = 0; i < TOTAL; i++) {
+            const div = document.createElement('div');
+            div.className = 'chapter-item' + (readChapters.has(i+1) ? ' read' : '') + (currentChapter === i+1 ? ' current' : '');
+            div.textContent = TITLES[i];
+            div.title = TITLES[i];
+            div.onclick = () => goChapter(i + 1);
+            grid.appendChild(div);
+        }
+        // Build select
+        const sel = document.getElementById('chapterSelect');
+        sel.innerHTML = '';
+        for (let i = 0; i < TOTAL; i++) {
+            const opt = document.createElement('option');
+            opt.value = i + 1;
+            opt.textContent = TITLES[i];
+            sel.appendChild(opt);
+        }
+    }
+
+    function showView(id) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function showToc() {
+        buildToc();
+        showView('tocView');
+        window.scrollTo(0, 0);
+    }
+
+    async function goChapter(num) {
+        if (num < 1 || num > TOTAL) return;
+        currentChapter = num;
+        readChapters.add(num);
+        saveState();
+
+        showView('readerView');
+        document.getElementById('readerTitle').textContent = TITLES[num - 1];
+        document.getElementById('chapterSelect').value = num;
+        document.getElementById('btnPrev').disabled = num <= 1;
+        document.getElementById('btnNext').disabled = num >= TOTAL;
+
+        const content = document.getElementById('readerContent');
+        content.innerHTML = '<div class="reader-loading">加载中...</div>';
+        window.scrollTo(0, 0);
+
+        try {
+            let text = chapterCache[num];
+            if (!text) {
+                const pad = String(num).padStart(4, '0');
+                const resp = await fetch(`chapters/chapter_${pad}.txt`);
+                text = await resp.text();
+                chapterCache[num] = text;
+            }
+            // Parse: skip first line (title), convert lines to paragraphs
+            const lines = text.split('\n');
+            let html = '';
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line) html += `<p>${escapeHtml(line)}</p>`;
+            }
+            content.innerHTML = html || '<p>（本章无内容）</p>';
+        } catch(e) {
+            content.innerHTML = '<div class="reader-loading">加载失败，请刷新重试</div>';
+        }
+
+        updateProgress();
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function prevChapter() { if (currentChapter > 1) goChapter(currentChapter - 1); }
+    function nextChapter() { if (currentChapter < TOTAL) goChapter(currentChapter + 1); }
+
+    // Font size
+    function setFont(size) {
+        document.getElementById('readerWrap').className = 'reader-wrap font-' + size;
+        document.querySelectorAll('.settings-bar button').forEach(b => {
+            if (['小字','中字','大字'].includes(b.textContent)) b.classList.remove('active');
+        });
+        const labels = {'small':'小字','medium':'中字','large':'大字'};
+        document.querySelectorAll('.settings-bar button').forEach(b => {
+            if (b.textContent === labels[size]) b.classList.add('active');
+        });
+        try { localStorage.setItem('divorce_font', size); } catch(e) {}
+    }
+
+    // Dark mode
+    function toggleDark() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        document.getElementById('btnDark').classList.toggle('active', isDark);
+        try { localStorage.setItem('divorce_dark', isDark ? '1' : '0'); } catch(e) {}
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+        if (document.getElementById('readerView').classList.contains('active')) {
+            if (e.key === 'ArrowLeft') prevChapter();
+            else if (e.key === 'ArrowRight') nextChapter();
+            else if (e.key === 'Escape') showToc();
+        }
+    });
+
+    // Init
+    loadState();
+    updateProgress();
+    buildToc();
+
+    // Restore settings
+    try {
+        const font = localStorage.getItem('divorce_font');
+        if (font) setFont(font);
+        if (localStorage.getItem('divorce_dark') === '1') toggleDark();
+    } catch(e) {}
+
+    // If user was reading, resume
+    if (currentChapter > 0) {
+        goChapter(currentChapter);
+    }
+    </script>
+</body>
+</html>

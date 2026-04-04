@@ -146,3 +146,13 @@
   title: "小白AI助手指南"
   description: "零基础也能用！手把手教你在Windows上使用Claude Code"
   order: 28
+
+- id: divorce-novel
+  title: "离婚后，前夫他后悔了"
+  description: "都市言情小说，全559章在线阅读"
+  order: 29
+  standalone_pages:
+    - title: "离婚后，前夫他后悔了"
+      url: "/articles/divorce/"
+      description: "都市言情小说在线阅读，支持章节导航、阅读进度记录、夜间模式"
+      tags: ["小说", "言情", "在线阅读"]
