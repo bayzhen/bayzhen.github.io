@@ -1,0 +1,33 @@
+schema: spec-driven
+
+context: |
+  Project: bayzhen.github.io, a Jekyll-based personal technical blog and article site.
+  Stack: Jekyll, Liquid templates, Markdown articles, YAML series metadata, static HTML/CSS.
+  Content layout:
+    - Article series live under articles/<series-id>/.
+    - Series landing pages usually use layout: series-index and set series_id.
+    - Individual articles usually use layout: article and include series, order, title_suffix, description, tags, and next/previous navigation when relevant.
+    - Public series discovery is driven by _data/series.yml.
+  Writing conventions:
+    - Prefer Chinese for Chinese-facing guides unless the series is explicitly an English reading series.
+    - Strategy guides should be practical, skimmable, and structured for quick lookup.
+    - Game information that may change with patches should be verified from current sources before writing final article content.
+    - Avoid long, unstructured essays for reference material; use consistent headings, tables, checklists, and concise recommendations.
+  Implementation constraints:
+    - Keep changes scoped to the requested article series and shared metadata.
+    - Do not rewrite unrelated existing articles or site layouts unless required by the proposal.
+    - Generated OpenSpec files document planned work; actual article implementation happens through an apply step.
+
+rules:
+  proposal:
+    - State whether the work creates a new article series or modifies an existing one.
+    - Identify source verification as part of the scope when game mechanics, item stats, or patch-sensitive advice are involved.
+  specs:
+    - Requirements should describe reader-visible behavior and content contracts, not implementation details.
+    - Include scenarios for quick lookup, source traceability, and navigation across the series.
+  design:
+    - Include the planned series structure and metadata integration points.
+    - Call out any source freshness assumptions and how they will be handled.
+  tasks:
+    - Separate research, content outline, article creation, metadata integration, and local build verification.
+    - Keep tasks checkable and concrete.

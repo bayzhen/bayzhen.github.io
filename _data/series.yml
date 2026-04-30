@@ -147,10 +147,15 @@
   description: "零基础也能用！手把手教你在Windows上使用Claude Code"
   order: 28
 
+- id: dst-strategy-handbook
+  title: "饥荒联机版策略手册"
+  description: "Don't Starve Together 中文实战攻略：开局、四季、基地、食物、角色、战斗、洞穴与后期循环"
+  order: 29
+
 - id: divorce-novel
   title: "离婚后，前夫他后悔了"
   description: "都市言情小说，全559章在线阅读"
-  order: 29
+  order: 30
   standalone_pages:
     - title: "离婚后，前夫他后悔了"
       url: "/articles/divorce/"
