@@ -62,6 +62,7 @@ next:
 ## 相关条目
 
 - [前 7 天开局](01-first-week.html)
+- [角色与特殊系统速查](13-character-cheatsheet.html)
 - [战斗与 Boss 准备](06-combat-and-boss-prep.html)
 - [危机处理手册](09-crisis-playbook.html)
 

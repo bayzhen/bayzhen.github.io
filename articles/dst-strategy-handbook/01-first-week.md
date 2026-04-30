@@ -8,6 +8,9 @@ series: dst-strategy-handbook
 series_title: "饥荒联机版策略手册"
 title_suffix: "DST Strategy"
 order: 1
+previous:
+  title: "天数与季节速查"
+  url: "/articles/dst-strategy-handbook/00-day-season-cheatsheet.html"
 next:
   title: "基地与动线"
   url: "/articles/dst-strategy-handbook/02-base-and-logistics.html"
@@ -71,6 +74,7 @@ next:
 - [基地与动线](02-base-and-logistics.html)
 - [食物、生命与理智](03-food-health-sanity.html)
 - [四季规划](04-seasonal-planning.html)
+- [天数与季节速查](00-day-season-cheatsheet.html)
 
 ## 版本与资料备注
 

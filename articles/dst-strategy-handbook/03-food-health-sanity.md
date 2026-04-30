@@ -61,6 +61,8 @@ next:
 ## 相关条目
 
 - [农场、烹饪与资源循环](08-farming-cooking-and-economy.html)
+- [做饭速查](11-cooking-cheatsheet.html)
+- [种地速查](12-farming-cheatsheet.html)
 - [战斗与 Boss 准备](06-combat-and-boss-prep.html)
 - [危机处理手册](09-crisis-playbook.html)
 

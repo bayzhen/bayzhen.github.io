@@ -60,6 +60,7 @@ DST 的季节问题不能到当天才解决。冬天的问题秋天解决，夏�
 ## 相关条目
 
 - [基地与动线](02-base-and-logistics.html)
+- [天数与季节速查](00-day-season-cheatsheet.html)
 - [战斗与 Boss 准备](06-combat-and-boss-prep.html)
 - [危机处理手册](09-crisis-playbook.html)
 

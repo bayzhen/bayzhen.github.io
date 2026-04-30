@@ -62,6 +62,8 @@ next:
 ## 相关条目
 
 - [食物、生命与理智](03-food-health-sanity.html)
+- [做饭速查](11-cooking-cheatsheet.html)
+- [种地速查](12-farming-cheatsheet.html)
 - [基地与动线](02-base-and-logistics.html)
 - [后期循环](10-late-game-loop.html)
 

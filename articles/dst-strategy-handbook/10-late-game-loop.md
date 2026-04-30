@@ -11,6 +11,9 @@ order: 10
 previous:
   title: "危机处理手册"
   url: "/articles/dst-strategy-handbook/09-crisis-playbook.html"
+next:
+  title: "做饭速查"
+  url: "/articles/dst-strategy-handbook/11-cooking-cheatsheet.html"
 ---
 
 ## 结论速查
@@ -63,6 +66,8 @@ previous:
 - [洞穴、遗迹与进度推进](07-caves-ruins-and-progression.html)
 - [农场、烹饪与资源循环](08-farming-cooking-and-economy.html)
 - [战斗与 Boss 准备](06-combat-and-boss-prep.html)
+- [做饭速查](11-cooking-cheatsheet.html)
+- [种地速查](12-farming-cheatsheet.html)
 
 ## 版本与资料备注
 
