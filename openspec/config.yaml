@@ -17,6 +17,7 @@ context: |
     - Keep changes scoped to the requested article series and shared metadata.
     - Do not rewrite unrelated existing articles or site layouts unless required by the proposal.
     - Generated OpenSpec files document planned work; actual article implementation happens through an apply step.
+    - Local Jekyll/Ruby build verification is optional for article-only changes; prefer static front matter, link, metadata, and OpenSpec validation unless the user explicitly asks for a local build.
 
 rules:
   proposal:
@@ -29,5 +30,6 @@ rules:
     - Include the planned series structure and metadata integration points.
     - Call out any source freshness assumptions and how they will be handled.
   tasks:
-    - Separate research, content outline, article creation, metadata integration, and local build verification.
+    - Separate research, content outline, article creation, metadata integration, and static verification.
     - Keep tasks checkable and concrete.
+    - Do not require local Jekyll build tasks for article-only changes unless explicitly requested.

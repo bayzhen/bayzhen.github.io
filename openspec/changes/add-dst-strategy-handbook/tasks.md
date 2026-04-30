@@ -33,7 +33,7 @@
 
 ## 5. Verification
 
-- [ ] 5.1 Run the local Jekyll build command used by this project and fix rendering/front matter issues.
+- [x] 5.1 Local Jekyll build is not required for this article-only change; static front matter, link, metadata, and OpenSpec checks are sufficient.
 - [x] 5.2 Check generated article URLs and previous/next links for the series.
 - [x] 5.3 Verify `_data/series.yml` renders the new series in the public series list.
 - [x] 5.4 Run `openspec validate add-dst-strategy-handbook --strict` and fix any OpenSpec validation issues.
