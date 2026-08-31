@@ -1,0 +1,555 @@
+:root {
+  color-scheme: light;
+  --ink: #20201e;
+  --paper: #f4f1eb;
+  --muted: #77736c;
+  --line: rgba(32, 32, 30, 0.16);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.intro {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 94svh;
+  place-content: center;
+  padding: 96px 24px 76px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.intro::before {
+  position: absolute;
+  inset: 24px;
+  z-index: -1;
+  border: 1px solid var(--line);
+  content: "";
+}
+
+.intro__orb {
+  position: absolute;
+  z-index: -2;
+  width: min(48vw, 650px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+.intro__orb--one {
+  top: -26%;
+  right: -8%;
+  background: radial-gradient(circle at 35% 40%, rgba(128, 49, 40, 0.18), transparent 68%);
+}
+
+.intro__orb--two {
+  bottom: -30%;
+  left: -10%;
+  background: radial-gradient(circle at 55% 45%, rgba(104, 101, 69, 0.18), transparent 68%);
+}
+
+.intro__kicker,
+.section-heading p,
+.placeholder-note > div > p {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", "Songti SC", serif;
+  font-size: clamp(44px, 8vw, 104px);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 0.96;
+}
+
+.intro__date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 46px auto 24px;
+}
+
+.intro__date span {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+.intro__date strong {
+  font-family: Georgia, serif;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.intro__date i {
+  width: 42px;
+  height: 1px;
+  background: var(--line);
+}
+
+.intro__lead {
+  max-width: 520px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-family: "Songti SC", STSong, serif;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.intro__scroll {
+  position: absolute;
+  bottom: 44px;
+  left: 50%;
+  display: flex;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  transform: translateX(-50%);
+}
+
+.concepts {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 120px 28px 150px;
+}
+
+.section-heading {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.45fr) 1fr auto;
+  align-items: end;
+  gap: 32px;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-heading p {
+  margin: 0;
+}
+
+.section-heading h2,
+.placeholder-note h2 {
+  margin: 0;
+  font-family: "Songti SC", STSong, Georgia, serif;
+  font-size: clamp(30px, 4vw, 56px);
+  font-weight: 400;
+}
+
+.section-heading > span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.concept-card {
+  min-width: 0;
+}
+
+.concept-card > a {
+  display: block;
+  height: 100%;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.28);
+  text-decoration: none;
+  transition: transform 360ms ease, box-shadow 360ms ease;
+}
+
+.concept-card > a:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 64px rgba(40, 35, 28, 0.12);
+}
+
+.concept-preview {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 500px;
+  overflow: hidden;
+}
+
+.preview-number {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font: 11px/1 "Helvetica Neue", sans-serif;
+  letter-spacing: 0.16em;
+}
+
+.concept-preview--cinematic {
+  place-content: center;
+  background:
+    radial-gradient(circle at 58% 28%, rgba(185, 150, 95, 0.24), transparent 25%),
+    linear-gradient(160deg, #20211f 0%, #0c0d0d 72%);
+  color: #f2eadb;
+  text-align: center;
+}
+
+.concept-preview--cinematic::after {
+  position: absolute;
+  inset: 34px;
+  z-index: -1;
+  border: 1px solid rgba(242, 234, 219, 0.18);
+  content: "";
+}
+
+.film-top,
+.film-bottom {
+  font-size: 9px;
+  letter-spacing: 0.34em;
+}
+
+.concept-preview--cinematic strong {
+  margin: 26px 0 20px;
+  font: 400 clamp(62px, 8vw, 100px)/0.8 Georgia, serif;
+  letter-spacing: -0.08em;
+}
+
+.concept-preview--cinematic strong span {
+  color: #b6955d;
+  font-size: 0.46em;
+}
+
+.concept-preview--cinematic i {
+  width: 44px;
+  height: 1px;
+  margin: 0 auto 20px;
+  background: #b6955d;
+}
+
+.concept-preview--editorial {
+  grid-template-columns: 1fr 0.7fr;
+  grid-template-rows: auto 1fr auto;
+  padding: 42px 34px;
+  background:
+    linear-gradient(rgba(113, 26, 33, 0.07) 1px, transparent 1px),
+    #eee7da;
+  background-size: 100% 25%;
+  color: #701b24;
+}
+
+.editorial-issue {
+  grid-column: 1 / -1;
+  align-self: start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid currentColor;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+}
+
+.concept-preview--editorial strong {
+  align-self: center;
+  font: italic 400 clamp(44px, 6vw, 74px)/0.82 Georgia, serif;
+  letter-spacing: -0.07em;
+}
+
+.editorial-date {
+  align-self: center;
+  justify-self: end;
+  font: 10px/1.6 "Helvetica Neue", sans-serif;
+  letter-spacing: 0.16em;
+  text-align: center;
+}
+
+.editorial-date b {
+  font: 400 62px/1 Georgia, serif;
+}
+
+.concept-preview--editorial i {
+  grid-column: 1 / -1;
+  width: 44%;
+  height: 76px;
+  margin-left: auto;
+  border: 1px solid rgba(112, 27, 36, 0.45);
+  border-radius: 80% 0;
+  transform: rotate(-8deg);
+}
+
+.concept-preview--oriental {
+  place-content: center;
+  background:
+    linear-gradient(90deg, transparent 49.8%, rgba(45, 45, 40, 0.08) 50%, transparent 50.2%),
+    #dedacc;
+  color: #2c2b27;
+}
+
+.concept-preview--oriental::before {
+  position: absolute;
+  inset: 30px;
+  z-index: -1;
+  border: 1px solid rgba(44, 43, 39, 0.25);
+  content: "";
+}
+
+.concept-preview--oriental strong {
+  font: 400 clamp(58px, 7vw, 88px)/1.18 "Songti SC", STSong, serif;
+  letter-spacing: 0.18em;
+}
+
+.oriental-date {
+  position: absolute;
+  top: 66px;
+  right: 54px;
+  font: 12px/2 "Kaiti SC", KaiTi, serif;
+  letter-spacing: 0.16em;
+  writing-mode: vertical-rl;
+}
+
+.concept-preview--oriental i {
+  position: absolute;
+  right: 52px;
+  bottom: 52px;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  background: #9e302a;
+  color: #eee8da;
+  font: normal 22px/1 "Songti SC", STSong, serif;
+}
+
+.oriental-line {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 32%;
+  height: 38%;
+  border-top: 1px solid rgba(44, 43, 39, 0.25);
+  border-left: 1px solid rgba(44, 43, 39, 0.25);
+  border-radius: 100% 0 0;
+}
+
+.concept-copy {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  min-height: 280px;
+  padding: 30px;
+}
+
+.concept-index {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.concept-copy h3 {
+  margin: 0;
+  font-family: "Songti SC", STSong, Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+}
+
+.concept-arrow {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+.concept-copy p {
+  grid-column: 1 / -1;
+  margin: 6px 0 10px;
+  color: var(--muted);
+  font-family: "Songti SC", STSong, serif;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.concept-copy ul {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.concept-copy li {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.placeholder-note {
+  display: grid;
+  grid-template-columns: 90px 1fr minmax(260px, 0.8fr);
+  align-items: center;
+  gap: 46px;
+  max-width: 1424px;
+  margin: 0 auto 130px;
+  padding: 70px;
+  border: 1px solid var(--line);
+}
+
+.placeholder-note__mark {
+  display: grid;
+  width: 90px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  font-size: 34px;
+}
+
+.placeholder-note > div > p {
+  margin-bottom: 12px;
+}
+
+.placeholder-note > p {
+  margin: 0;
+  color: var(--muted);
+  font-family: "Songti SC", STSong, serif;
+  line-height: 2;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 30px 38px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+footer p {
+  margin: 0;
+}
+
+footer a {
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 980px) {
+  .section-heading {
+    grid-template-columns: 1fr auto;
+  }
+
+  .section-heading p {
+    grid-column: 1 / -1;
+  }
+
+  .concept-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .concept-card > a {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.9fr) 1fr;
+  }
+
+  .concept-preview {
+    min-height: 440px;
+  }
+
+  .placeholder-note {
+    grid-template-columns: 72px 1fr;
+    margin-inline: 24px;
+    padding: 46px;
+  }
+
+  .placeholder-note__mark {
+    width: 72px;
+  }
+
+  .placeholder-note > p {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 680px) {
+  .intro {
+    min-height: 92svh;
+  }
+
+  .intro::before {
+    inset: 12px;
+  }
+
+  .intro h1 {
+    font-size: clamp(42px, 13vw, 64px);
+  }
+
+  .intro__date {
+    gap: 10px;
+  }
+
+  .intro__date i {
+    width: 22px;
+  }
+
+  .concepts {
+    padding: 90px 14px 110px;
+  }
+
+  .section-heading {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding-inline: 6px;
+  }
+
+  .section-heading > span {
+    margin-top: 8px;
+  }
+
+  .concept-card > a {
+    display: block;
+  }
+
+  .concept-preview {
+    min-height: 460px;
+  }
+
+  .concept-copy {
+    min-height: 250px;
+    padding: 26px 22px;
+  }
+
+  .placeholder-note {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin: 0 14px 90px;
+    padding: 34px 24px;
+  }
+
+  .placeholder-note__mark {
+    width: 56px;
+  }
+
+  .placeholder-note > p {
+    grid-column: auto;
+  }
+
+  footer {
+    flex-direction: column;
+    padding: 26px 20px;
+  }
+}
