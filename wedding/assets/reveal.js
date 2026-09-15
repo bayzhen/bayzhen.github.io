@@ -1,6 +1,18 @@
 (function () {
   document.documentElement.classList.add("js");
 
+  var playWeddingMusic = null;
+
+  document.addEventListener(
+    "WeixinJSBridgeReady",
+    function () {
+      if (playWeddingMusic) {
+        playWeddingMusic();
+      }
+    },
+    false
+  );
+
   function initializeReveal() {
     var items = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -64,9 +76,96 @@
     narrowScreen.addEventListener("change", showNav);
   }
 
+  function initializeMusic() {
+    var music = document.createElement("audio");
+    var toggle = document.createElement("button");
+    var userPaused = false;
+    var unlockEvents = ["pointerdown", "touchstart", "keydown"];
+
+    music.className = "wedding-music";
+    music.src = "/wedding/assets/audio/shortcut-to-heaven.mp3";
+    music.loop = true;
+    music.autoplay = true;
+    music.preload = "auto";
+    music.volume = 0.46;
+    music.setAttribute("playsinline", "");
+    music.setAttribute("webkit-playsinline", "");
+
+    toggle.className = "music-toggle";
+    toggle.type = "button";
+    toggle.setAttribute("aria-label", "播放背景音乐");
+    toggle.setAttribute("aria-pressed", "false");
+    toggle.innerHTML = '<span class="music-toggle__disc" aria-hidden="true">♪</span>';
+
+    document.body.appendChild(music);
+    document.body.appendChild(toggle);
+
+    function syncToggle() {
+      var isPlaying = !music.paused;
+
+      toggle.classList.toggle("is-playing", isPlaying);
+      toggle.setAttribute("aria-pressed", String(isPlaying));
+      toggle.setAttribute("aria-label", isPlaying ? "暂停背景音乐" : "播放背景音乐");
+    }
+
+    function requestPlayback() {
+      var playback;
+
+      if (userPaused) {
+        return;
+      }
+
+      playback = music.play();
+      if (playback && typeof playback.catch === "function") {
+        playback.catch(syncToggle);
+      }
+    }
+
+    function removeUnlockListeners() {
+      unlockEvents.forEach(function (eventName) {
+        document.removeEventListener(eventName, unlockMusic, true);
+      });
+    }
+
+    function unlockMusic(event) {
+      if (toggle.contains(event.target)) {
+        return;
+      }
+
+      requestPlayback();
+      removeUnlockListeners();
+    }
+
+    toggle.addEventListener("click", function () {
+      if (music.paused) {
+        userPaused = false;
+        requestPlayback();
+      } else {
+        userPaused = true;
+        music.pause();
+      }
+    });
+
+    music.addEventListener("play", syncToggle);
+    music.addEventListener("pause", syncToggle);
+    music.addEventListener("error", syncToggle);
+
+    unlockEvents.forEach(function (eventName) {
+      document.addEventListener(eventName, unlockMusic, true);
+    });
+
+    playWeddingMusic = requestPlayback;
+    requestPlayback();
+
+    if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
+      window.WeixinJSBridge.invoke("getNetworkType", {}, requestPlayback);
+    }
+  }
+
   function initializePage() {
     initializeReveal();
     initializeConceptNav();
+    initializeMusic();
   }
 
   if (document.readyState === "loading") {
