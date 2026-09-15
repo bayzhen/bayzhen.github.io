@@ -13,4 +13,4 @@
 
 - [x] 3.1 Validate script syntax, OpenSpec artifacts, absence of calendar features, and clean diffs.
 - [x] 3.2 Exercise the full interaction on narrow mobile and desktop viewports, verify no overflow, and complete a Jekyll production build.
-- [ ] 3.3 Archive the completed OpenSpec change, commit the implementation, push Main, and verify the deployed GitHub Pages assets.
+- [x] 3.3 Archive the completed OpenSpec change, commit the implementation, push Main, and verify the deployed GitHub Pages assets.
