@@ -112,33 +112,6 @@ svg {
   background: var(--switcher-active, rgba(255, 255, 255, 0.16));
 }
 
-.calendar-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 44px;
-  margin-top: 30px;
-  padding: 11px 18px;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  color: inherit;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-decoration: none;
-  transition: background-color 180ms ease, color 180ms ease;
-}
-
-.calendar-link::before {
-  content: "+";
-  font: 18px/1 Georgia, serif;
-}
-
-.calendar-link:hover,
-.calendar-link:focus-visible {
-  background: var(--calendar-hover-bg, rgba(127, 127, 127, 0.12));
-}
-
 .music-toggle {
   position: fixed;
   right: 18px;

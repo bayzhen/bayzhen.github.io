@@ -471,12 +471,6 @@ body {
   letter-spacing: 0.08em;
 }
 
-.closing .calendar-link {
-  --calendar-hover-bg: rgba(185, 154, 98, 0.12);
-  justify-self: center;
-  color: var(--gold);
-}
-
 .film-footer {
   display: flex;
   justify-content: space-between;

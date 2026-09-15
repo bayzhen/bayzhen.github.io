@@ -672,12 +672,6 @@ body {
   text-underline-offset: 5px;
 }
 
-.eastern-closing .calendar-link {
-  --calendar-hover-bg: rgba(157, 49, 44, 0.08);
-  justify-self: center;
-  color: var(--cinnabar);
-}
-
 @media (max-width: 1000px) {
   .eastern-hero {
     grid-template-columns: 0.35fr 1fr 0.35fr;
