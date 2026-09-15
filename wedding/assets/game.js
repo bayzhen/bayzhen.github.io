@@ -199,6 +199,7 @@
     var memoryHideTimer = 0;
     var flowTimers = [];
     var lastFocus = null;
+    var photoWarmupCache = [];
     var activeMemoryFrame = null;
     var activeMemorySide = "front";
     var memoryReviewMode = false;
@@ -207,6 +208,17 @@
       crown: "相知 · 平凡日子有了共同方向",
       right: "相守 · 从此共赴岁岁年年"
     };
+    var highResolutionPhotos = [
+      "/wedding/assets/photos/orange-playful.webp",
+      "/wedding/assets/photos/veil-closeup.webp",
+      "/wedding/assets/photos/traditional-closeup.webp",
+      "/wedding/assets/photos/black-gown-couple.webp",
+      "/wedding/assets/photos/orange-portrait.webp",
+      "/wedding/assets/photos/starlight-bride.webp",
+      "/wedding/assets/photos/black-suit-groom.webp",
+      "/wedding/assets/photos/traditional-portrait.webp",
+      "/wedding/assets/photos/starlight-couple.webp"
+    ];
     var memoryStories = {
       left: {
         front: {
@@ -332,6 +344,68 @@
     }
 
     effects = createEffects(canvas);
+
+    function preloadHighResolutionPhotos() {
+      var nextIndex = 0;
+      var activeRequests = 0;
+      var settledRequests = 0;
+      var concurrency = 2;
+
+      if (shell.getAttribute("data-photo-preload") === "warming" || shell.getAttribute("data-photo-preload") === "ready") {
+        return;
+      }
+
+      shell.setAttribute("data-photo-preload", "warming");
+
+      function loadNext() {
+        while (activeRequests < concurrency && nextIndex < highResolutionPhotos.length) {
+          (function (source) {
+            var image = new Image();
+
+            activeRequests += 1;
+            nextIndex += 1;
+            photoWarmupCache.push(image);
+            image.decoding = "async";
+            image.fetchPriority = "low";
+            image.onload = image.onerror = function () {
+              activeRequests -= 1;
+              settledRequests += 1;
+              image.onload = null;
+              image.onerror = null;
+
+              if (settledRequests === highResolutionPhotos.length) {
+                shell.setAttribute("data-photo-preload", "ready");
+                return;
+              }
+
+              loadNext();
+            };
+            image.src = source;
+          })(highResolutionPhotos[nextIndex]);
+        }
+      }
+
+      loadNext();
+    }
+
+    function schedulePhotoWarmup() {
+      function startWhenIdle() {
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(preloadHighResolutionPhotos, { timeout: 900 });
+        } else {
+          window.setTimeout(preloadHighResolutionPhotos, 350);
+        }
+      }
+
+      shell.setAttribute("data-photo-preload", "waiting");
+      if (document.readyState === "complete") {
+        startWhenIdle();
+      } else {
+        window.addEventListener("load", startWhenIdle, { once: true });
+      }
+    }
+
+    schedulePhotoWarmup();
 
     function vibrate(duration) {
       if (navigator.vibrate) {
