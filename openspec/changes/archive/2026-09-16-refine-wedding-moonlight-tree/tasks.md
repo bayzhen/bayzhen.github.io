@@ -13,4 +13,4 @@
 
 - [x] 3.1 Validate SVG/CSS syntax, OpenSpec artifacts, unchanged interaction hooks, and clean diffs.
 - [x] 3.2 Exercise the complete game and inspect the refined tree at narrow mobile, standard mobile, and desktop viewports, then complete a production Jekyll build.
-- [ ] 3.3 Commit, push, verify GitHub Pages assets, and sync/archive the completed change.
+- [x] 3.3 Commit, push, verify GitHub Pages assets, and sync/archive the completed change.
