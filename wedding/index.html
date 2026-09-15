@@ -24,10 +24,10 @@
   <title>陈栢成与任鹭 · 婚礼邀请函</title>
   <link rel="canonical" href="https://bayzhen.github.io/wedding/">
   <link rel="image_src" href="https://bayzhen.github.io/wedding/assets/share/editorial-invitation-20261006.jpg">
-  <link rel="stylesheet" href="/wedding/assets/base.css?v=20260916-memories">
-  <link rel="stylesheet" href="/wedding/assets/index.css?v=20260916-memories">
-  <script src="/wedding/assets/reveal.js?v=20260916-memories"></script>
-  <script src="/wedding/assets/game.js?v=20260916-memories"></script>
+  <link rel="stylesheet" href="/wedding/assets/base.css?v=20260916-botanical">
+  <link rel="stylesheet" href="/wedding/assets/index.css?v=20260916-botanical">
+  <script src="/wedding/assets/reveal.js?v=20260916-botanical"></script>
+  <script src="/wedding/assets/game.js?v=20260916-botanical"></script>
 </head>
 <body>
   <a class="skip-link" href="#tree-game">跳转到爱情树小游戏</a>
@@ -69,6 +69,16 @@
                 <stop offset="0.56" stop-color="#d7bc89" stop-opacity="0.7"/>
                 <stop offset="1" stop-color="#f0dab0" stop-opacity="0.12"/>
               </linearGradient>
+              <linearGradient id="trunk-shadow" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0" stop-color="#120f0e" stop-opacity="0.9"/>
+                <stop offset="0.55" stop-color="#342820" stop-opacity="0.78"/>
+                <stop offset="1" stop-color="#6b5139" stop-opacity="0.22"/>
+              </linearGradient>
+              <linearGradient id="moon-rim-gradient" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0" stop-color="#9ba98a" stop-opacity="0"/>
+                <stop offset="0.52" stop-color="#d7d4ad" stop-opacity="0.42"/>
+                <stop offset="1" stop-color="#fff0c2" stop-opacity="0.82"/>
+              </linearGradient>
               <radialGradient id="ground-light">
                 <stop offset="0" stop-color="#dec385" stop-opacity="0.3"/>
                 <stop offset="1" stop-color="#dec385" stop-opacity="0"/>
@@ -82,11 +92,26 @@
               </filter>
               <g id="leaf-sprig">
                 <path class="sprig-stem" d="M-2 24 C1 13 1 1 0 -16"/>
-                <path d="M0 13 C-18 2 -27 7 -28 18 C-17 24 -7 21 0 13Z"/>
-                <path d="M1 9 C17 -3 28 0 30 10 C20 18 10 17 1 9Z"/>
-                <path d="M0 -1 C-16 -12 -25 -7 -24 4 C-14 10 -6 7 0 -1Z"/>
-                <path d="M0 -5 C14 -18 24 -15 27 -5 C19 3 9 3 0 -5Z"/>
-                <path d="M0 -15 C-7 -27 -2 -34 7 -33 C13 -25 9 -18 0 -15Z"/>
+                <path class="leaf-body" d="M0 13 C-18 2 -27 7 -28 18 C-17 24 -7 21 0 13Z"/>
+                <path class="leaf-body" d="M1 9 C17 -3 28 0 30 10 C20 18 10 17 1 9Z"/>
+                <path class="leaf-body" d="M0 -1 C-16 -12 -25 -7 -24 4 C-14 10 -6 7 0 -1Z"/>
+                <path class="leaf-body" d="M0 -5 C14 -18 24 -15 27 -5 C19 3 9 3 0 -5Z"/>
+                <path class="leaf-body" d="M0 -15 C-7 -27 -2 -34 7 -33 C13 -25 9 -18 0 -15Z"/>
+                <path class="leaf-vein" d="M-1 14 L-20 15 M2 9 L22 8 M0 0 L-17 0 M1 -5 L19 -7 M0 -15 L5 -27"/>
+              </g>
+              <g id="leaf-single">
+                <path class="leaf-body" d="M0 0 C-14 -15 -12 -31 3 -39 C17 -27 16 -11 0 0Z"/>
+                <path class="leaf-vein" d="M0 -2 C3 -13 4 -24 3 -35"/>
+              </g>
+              <g id="leaf-lance">
+                <path class="leaf-body" d="M0 0 C-8 -18 -3 -37 7 -49 C16 -29 13 -10 0 0Z"/>
+                <path class="leaf-vein" d="M1 -3 L7 -43"/>
+              </g>
+              <g id="round-sprig">
+                <path class="sprig-stem" d="M0 25 C-2 8 0 -9 5 -27"/>
+                <circle class="leaf-body" cx="-10" cy="13" r="8"/><circle class="leaf-body" cx="10" cy="6" r="7.5"/>
+                <circle class="leaf-body" cx="-7" cy="-4" r="7"/><circle class="leaf-body" cx="11" cy="-13" r="6.6"/>
+                <circle class="leaf-body" cx="5" cy="-28" r="6"/>
               </g>
               <g id="blossom">
                 <ellipse cx="0" cy="-7" rx="5.2" ry="8"/>
@@ -95,6 +120,15 @@
                 <ellipse cx="-4.2" cy="6" rx="5.2" ry="8" transform="rotate(-142 -4.2 6)"/>
                 <ellipse cx="-6.7" cy="-2" rx="5.2" ry="8" transform="rotate(-70 -6.7 -2)"/>
                 <circle class="flower-heart" r="3.2"/>
+              </g>
+              <g id="blossom-cupped">
+                <path d="M0 4 C-11 2 -13 -8 -5 -13 C1 -11 3 -5 2 1 C5 -7 13 -10 17 -4 C17 4 10 8 2 7 C7 9 7 16 1 19 C-6 16 -6 9 0 4Z"/>
+                <circle class="flower-heart" cx="1" cy="4" r="2.5"/>
+              </g>
+              <g id="flower-bud">
+                <path class="bud-sepal" d="M0 14 C-1 7 -1 1 1 -6"/>
+                <path class="bud-petal" d="M1 -5 C-8 -10 -8 -20 1 -25 C10 -19 10 -10 1 -5Z"/>
+                <path class="bud-glint" d="M1 -21 C4 -17 4 -12 2 -8"/>
               </g>
               <g id="flower-spray">
                 <path class="flower-twig" d="M0 24 C0 10 -7 1 -14 -8 M0 13 C8 3 13 -8 12 -18"/>
@@ -106,36 +140,89 @@
 
             <ellipse class="tree-ground" cx="263" cy="652" rx="188" ry="28" fill="url(#ground-light)"/>
 
+            <g class="tree-root-shadows" fill="none" stroke="url(#trunk-shadow)" stroke-linecap="round">
+              <path pathLength="1" d="M258 638 C224 645 187 657 136 659 C117 660 97 658 78 662"/>
+              <path pathLength="1" d="M266 638 C302 643 340 650 391 654 C415 656 434 653 455 657"/>
+              <path pathLength="1" d="M258 640 C240 653 222 668 187 679"/>
+              <path pathLength="1" d="M267 640 C287 652 309 666 348 677"/>
+            </g>
+
             <g class="tree-roots" fill="none" stroke="url(#trunk-gradient)" stroke-linecap="round">
-              <path pathLength="1" d="M257 635 C210 645 160 654 94 657"/>
-              <path pathLength="1" d="M264 636 C315 645 371 653 438 655"/>
-              <path pathLength="1" d="M256 637 C228 655 207 668 167 676"/>
-              <path pathLength="1" d="M266 637 C296 658 322 670 361 676"/>
+              <path pathLength="1" d="M258 635 C224 642 188 653 139 656 C118 657 99 655 83 659"/>
+              <path pathLength="1" d="M265 636 C302 641 340 647 389 651 C412 653 431 650 449 654"/>
+              <path pathLength="1" d="M257 637 C240 650 221 665 191 676"/>
+              <path pathLength="1" d="M266 637 C286 649 309 663 344 674"/>
+              <path class="tree-root-fine" pathLength="1" d="M231 643 C207 645 184 641 158 635 M298 643 C321 644 345 640 370 632"/>
+            </g>
+
+            <path class="tree-trunk-flare" d="M245 640 C251 616 251 588 255 558 C260 579 262 601 264 620 C268 599 270 578 268 551 C277 583 276 615 284 641 C270 637 257 637 245 640Z"/>
+
+            <g class="tree-branch-shadows" fill="none" stroke="url(#trunk-shadow)" stroke-linecap="round" stroke-linejoin="round">
+              <path class="tree-shadow tree-shadow--main" pathLength="1" d="M261 641 C250 578 261 532 256 474 C251 417 263 371 258 318 C253 270 248 222 270 145"/>
+              <path class="tree-shadow tree-shadow--major" pathLength="1" d="M258 528 C222 500 192 460 160 417 C131 378 102 344 63 302"/>
+              <path class="tree-shadow tree-shadow--major" pathLength="1" d="M258 475 C298 448 327 408 356 361 C390 307 421 269 459 239"/>
+              <path class="tree-shadow tree-shadow--minor" pathLength="1" d="M245 474 C195 459 145 441 91 427 M250 405 C206 383 166 346 127 302 M252 337 C207 314 178 276 156 229"/>
+              <path class="tree-shadow tree-shadow--minor" pathLength="1" d="M263 417 C315 399 367 381 425 375 M261 359 C311 333 354 299 389 254 M345 388 C385 351 415 320 442 284"/>
             </g>
 
             <g class="tree-branches" fill="none" stroke="url(#trunk-gradient)" stroke-linecap="round" stroke-linejoin="round">
-              <path class="tree-trunk tree-trunk--main" pathLength="1" d="M261 641 C249 570 263 520 257 458 C251 395 266 331 255 270 C248 228 254 186 270 145"/>
-              <path class="tree-trunk tree-trunk--left" pathLength="1" d="M257 527 C218 492 187 451 150 399 C121 359 92 331 63 302"/>
-              <path class="tree-trunk tree-trunk--right" pathLength="1" d="M258 472 C303 438 330 394 361 345 C391 298 420 269 459 239"/>
-              <path class="tree-branch branch-left" pathLength="1" d="M244 473 C195 459 146 441 91 427"/>
-              <path class="tree-branch branch-left" pathLength="1" d="M249 402 C203 380 166 346 127 302"/>
-              <path class="tree-branch branch-left" pathLength="1" d="M251 332 C202 307 176 273 156 229"/>
-              <path class="tree-branch branch-left" pathLength="1" d="M178 439 C139 412 115 382 89 350"/>
-              <path class="tree-branch branch-crown" pathLength="1" d="M256 294 C225 253 213 211 216 166"/>
-              <path class="tree-branch branch-crown" pathLength="1" d="M258 330 C291 286 305 240 307 190"/>
-              <path class="tree-branch branch-crown" pathLength="1" d="M264 234 C296 204 318 170 328 128"/>
-              <path class="tree-branch branch-right" pathLength="1" d="M263 414 C316 398 365 379 425 375"/>
-              <path class="tree-branch branch-right" pathLength="1" d="M262 355 C315 327 355 296 389 254"/>
-              <path class="tree-branch branch-right" pathLength="1" d="M345 387 C385 350 414 321 442 284"/>
+              <path class="tree-trunk tree-trunk--main" pathLength="1" d="M261 641 C250 578 261 532 256 474 C251 417 263 371 258 318 C253 270 248 222 270 145"/>
+              <path class="tree-trunk tree-trunk--left" pathLength="1" d="M258 528 C222 500 192 460 160 417 C131 378 102 344 63 302"/>
+              <path class="tree-trunk tree-trunk--right" pathLength="1" d="M258 475 C298 448 327 408 356 361 C390 307 421 269 459 239"/>
+              <path class="tree-branch branch-left" pathLength="1" d="M245 474 C195 459 145 441 91 427"/>
+              <path class="tree-branch branch-left" pathLength="1" d="M250 405 C206 383 166 346 127 302"/>
+              <path class="tree-branch branch-left" pathLength="1" d="M252 337 C207 314 178 276 156 229"/>
+              <path class="tree-branch branch-left" pathLength="1" d="M181 440 C143 413 116 383 89 350"/>
+              <path class="tree-branch branch-left tree-branch--fine" pathLength="1" d="M202 383 C169 367 145 340 124 309 M154 415 C124 410 101 398 79 377"/>
+              <path class="tree-branch branch-crown" pathLength="1" d="M257 300 C228 258 214 213 216 166"/>
+              <path class="tree-branch branch-crown" pathLength="1" d="M259 334 C289 291 304 243 307 190"/>
+              <path class="tree-branch branch-crown" pathLength="1" d="M264 239 C296 205 319 169 328 128"/>
+              <path class="tree-branch branch-crown tree-branch--fine" pathLength="1" d="M241 254 C226 224 227 195 237 171 M285 269 C319 248 341 223 355 192"/>
+              <path class="tree-branch branch-right" pathLength="1" d="M263 417 C315 399 367 381 425 375"/>
+              <path class="tree-branch branch-right" pathLength="1" d="M261 359 C311 333 354 299 389 254"/>
+              <path class="tree-branch branch-right" pathLength="1" d="M345 388 C385 351 415 320 442 284"/>
+              <path class="tree-branch branch-right tree-branch--fine" pathLength="1" d="M319 391 C353 374 382 350 405 322 M363 346 C397 333 424 310 449 279"/>
             </g>
             <g class="bark-highlights" fill="none" stroke="url(#bark-light)" stroke-linecap="round">
-              <path pathLength="1" d="M267 624 C259 552 272 492 264 433 C260 386 270 329 263 282"/>
-              <path pathLength="1" d="M252 530 C216 493 183 454 151 411"/>
-              <path pathLength="1" d="M266 468 C305 434 331 393 359 351"/>
+              <path pathLength="1" d="M267 624 C260 560 271 503 264 448 C259 400 270 351 263 300"/>
+              <path pathLength="1" d="M251 528 C218 498 188 459 159 419"/>
+              <path pathLength="1" d="M266 469 C303 441 328 404 355 363"/>
+              <path class="bark-highlight--fine" pathLength="1" d="M265 389 C257 357 264 327 261 299 M253 472 C249 447 256 427 253 408"/>
+            </g>
+            <g class="bark-texture" fill="none" stroke-linecap="round">
+              <path pathLength="1" d="M251 610 C259 596 258 580 253 566 M268 548 C261 533 264 516 269 503"/>
+              <path pathLength="1" d="M250 488 C260 476 259 462 253 450 M269 425 C260 412 263 396 268 384"/>
+              <path pathLength="1" d="M251 363 C260 351 260 337 255 324 M263 286 C257 273 258 260 263 248"/>
+              <path pathLength="1" d="M222 486 C218 476 211 466 202 458 M305 432 C313 423 321 411 326 399"/>
+            </g>
+            <g class="tree-knots">
+              <ellipse cx="255" cy="506" rx="6" ry="11" transform="rotate(-8 255 506)"/>
+              <ellipse cx="262" cy="374" rx="4.5" ry="8" transform="rotate(10 262 374)"/>
+            </g>
+
+            <g class="ground-botanicals botanical-detail">
+              <g class="ground-leaves ground-leaves--left">
+                <use href="#leaf-single" transform="translate(126 649) rotate(-78) scale(.42)"/>
+                <use href="#leaf-lance" transform="translate(151 653) rotate(-56) scale(.36)"/>
+                <use href="#round-sprig" transform="translate(175 653) rotate(-70) scale(.34)"/>
+              </g>
+              <g class="ground-leaves ground-leaves--right">
+                <use href="#leaf-single" transform="translate(395 650) rotate(72) scale(.4)"/>
+                <use href="#leaf-lance" transform="translate(370 654) rotate(54) scale(.34)"/>
+                <use href="#round-sprig" transform="translate(347 652) rotate(69) scale(.32)"/>
+              </g>
+              <g class="ground-stones">
+                <ellipse cx="104" cy="664" rx="10" ry="3"/><ellipse cx="420" cy="659" rx="8" ry="2.5"/>
+                <ellipse cx="165" cy="674" rx="6" ry="2"/><ellipse cx="369" cy="671" rx="7" ry="2"/>
+              </g>
             </g>
 
             <g class="canopy canopy--back" filter="url(#botanical-shadow)">
               <path class="canopy-wash" d="M50 423 C18 365 42 305 94 282 C77 223 123 177 180 188 C199 117 267 91 316 136 C370 106 426 145 424 203 C483 215 503 276 468 319 C508 365 475 431 416 430 C387 482 326 489 283 458 C238 500 172 487 151 443 C111 470 72 456 50 423Z"/>
+              <g class="canopy-depth-shapes">
+                <path d="M47 390 C32 346 58 305 105 301 C91 258 122 218 166 224 C176 180 217 154 256 174 C285 137 337 142 356 181 C403 163 444 194 439 239 C476 253 487 297 459 326 C482 362 459 404 417 405 C388 449 333 450 303 423 C264 461 209 452 190 418 C152 445 105 429 100 392 C80 405 59 402 47 390Z"/>
+                <path class="canopy-pocket" d="M127 347 C117 313 142 286 176 290 C181 257 212 238 243 254 C263 224 307 223 326 254 C359 238 394 258 397 292 C429 299 438 336 416 359 C429 389 397 416 367 405 C342 432 298 427 280 399 C246 426 204 414 194 381 C162 397 129 379 127 347Z"/>
+              </g>
               <g class="leaf-tone leaf-tone--shadow">
                 <use href="#leaf-sprig" transform="translate(83 385) rotate(-58) scale(1.12)"/><use href="#leaf-sprig" transform="translate(105 325) rotate(-18) scale(.95)"/>
                 <use href="#leaf-sprig" transform="translate(126 266) rotate(-42) scale(1.14)"/><use href="#leaf-sprig" transform="translate(157 217) rotate(-12) scale(1.05)"/>
@@ -144,6 +231,13 @@
                 <use href="#leaf-sprig" transform="translate(407 222) rotate(62) scale(1.14)"/><use href="#leaf-sprig" transform="translate(449 285) rotate(78) scale(1.04)"/>
                 <use href="#leaf-sprig" transform="translate(434 356) rotate(102) scale(1.15)"/><use href="#leaf-sprig" transform="translate(392 418) rotate(132) scale(1.08)"/>
                 <use href="#leaf-sprig" transform="translate(328 445) rotate(161) scale(1.1)"/><use href="#leaf-sprig" transform="translate(205 444) rotate(-152) scale(1.08)"/>
+              </g>
+              <g class="leaf-tone leaf-tone--deep botanical-detail botanical-detail--back">
+                <use href="#leaf-single" transform="translate(72 336) rotate(-74) scale(.88)"/><use href="#leaf-single" transform="translate(111 250) rotate(-42) scale(1.02)"/>
+                <use href="#leaf-lance" transform="translate(169 190) rotate(-19) scale(.82)"/><use href="#round-sprig" transform="translate(224 151) rotate(-4) scale(.8)"/>
+                <use href="#leaf-single" transform="translate(344 157) rotate(35) scale(1.02)"/><use href="#leaf-lance" transform="translate(414 214) rotate(58) scale(.9)"/>
+                <use href="#round-sprig" transform="translate(458 320) rotate(88) scale(.82)"/><use href="#leaf-single" transform="translate(405 417) rotate(135) scale(.94)"/>
+                <use href="#leaf-lance" transform="translate(293 458) rotate(172) scale(.82)"/><use href="#leaf-single" transform="translate(153 440) rotate(-139) scale(.9)"/>
               </g>
             </g>
 
@@ -157,6 +251,13 @@
                 <use href="#leaf-sprig" transform="translate(394 298) rotate(75) scale(1.02)"/><use href="#leaf-sprig" transform="translate(376 365) rotate(111) scale(1.1)"/>
                 <use href="#leaf-sprig" transform="translate(334 399) rotate(142) scale(.96)"/><use href="#leaf-sprig" transform="translate(276 430) rotate(174) scale(1.08)"/>
               </g>
+              <g class="leaf-tone leaf-tone--olive botanical-detail botanical-detail--middle">
+                <use href="#round-sprig" transform="translate(111 347) rotate(-66) scale(.68)"/><use href="#leaf-lance" transform="translate(153 255) rotate(-36) scale(.67)"/>
+                <use href="#leaf-single" transform="translate(193 310) rotate(-62) scale(.72)"/><use href="#round-sprig" transform="translate(248 204) rotate(-3) scale(.65)"/>
+                <use href="#leaf-lance" transform="translate(310 188) rotate(27) scale(.72)"/><use href="#leaf-single" transform="translate(353 252) rotate(51) scale(.74)"/>
+                <use href="#round-sprig" transform="translate(407 326) rotate(81) scale(.66)"/><use href="#leaf-lance" transform="translate(343 418) rotate(148) scale(.65)"/>
+                <use href="#leaf-single" transform="translate(230 435) rotate(-169) scale(.72)"/><use href="#leaf-lance" transform="translate(155 387) rotate(-118) scale(.68)"/>
+              </g>
             </g>
 
             <g class="canopy canopy--front" filter="url(#botanical-shadow)">
@@ -168,21 +269,46 @@
                 <use href="#leaf-sprig" transform="translate(353 336) rotate(83) scale(.9)"/><use href="#leaf-sprig" transform="translate(317 370) rotate(129) scale(.82)"/>
                 <use href="#leaf-sprig" transform="translate(264 390) rotate(170) scale(.86)"/><use href="#leaf-sprig" transform="translate(219 407) rotate(-159) scale(.76)"/>
               </g>
+              <g class="leaf-tone leaf-tone--moon botanical-detail botanical-detail--front">
+                <use href="#leaf-single" transform="translate(91 373) rotate(-80) scale(.58)"/><use href="#leaf-lance" transform="translate(129 291) rotate(-48) scale(.6)"/>
+                <use href="#round-sprig" transform="translate(185 235) rotate(-26) scale(.54)"/><use href="#leaf-single" transform="translate(269 166) rotate(8) scale(.61)"/>
+                <use href="#leaf-lance" transform="translate(361 207) rotate(43) scale(.62)"/><use href="#round-sprig" transform="translate(424 277) rotate(70) scale(.54)"/>
+                <use href="#leaf-single" transform="translate(399 383) rotate(119) scale(.6)"/><use href="#leaf-lance" transform="translate(305 425) rotate(158) scale(.58)"/>
+                <use href="#round-sprig" transform="translate(196 402) rotate(-148) scale(.52)"/>
+              </g>
+              <g class="moon-rim botanical-detail">
+                <path d="M171 189 C210 120 281 108 322 139"/>
+                <path d="M332 142 C383 125 431 169 424 212"/>
+                <path d="M431 216 C481 231 490 282 461 320"/>
+                <path d="M469 329 C491 372 462 418 418 423"/>
+              </g>
             </g>
 
             <g class="tree-flowers" filter="url(#moon-glow)">
               <g class="flower-cluster flower-cluster--left">
                 <use href="#flower-spray" transform="translate(103 370) rotate(-46) scale(.9)"/><use href="#flower-spray" transform="translate(145 298) rotate(-24) scale(.78)"/>
-                <use href="#blossom" transform="translate(179 388) scale(.78)"/><use href="#blossom" transform="translate(88 316) scale(.64)"/>
+                <use href="#blossom" transform="translate(179 388) scale(.78)"/><use href="#blossom-cupped" transform="translate(88 316) rotate(-18) scale(.64)"/>
+                <use href="#flower-bud" transform="translate(120 407) rotate(-58) scale(.72)"/><use href="#flower-bud" transform="translate(166 270) rotate(-20) scale(.58)"/>
+                <use href="#blossom-cupped" transform="translate(70 356) rotate(24) scale(.48)"/>
               </g>
               <g class="flower-cluster flower-cluster--crown">
                 <use href="#flower-spray" transform="translate(229 208) rotate(-8) scale(.86)"/><use href="#flower-spray" transform="translate(292 187) rotate(24) scale(.8)"/>
-                <use href="#blossom" transform="translate(257 276) scale(.72)"/><use href="#blossom" transform="translate(326 229) scale(.65)"/>
+                <use href="#blossom-cupped" transform="translate(257 276) rotate(12) scale(.72)"/><use href="#blossom" transform="translate(326 229) scale(.65)"/>
+                <use href="#flower-bud" transform="translate(203 192) rotate(-9) scale(.64)"/><use href="#flower-bud" transform="translate(310 153) rotate(21) scale(.55)"/>
+                <use href="#blossom-cupped" transform="translate(278 139) rotate(-12) scale(.5)"/>
               </g>
               <g class="flower-cluster flower-cluster--right">
                 <use href="#flower-spray" transform="translate(350 320) rotate(42) scale(.88)"/><use href="#flower-spray" transform="translate(398 285) rotate(55) scale(.76)"/>
-                <use href="#blossom" transform="translate(333 386) scale(.76)"/><use href="#blossom" transform="translate(417 347) scale(.62)"/>
+                <use href="#blossom" transform="translate(333 386) scale(.76)"/><use href="#blossom-cupped" transform="translate(417 347) rotate(18) scale(.62)"/>
+                <use href="#flower-bud" transform="translate(377 257) rotate(48) scale(.62)"/><use href="#flower-bud" transform="translate(440 321) rotate(67) scale(.56)"/>
+                <use href="#blossom-cupped" transform="translate(382 403) rotate(-16) scale(.48)"/>
               </g>
+            </g>
+
+            <g class="tree-dew botanical-detail" filter="url(#moon-glow)">
+              <circle cx="129" cy="274" r="2.2"/><circle cx="185" cy="207" r="1.5"/><circle cx="247" cy="160" r="1.8"/>
+              <circle cx="323" cy="174" r="1.5"/><circle cx="389" cy="224" r="2.1"/><circle cx="445" cy="309" r="1.6"/>
+              <circle cx="383" cy="392" r="1.8"/><circle cx="297" cy="424" r="1.4"/><circle cx="178" cy="403" r="1.7"/><circle cx="96" cy="353" r="1.4"/>
             </g>
 
             <g class="star-trails" fill="none" stroke-linecap="round">

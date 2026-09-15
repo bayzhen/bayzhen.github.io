@@ -217,14 +217,53 @@ body {
 }
 
 .tree-roots path,
+.tree-root-shadows path,
+.tree-branch-shadows path,
 .tree-branches path,
-.bark-highlights path {
+.bark-highlights path,
+.bark-texture path {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }
 
+.tree-root-shadows path {
+  stroke-width: 10;
+  opacity: 0.62;
+}
+
 .tree-roots path {
   stroke-width: 5;
+}
+
+.tree-root-fine {
+  stroke-width: 2.4;
+  opacity: 0.65;
+}
+
+.tree-trunk-flare {
+  fill: url(#trunk-gradient);
+  opacity: 0;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.38));
+  transform: scaleY(0.72);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.tree-shadow--main {
+  stroke-width: 32;
+}
+
+.tree-shadow--major {
+  stroke-width: 19;
+}
+
+.tree-shadow--minor {
+  stroke-width: 10;
+}
+
+.tree-branch-shadows {
+  opacity: 0.72;
+  filter: blur(1.2px);
 }
 
 .tree-trunk--main {
@@ -240,9 +279,51 @@ body {
   stroke-width: 6.5;
 }
 
+.tree-branch--fine {
+  stroke-width: 3.4;
+  opacity: 0.82;
+}
+
 .bark-highlights path {
   stroke-width: 2.2;
   opacity: 0.78;
+}
+
+.bark-highlights .bark-highlight--fine {
+  stroke-width: 1.2;
+  opacity: 0.55;
+}
+
+.bark-texture {
+  stroke: rgba(32, 22, 18, 0.68);
+  stroke-width: 1.45;
+}
+
+.tree-knots {
+  fill: rgba(35, 25, 20, 0.52);
+  stroke: rgba(203, 169, 116, 0.34);
+  stroke-width: 1.2;
+  opacity: 0;
+  transform: scale(0.65);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ground-botanicals {
+  opacity: 0;
+}
+
+.ground-leaves {
+  color: #556f5b;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4));
+}
+
+.ground-leaves--right {
+  color: #708267;
+}
+
+.ground-stones {
+  fill: rgba(159, 140, 105, 0.24);
 }
 
 [data-stage="trunk"] .tree-ground,
@@ -254,19 +335,23 @@ body {
   opacity: 1;
 }
 
+[data-stage="trunk"] .tree-root-shadows path,
 [data-stage="trunk"] .tree-roots path {
   animation: draw-branch 720ms ease-out forwards;
 }
 
+[data-stage="trunk"] .tree-shadow--main,
 [data-stage="trunk"] .tree-trunk--main {
   animation: draw-branch 1.25s 260ms ease-out forwards;
 }
 
+[data-stage="trunk"] .tree-shadow--major,
 [data-stage="trunk"] .tree-trunk--left,
 [data-stage="trunk"] .tree-trunk--right {
   animation: draw-branch 950ms 820ms ease-out forwards;
 }
 
+[data-stage="trunk"] .tree-shadow--minor,
 [data-stage="trunk"] .tree-branch {
   animation: draw-branch 850ms 1.22s ease-out forwards;
 }
@@ -275,22 +360,76 @@ body {
   animation: draw-branch 900ms 1.05s ease-out forwards;
 }
 
+[data-stage="trunk"] .bark-texture path {
+  animation: draw-branch 620ms 1.45s ease-out forwards;
+}
+
+[data-stage="trunk"] .tree-knots {
+  animation: tree-detail-in 520ms 1.4s ease-out forwards;
+}
+
+[data-stage="trunk"] .tree-trunk-flare,
+[data-stage="trunk"] .ground-botanicals {
+  animation: tree-detail-in 640ms 460ms ease-out forwards;
+}
+
 [data-stage="canopy"] .tree-roots path,
+[data-stage="canopy"] .tree-root-shadows path,
+[data-stage="canopy"] .tree-branch-shadows path,
 [data-stage="canopy"] .tree-branches path,
 [data-stage="canopy"] .bark-highlights path,
+[data-stage="canopy"] .bark-texture path,
 [data-stage="bloom"] .tree-roots path,
+[data-stage="bloom"] .tree-root-shadows path,
+[data-stage="bloom"] .tree-branch-shadows path,
 [data-stage="bloom"] .tree-branches path,
 [data-stage="bloom"] .bark-highlights path,
+[data-stage="bloom"] .bark-texture path,
 [data-stage="shake"] .tree-roots path,
+[data-stage="shake"] .tree-root-shadows path,
+[data-stage="shake"] .tree-branch-shadows path,
 [data-stage="shake"] .tree-branches path,
 [data-stage="shake"] .bark-highlights path,
+[data-stage="shake"] .bark-texture path,
 [data-stage="stars"] .tree-roots path,
+[data-stage="stars"] .tree-root-shadows path,
+[data-stage="stars"] .tree-branch-shadows path,
 [data-stage="stars"] .tree-branches path,
 [data-stage="stars"] .bark-highlights path,
+[data-stage="stars"] .bark-texture path,
 [data-stage="complete"] .tree-roots path,
+[data-stage="complete"] .tree-root-shadows path,
+[data-stage="complete"] .tree-branch-shadows path,
 [data-stage="complete"] .tree-branches path,
-[data-stage="complete"] .bark-highlights path {
+[data-stage="complete"] .bark-highlights path,
+[data-stage="complete"] .bark-texture path {
   stroke-dashoffset: 0;
+}
+
+[data-stage="canopy"] .tree-trunk-flare,
+[data-stage="bloom"] .tree-trunk-flare,
+[data-stage="shake"] .tree-trunk-flare,
+[data-stage="stars"] .tree-trunk-flare,
+[data-stage="complete"] .tree-trunk-flare {
+  opacity: 1;
+  transform: none;
+}
+
+[data-stage="canopy"] .tree-knots,
+[data-stage="bloom"] .tree-knots,
+[data-stage="shake"] .tree-knots,
+[data-stage="stars"] .tree-knots,
+[data-stage="complete"] .tree-knots {
+  opacity: 1;
+  transform: none;
+}
+
+[data-stage="canopy"] .ground-botanicals,
+[data-stage="bloom"] .ground-botanicals,
+[data-stage="shake"] .ground-botanicals,
+[data-stage="stars"] .ground-botanicals,
+[data-stage="complete"] .ground-botanicals {
+  opacity: 0.8;
 }
 
 .canopy {
@@ -301,8 +440,16 @@ body {
 }
 
 .canopy-wash {
-  fill: rgba(20, 34, 30, 0.24);
-  filter: blur(7px);
+  fill: rgba(14, 29, 26, 0.31);
+  filter: blur(8px);
+}
+
+.canopy-depth-shapes {
+  fill: rgba(21, 43, 36, 0.48);
+}
+
+.canopy-depth-shapes .canopy-pocket {
+  fill: rgba(38, 61, 49, 0.2);
 }
 
 .leaf-tone {
@@ -314,16 +461,44 @@ body {
   fill: currentColor;
 }
 
+.leaf-body {
+  fill: currentColor;
+}
+
+.leaf-vein {
+  fill: none;
+  stroke: rgba(230, 225, 190, 0.3);
+  stroke-width: 0.72;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
 .leaf-tone--shadow {
   color: var(--leaf-dark);
+}
+
+.leaf-tone--deep {
+  color: #29493e;
+  opacity: 0.76;
 }
 
 .leaf-tone--sage {
   color: var(--leaf-mid);
 }
 
+.leaf-tone--olive {
+  color: #82916f;
+  opacity: 0.88;
+}
+
 .leaf-tone--light {
   color: var(--leaf-light);
+}
+
+.leaf-tone--moon {
+  color: #c0c7a3;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 4px rgba(224, 212, 165, 0.13));
 }
 
 .sprig-stem {
@@ -332,6 +507,15 @@ body {
   stroke-width: 1.4;
   stroke-linecap: round;
   opacity: 0.6;
+}
+
+.moon-rim {
+  fill: none;
+  stroke: url(#moon-rim-gradient);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  opacity: 0;
+  filter: drop-shadow(0 0 5px rgba(255, 234, 177, 0.2));
 }
 
 .has-canopy .canopy--back {
@@ -358,6 +542,10 @@ body {
   animation: canopy-breathe 4.7s 1.7s ease-in-out infinite alternate;
 }
 
+.has-canopy .moon-rim {
+  animation: moon-rim-in 900ms 1.1s ease forwards, moon-rim-breathe 4.8s 2s ease-in-out infinite alternate;
+}
+
 .flower-cluster {
   color: #dda0a0;
   fill: currentColor;
@@ -367,10 +555,40 @@ body {
   transform-origin: center;
 }
 
+.flower-cluster--left {
+  color: #e4a3a0;
+}
+
+.flower-cluster--crown {
+  color: #edc2b8;
+}
+
+.flower-cluster--right {
+  color: #d9868d;
+}
+
 .flower-twig {
   fill: none;
   stroke: #8c9c75;
   stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.bud-sepal {
+  fill: none;
+  stroke: #9aa780;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.bud-petal {
+  fill: currentColor;
+}
+
+.bud-glint {
+  fill: none;
+  stroke: rgba(255, 240, 216, 0.55);
+  stroke-width: 1;
   stroke-linecap: round;
 }
 
@@ -391,6 +609,15 @@ body {
 
 .has-canopy .tree-fireflies {
   animation: fireflies-in 1s 800ms ease forwards, firefly-pulse 3.6s 1.8s ease-in-out infinite alternate;
+}
+
+.tree-dew {
+  fill: #fff1be;
+  opacity: 0;
+}
+
+.has-canopy .tree-dew {
+  animation: dew-in 800ms 1.15s ease forwards, dew-pulse 3.8s 2s ease-in-out infinite alternate;
 }
 
 .star-trails {
@@ -1221,6 +1448,13 @@ body {
   to { stroke-dashoffset: 0; }
 }
 
+@keyframes tree-detail-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes canopy-rise {
   0% { opacity: 0; transform: translateY(88px) scale(0.22); }
   64% { opacity: 1; transform: translateY(-5px) scale(1.035); }
@@ -1230,6 +1464,15 @@ body {
 @keyframes canopy-breathe {
   0% { transform: rotate(-1deg) translateX(-2px); }
   100% { transform: rotate(1.2deg) translateX(3px); }
+}
+
+@keyframes moon-rim-in {
+  to { opacity: 0.76; }
+}
+
+@keyframes moon-rim-breathe {
+  0% { opacity: 0.4; }
+  100% { opacity: 0.9; }
 }
 
 @keyframes flower-open {
@@ -1245,6 +1488,15 @@ body {
 @keyframes firefly-pulse {
   0% { opacity: 0.35; }
   100% { opacity: 1; }
+}
+
+@keyframes dew-in {
+  to { opacity: 0.74; }
+}
+
+@keyframes dew-pulse {
+  0% { opacity: 0.32; }
+  100% { opacity: 0.92; }
 }
 
 @keyframes trails-in {
@@ -1579,6 +1831,16 @@ body {
   .invitation-card__letter {
     font-size: 11px;
   }
+
+  .botanical-detail--back use:nth-child(n + 7),
+  .botanical-detail--middle use:nth-child(n + 9),
+  .tree-dew circle:nth-child(even) {
+    display: none;
+  }
+
+  .moon-rim {
+    opacity: 0.55;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1586,19 +1848,35 @@ body {
   .gesture-cue,
   .bloom-button.is-active,
   .has-canopy .leaf-tone,
-  .has-canopy .tree-fireflies {
+  .has-canopy .tree-fireflies,
+  .has-canopy .tree-dew,
+  .has-canopy .moon-rim {
     animation: none;
   }
 
   .tree-roots path,
+  .tree-root-shadows path,
+  .tree-branch-shadows path,
   .tree-branches path,
   .bark-highlights path,
+  .bark-texture path,
+  .tree-knots,
+  .tree-trunk-flare,
+  .ground-botanicals,
   .canopy,
   .flower-cluster,
   .fallen-star,
   .memory-frame.is-planted {
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
+  }
+
+  .has-canopy .tree-dew {
+    opacity: 0.68;
+  }
+
+  .has-canopy .moon-rim {
+    opacity: 0.72;
   }
 
   .memory-frame__inner,
