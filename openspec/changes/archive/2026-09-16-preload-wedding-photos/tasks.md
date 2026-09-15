@@ -12,4 +12,4 @@
 
 - [x] 3.1 Validate syntax, all small/full photo mappings, preload hints, failure fallback, OpenSpec artifacts, and clean diffs.
 - [x] 3.2 Verify zero-interaction preload requests, request ordering/concurrency, cache reuse during the full game, responsive layout, and a production Jekyll build.
-- [ ] 3.3 Commit, push, verify GitHub Pages assets, and sync/archive the completed change.
+- [x] 3.3 Commit, push, verify GitHub Pages assets, and sync/archive the completed change.
