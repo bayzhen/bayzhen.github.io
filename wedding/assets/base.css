@@ -177,9 +177,76 @@ svg {
   opacity: 0.62;
 }
 
+.music-entry {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 28px;
+  place-content: center;
+  place-items: center;
+  border: 0;
+  background: var(--music-entry-bg, #f4f1eb);
+  color: var(--music-entry-text, #20201e);
+  text-align: center;
+  cursor: pointer;
+}
+
+.music-entry[hidden] {
+  display: none;
+}
+
+.music-entry__kicker {
+  margin-bottom: 28px;
+  color: var(--music-entry-accent, currentColor);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.music-entry__monogram {
+  font: italic 400 clamp(62px, 18vw, 96px)/1 Georgia, "Songti SC", serif;
+  letter-spacing: -0.08em;
+}
+
+.music-entry__action {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  margin-top: 42px;
+  padding: 12px 22px;
+  border: 1px solid var(--music-entry-accent, currentColor);
+  border-radius: 999px;
+  color: var(--music-entry-accent, currentColor);
+  font-family: "Songti SC", STSong, serif;
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  animation: music-entry-pulse 1.8s ease-in-out infinite;
+}
+
+.music-entry__hint {
+  margin-top: 16px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  opacity: 0.62;
+}
+
+.music-entry-open {
+  overflow: hidden;
+}
+
 @keyframes music-disc-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes music-entry-pulse {
+  50% {
+    transform: translateY(-3px);
   }
 }
 

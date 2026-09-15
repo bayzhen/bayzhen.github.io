@@ -10,6 +10,9 @@
   --switcher-border: rgba(238, 233, 222, 0.18);
   --switcher-text: #eee9de;
   --switcher-active: rgba(185, 154, 98, 0.22);
+  --music-entry-bg: #0b0c0c;
+  --music-entry-text: #eee9de;
+  --music-entry-accent: #b99a62;
 }
 
 body {

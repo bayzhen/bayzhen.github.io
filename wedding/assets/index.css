@@ -4,6 +4,9 @@
   --paper: #f4f1eb;
   --muted: #77736c;
   --line: rgba(32, 32, 30, 0.16);
+  --music-entry-bg: #f4f1eb;
+  --music-entry-text: #20201e;
+  --music-entry-accent: #803128;
 }
 
 body {

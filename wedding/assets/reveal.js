@@ -79,6 +79,7 @@
   function initializeMusic() {
     var music = document.createElement("audio");
     var toggle = document.createElement("button");
+    var entry = document.createElement("button");
     var userPaused = false;
     var unlockEvents = ["pointerdown", "touchstart", "keydown"];
 
@@ -97,8 +98,33 @@
     toggle.setAttribute("aria-pressed", "false");
     toggle.innerHTML = '<span class="music-toggle__disc" aria-hidden="true">♪</span>';
 
+    entry.className = "music-entry";
+    entry.type = "button";
+    entry.hidden = true;
+    entry.setAttribute("aria-label", "开启婚礼邀请函并播放背景音乐");
+    entry.innerHTML =
+      '<span class="music-entry__kicker">Wedding invitation</span>' +
+      '<span class="music-entry__monogram">陈 &amp; 任</span>' +
+      '<span class="music-entry__action">开启邀请函</span>' +
+      '<span class="music-entry__hint">轻触开启音乐</span>';
+
     document.body.appendChild(music);
     document.body.appendChild(toggle);
+    document.body.appendChild(entry);
+
+    function showEntry() {
+      if (userPaused || !entry.hidden) {
+        return;
+      }
+
+      entry.hidden = false;
+      document.documentElement.classList.add("music-entry-open");
+    }
+
+    function hideEntry() {
+      entry.hidden = true;
+      document.documentElement.classList.remove("music-entry-open");
+    }
 
     function syncToggle() {
       var isPlaying = !music.paused;
@@ -117,7 +143,12 @@
 
       playback = music.play();
       if (playback && typeof playback.catch === "function") {
-        playback.catch(syncToggle);
+        playback.catch(function (error) {
+          syncToggle();
+          if (!error || error.name === "NotAllowedError") {
+            showEntry();
+          }
+        });
       }
     }
 
@@ -146,9 +177,21 @@
       }
     });
 
-    music.addEventListener("play", syncToggle);
+    entry.addEventListener("click", function () {
+      userPaused = false;
+      requestPlayback();
+    });
+
+    music.addEventListener("play", function () {
+      syncToggle();
+      hideEntry();
+      removeUnlockListeners();
+    });
     music.addEventListener("pause", syncToggle);
-    music.addEventListener("error", syncToggle);
+    music.addEventListener("error", function () {
+      syncToggle();
+      hideEntry();
+    });
 
     unlockEvents.forEach(function (eventName) {
       document.addEventListener(eventName, unlockMusic, true);
