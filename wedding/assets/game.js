@@ -159,6 +159,15 @@
     var shakeCue = document.querySelector("[data-shake-tree]");
     var bloomButtons = Array.prototype.slice.call(document.querySelectorAll("[data-bloom]"));
     var stars = Array.prototype.slice.call(document.querySelectorAll("[data-fallen-star]"));
+    var frames = Array.prototype.slice.call(document.querySelectorAll("[data-memory-frame]"));
+    var memoryViewer = document.querySelector("[data-memory-viewer]");
+    var memoryMedia = document.querySelector("[data-memory-media]");
+    var memoryPictures = Array.prototype.slice.call(document.querySelectorAll("[data-memory-picture]"));
+    var memoryKicker = document.querySelector("[data-memory-kicker]");
+    var memoryTitle = document.querySelector("[data-memory-title]");
+    var memoryCaption = document.querySelector("[data-memory-caption]");
+    var memoryFlip = document.querySelector("[data-flip-memory]");
+    var memoryClose = document.querySelector("[data-close-memory]");
     var skip = document.querySelector("[data-skip-game]");
     var openButton = document.querySelector("[data-open-invitation]");
     var closeButtons = Array.prototype.slice.call(document.querySelectorAll("[data-close-invitation]"));
@@ -186,15 +195,139 @@
     var gestureHandled = false;
     var invitationTimer = 0;
     var closeTimer = 0;
+    var memoryAutoTimer = 0;
+    var memoryHideTimer = 0;
     var flowTimers = [];
     var lastFocus = null;
+    var activeMemoryFrame = null;
+    var activeMemorySide = "front";
+    var memoryReviewMode = false;
     var memories = {
       left: "相遇 · 故事从一束光开始",
       crown: "相知 · 平凡日子有了共同方向",
       right: "相守 · 从此共赴岁岁年年"
     };
+    var memoryStories = {
+      left: {
+        front: {
+          kicker: "第一帧 · 相遇",
+          title: "遇见你时，笑意先抵达",
+          caption: "从一个顽皮的手势开始，故事有了两个人。",
+          layout: "portrait",
+          photos: [
+            {
+              small: "/wedding/assets/photos/orange-playful-small.webp",
+              full: "/wedding/assets/photos/orange-playful.webp",
+              smallWidth: 640,
+              fullWidth: 960,
+              width: 960,
+              height: 1440,
+              alt: "新郎为新娘比出爱心的暖橙色婚纱照"
+            }
+          ]
+        },
+        back: {
+          kicker: "星光面 · 相遇",
+          title: "并肩以后，每天都有新鲜的光",
+          caption: "把明亮、认真和一点可爱，都放进往后的日子。",
+          layout: "portrait",
+          photos: [
+            {
+              small: "/wedding/assets/photos/orange-portrait-small.webp",
+              full: "/wedding/assets/photos/orange-portrait.webp",
+              smallWidth: 640,
+              fullWidth: 1280,
+              width: 1280,
+              height: 1919,
+              alt: "新郎新娘在暖橙色背景前的正式合照"
+            }
+          ]
+        }
+      },
+      crown: {
+        front: {
+          kicker: "第二帧 · 相知",
+          title: "靠近一点，听见彼此的心跳",
+          caption: "世界很大，而我们刚好愿意停在彼此身边。",
+          layout: "landscape",
+          photos: [
+            {
+              small: "/wedding/assets/photos/veil-closeup-small.webp",
+              full: "/wedding/assets/photos/veil-closeup.webp",
+              smallWidth: 800,
+              fullWidth: 1919,
+              width: 1919,
+              height: 1280,
+              alt: "新郎新娘在头纱下相互靠近"
+            }
+          ]
+        },
+        back: {
+          kicker: "星光面 · 相知",
+          title: "你与我，成为我们",
+          caption: "各自闪耀，也从此共享同一束星光。",
+          layout: "diptych",
+          photos: [
+            {
+              small: "/wedding/assets/photos/starlight-bride-small.webp",
+              full: "/wedding/assets/photos/starlight-bride.webp",
+              smallWidth: 640,
+              fullWidth: 1280,
+              width: 1280,
+              height: 1919,
+              alt: "新娘身着白色婚纱站在星光背景前"
+            },
+            {
+              small: "/wedding/assets/photos/black-suit-groom-small.webp",
+              full: "/wedding/assets/photos/black-suit-groom.webp",
+              smallWidth: 640,
+              fullWidth: 960,
+              width: 960,
+              height: 1440,
+              alt: "新郎身着黑色礼服的肖像"
+            }
+          ]
+        }
+      },
+      right: {
+        front: {
+          kicker: "第三帧 · 相守",
+          title: "古老的祝愿，写进我们的以后",
+          caption: "一礼一诺，从今朝走向岁岁年年。",
+          layout: "landscape",
+          photos: [
+            {
+              small: "/wedding/assets/photos/traditional-closeup-small.webp",
+              full: "/wedding/assets/photos/traditional-closeup.webp",
+              smallWidth: 800,
+              fullWidth: 1919,
+              width: 1919,
+              height: 1280,
+              alt: "身着明制婚服的新郎新娘相视而笑"
+            }
+          ]
+        },
+        back: {
+          kicker: "星光面 · 相守",
+          title: "从此有喜，也有朝朝暮暮",
+          caption: "愿每一次回望，都还能看见今天的欢喜。",
+          layout: "portrait",
+          photos: [
+            {
+              small: "/wedding/assets/photos/traditional-portrait-small.webp",
+              full: "/wedding/assets/photos/traditional-portrait.webp",
+              smallWidth: 640,
+              fullWidth: 1280,
+              width: 1280,
+              height: 1919,
+              alt: "身着明制婚服的新郎新娘手持囍字"
+            }
+          ]
+        }
+      }
+    };
 
-    if (!shell || !viewport || !seed || !growCue || !shakeCue || !dialog || !canvas) {
+    if (!shell || !viewport || !seed || !growCue || !shakeCue || !dialog || !canvas || !memoryViewer || frames.length !== 3) {
       return;
     }
 
@@ -244,6 +377,159 @@
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2
       };
+    }
+
+    function frameForKey(key) {
+      return frames.filter(function (frame) {
+        return frame.getAttribute("data-memory-frame") === key;
+      })[0];
+    }
+
+    function storyFor(frame, side) {
+      var key = frame.getAttribute("data-memory-frame");
+      return memoryStories[key][side];
+    }
+
+    function loadFrameSide(frame, side) {
+      var story = storyFor(frame, side);
+      var thumbNames = side === "front" ? ["front"] : ["back", "back-secondary"];
+
+      story.photos.forEach(function (photo, index) {
+        var image = frame.querySelector('[data-frame-thumb="' + thumbNames[index] + '"]');
+        if (image && !image.getAttribute("src")) {
+          image.src = image.getAttribute("data-src");
+          image.decoding = "async";
+        }
+      });
+    }
+
+    function clearMemoryPicture(picture) {
+      var source = picture.querySelector("[data-memory-source]");
+      var image = picture.querySelector("[data-memory-image]");
+
+      picture.hidden = true;
+      source.removeAttribute("srcset");
+      source.removeAttribute("sizes");
+      image.removeAttribute("src");
+      image.removeAttribute("width");
+      image.removeAttribute("height");
+      image.alt = "";
+    }
+
+    function fillMemoryPicture(picture, photo) {
+      var source = picture.querySelector("[data-memory-source]");
+      var image = picture.querySelector("[data-memory-image]");
+
+      source.srcset = photo.small + " " + photo.smallWidth + "w, " + photo.full + " " + photo.fullWidth + "w";
+      source.sizes = "(max-width: 600px) 82vw, 430px";
+      image.src = photo.small;
+      image.width = photo.width;
+      image.height = photo.height;
+      image.alt = photo.alt;
+      image.decoding = "async";
+      picture.hidden = false;
+    }
+
+    function renderMemory(frame, side) {
+      var story = storyFor(frame, side);
+
+      memoryKicker.textContent = story.kicker;
+      memoryTitle.textContent = story.title;
+      memoryCaption.textContent = story.caption;
+      memoryMedia.className = "memory-viewer__media is-" + story.layout;
+      memoryPictures.forEach(clearMemoryPicture);
+      story.photos.forEach(function (photo, index) {
+        fillMemoryPicture(memoryPictures[index], photo);
+      });
+      memoryFlip.textContent = side === "front" ? "翻看星光一面" : "翻看花开一面";
+    }
+
+    function closeMemory(immediate) {
+      var returnFocus = memoryReviewMode ? activeMemoryFrame : null;
+
+      window.clearTimeout(memoryAutoTimer);
+      window.clearTimeout(memoryHideTimer);
+      memoryViewer.classList.remove("is-visible", "is-review");
+      memoryReviewMode = false;
+      memoryHideTimer = window.setTimeout(function () {
+        memoryViewer.hidden = true;
+        if (!immediate && returnFocus && typeof returnFocus.focus === "function") {
+          returnFocus.focus({ preventScroll: true });
+        }
+      }, immediate || reduceMotion ? 20 : 300);
+    }
+
+    function openMemory(frame, side, reviewMode) {
+      window.clearTimeout(memoryAutoTimer);
+      window.clearTimeout(memoryHideTimer);
+      activeMemoryFrame = frame;
+      activeMemorySide = side;
+      memoryReviewMode = reviewMode;
+      loadFrameSide(frame, side);
+      renderMemory(frame, side);
+      memoryFlip.hidden = !reviewMode;
+      memoryViewer.classList.toggle("is-review", reviewMode);
+      memoryViewer.hidden = false;
+
+      window.requestAnimationFrame(function () {
+        memoryViewer.classList.add("is-visible");
+      });
+
+      if (reviewMode) {
+        memoryClose.focus({ preventScroll: true });
+      } else {
+        memoryAutoTimer = window.setTimeout(function () {
+          closeMemory(false);
+        }, reduceMotion ? 260 : 2200);
+      }
+    }
+
+    function plantFrame(key) {
+      var frame = frameForKey(key);
+
+      loadFrameSide(frame, "front");
+      frame.hidden = false;
+      window.requestAnimationFrame(function () {
+        frame.classList.add("is-planted");
+      });
+      openMemory(frame, "front", false);
+    }
+
+    function flipFrame(key) {
+      var frame = frameForKey(key);
+
+      loadFrameSide(frame, "back");
+      frame.hidden = false;
+      frame.classList.add("is-planted", "is-flipped");
+      openMemory(frame, "back", false);
+    }
+
+    function prepareAllFrames() {
+      frames.forEach(function (frame) {
+        loadFrameSide(frame, "front");
+        loadFrameSide(frame, "back");
+        frame.hidden = false;
+        frame.disabled = false;
+        frame.tabIndex = 0;
+        frame.classList.add("is-planted", "is-flipped");
+      });
+      shell.classList.add("frame-review-ready");
+    }
+
+    function resetFrames() {
+      closeMemory(true);
+      activeMemoryFrame = null;
+      activeMemorySide = "front";
+      frames.forEach(function (frame) {
+        frame.hidden = true;
+        frame.disabled = true;
+        frame.tabIndex = -1;
+        frame.classList.remove("is-planted", "is-flipped");
+        Array.prototype.slice.call(frame.querySelectorAll("[data-frame-thumb]")).forEach(function (image) {
+          image.removeAttribute("src");
+        });
+      });
+      memoryPictures.forEach(clearMemoryPicture);
     }
 
     function activateBloom(index) {
@@ -353,6 +639,7 @@
       center = buttonCenter(button);
       bloomIndex += 1;
       effects.burst(center.x, center.y, "petal", 34);
+      plantFrame(cluster);
       vibrate(22);
       memory.textContent = memories[cluster];
       announcement.textContent = memories[cluster] + "，枝头已经开花";
@@ -420,6 +707,7 @@
     function openInvitation() {
       window.clearTimeout(invitationTimer);
       window.clearTimeout(closeTimer);
+      closeMemory(true);
       lastFocus = document.activeElement;
       shell.classList.add("is-invitation-open");
       dialog.hidden = false;
@@ -451,6 +739,7 @@
 
     function completeGame(openNow) {
       clearFlowTimers();
+      closeMemory(true);
       setStage("complete");
       setProgress(5, "月光花树与三颗星已经全部点亮");
       setPrompt("伍 · 礼成", "花与星光已经集齐，<br><em>我们的邀请为你开启</em>");
@@ -460,6 +749,7 @@
       openButton.hidden = false;
       shell.classList.remove("is-tree-shaking");
       shell.classList.add("has-canopy", "has-bloom-left", "has-bloom-crown", "has-bloom-right", "stars-ready");
+      prepareAllFrames();
 
       bloomButtons.forEach(function (button) {
         button.hidden = true;
@@ -484,6 +774,8 @@
     function findStar(star) {
       var center;
       var word;
+      var starIndex;
+      var frameKey;
 
       if (stage !== "stars" || !shell.classList.contains("stars-ready") || star.classList.contains("is-found")) {
         return;
@@ -495,6 +787,9 @@
       star.setAttribute("aria-label", word + "之星已点亮");
       star.tabIndex = -1;
       starCount += 1;
+      starIndex = stars.indexOf(star);
+      frameKey = frames[starIndex].getAttribute("data-memory-frame");
+      flipFrame(frameKey);
       center = buttonCenter(star);
       effects.burst(center.x, center.y, "star", 38);
       vibrate(25);
@@ -504,7 +799,7 @@
       if (starCount === stars.length) {
         schedule(function () {
           completeGame(false);
-        }, reduceMotion ? 100 : 620);
+        }, reduceMotion ? 260 : 2100);
       } else {
         setPrompt("肆 · 星落", "已点亮 " + starCount + " 颗星，<br><em>其余星光会一直等你</em>");
       }
@@ -521,6 +816,7 @@
       pointerActive = false;
       pointerMoved = false;
       gestureHandled = false;
+      resetFrames();
       shell.className = "tree-shell";
       shell.setAttribute("data-tree-game", "");
       shell.setAttribute("data-stage", "seed");
@@ -622,6 +918,36 @@
       });
     });
 
+    frames.forEach(function (frame) {
+      frame.addEventListener("click", function () {
+        var side;
+        if (stage !== "complete" || !dialog.hidden) {
+          return;
+        }
+        side = frame.classList.contains("is-flipped") ? "back" : "front";
+        openMemory(frame, side, true);
+      });
+    });
+
+    memoryClose.addEventListener("click", function () {
+      closeMemory(false);
+    });
+    memoryFlip.addEventListener("click", function () {
+      if (!memoryReviewMode || !activeMemoryFrame) {
+        return;
+      }
+      activeMemorySide = activeMemorySide === "front" ? "back" : "front";
+      activeMemoryFrame.classList.toggle("is-flipped", activeMemorySide === "back");
+      loadFrameSide(activeMemoryFrame, activeMemorySide);
+      renderMemory(activeMemoryFrame, activeMemorySide);
+      announcement.textContent = "相框已经翻到" + (activeMemorySide === "front" ? "花开" : "星光") + "一面";
+    });
+    memoryViewer.addEventListener("click", function (event) {
+      if (event.target === memoryViewer) {
+        closeMemory(false);
+      }
+    });
+
     viewport.addEventListener("pointerdown", beginPointer);
     viewport.addEventListener("pointermove", movePointer);
     viewport.addEventListener("pointerup", endPointer);
@@ -665,7 +991,12 @@
       }
     });
     document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && !dialog.hidden) {
+      if (event.key !== "Escape") {
+        return;
+      }
+      if (!memoryViewer.hidden) {
+        closeMemory(false);
+      } else if (!dialog.hidden) {
         closeInvitation(false);
       }
     });
@@ -673,6 +1004,9 @@
     bloomButtons.forEach(function (button) {
       button.disabled = true;
       button.tabIndex = -1;
+    });
+    frames.forEach(function (frame) {
+      frame.tabIndex = -1;
     });
     setProgress(1);
   }

@@ -24,10 +24,10 @@
   <title>陈栢成与任鹭 · 婚礼邀请函</title>
   <link rel="canonical" href="https://bayzhen.github.io/wedding/">
   <link rel="image_src" href="https://bayzhen.github.io/wedding/assets/share/editorial-invitation-20261006.jpg">
-  <link rel="stylesheet" href="/wedding/assets/base.css?v=20260916-moonlight">
-  <link rel="stylesheet" href="/wedding/assets/index.css?v=20260916-moonlight">
-  <script src="/wedding/assets/reveal.js?v=20260916-moonlight"></script>
-  <script src="/wedding/assets/game.js?v=20260916-moonlight"></script>
+  <link rel="stylesheet" href="/wedding/assets/base.css?v=20260916-memories">
+  <link rel="stylesheet" href="/wedding/assets/index.css?v=20260916-memories">
+  <script src="/wedding/assets/reveal.js?v=20260916-memories"></script>
+  <script src="/wedding/assets/game.js?v=20260916-memories"></script>
 </head>
 <body>
   <a class="skip-link" href="#tree-game">跳转到爱情树小游戏</a>
@@ -198,6 +198,48 @@
           </svg>
         </div>
 
+        <div class="memory-frames" data-memory-frames aria-label="花树上的三组记忆相框">
+          <button class="memory-frame memory-frame--left" type="button" data-memory-frame="left" aria-label="回看相遇相框" hidden disabled>
+            <span class="memory-frame__string" aria-hidden="true"></span>
+            <span class="memory-frame__inner">
+              <span class="memory-frame__face memory-frame__face--front">
+                <img data-frame-thumb="front" data-src="/wedding/assets/photos/orange-playful-small.webp" alt="">
+              </span>
+              <span class="memory-frame__face memory-frame__face--back">
+                <img data-frame-thumb="back" data-src="/wedding/assets/photos/orange-portrait-small.webp" alt="">
+              </span>
+            </span>
+            <small>相遇</small>
+          </button>
+
+          <button class="memory-frame memory-frame--crown" type="button" data-memory-frame="crown" aria-label="回看相知相框" hidden disabled>
+            <span class="memory-frame__string" aria-hidden="true"></span>
+            <span class="memory-frame__inner">
+              <span class="memory-frame__face memory-frame__face--front memory-frame__face--landscape">
+                <img data-frame-thumb="front" data-src="/wedding/assets/photos/veil-closeup-small.webp" alt="">
+              </span>
+              <span class="memory-frame__face memory-frame__face--back memory-frame__face--diptych">
+                <img data-frame-thumb="back" data-src="/wedding/assets/photos/starlight-bride-small.webp" alt="">
+                <img data-frame-thumb="back-secondary" data-src="/wedding/assets/photos/black-suit-groom-small.webp" alt="">
+              </span>
+            </span>
+            <small>相知</small>
+          </button>
+
+          <button class="memory-frame memory-frame--right" type="button" data-memory-frame="right" aria-label="回看相守相框" hidden disabled>
+            <span class="memory-frame__string" aria-hidden="true"></span>
+            <span class="memory-frame__inner">
+              <span class="memory-frame__face memory-frame__face--front memory-frame__face--landscape">
+                <img data-frame-thumb="front" data-src="/wedding/assets/photos/traditional-closeup-small.webp" alt="">
+              </span>
+              <span class="memory-frame__face memory-frame__face--back">
+                <img data-frame-thumb="back" data-src="/wedding/assets/photos/traditional-portrait-small.webp" alt="">
+              </span>
+            </span>
+            <small>相守</small>
+          </button>
+        </div>
+
         <button class="seed-button" type="button" data-seed aria-label="轻触种下爱情树">
           <span aria-hidden="true">✦</span><small>轻触种下</small>
         </button>
@@ -230,6 +272,26 @@
           <span aria-hidden="true">✦</span><small>相守</small>
         </button>
       </div>
+
+      <section class="memory-viewer" data-memory-viewer aria-live="polite" hidden>
+        <article class="memory-viewer__card">
+          <button class="memory-viewer__close" type="button" data-close-memory aria-label="收起照片">×</button>
+          <p class="memory-viewer__kicker" data-memory-kicker>花树记忆</p>
+          <div class="memory-viewer__media" data-memory-media>
+            <picture data-memory-picture="primary">
+              <source type="image/webp" data-memory-source>
+              <img data-memory-image alt="">
+            </picture>
+            <picture data-memory-picture="secondary" hidden>
+              <source type="image/webp" data-memory-source>
+              <img data-memory-image alt="">
+            </picture>
+          </div>
+          <h2 data-memory-title>相遇</h2>
+          <p class="memory-viewer__caption" data-memory-caption></p>
+          <button class="memory-viewer__flip" type="button" data-flip-memory hidden>翻看另一面</button>
+        </article>
+      </section>
 
       <p class="tree-memory" data-tree-memory aria-live="polite"></p>
 
