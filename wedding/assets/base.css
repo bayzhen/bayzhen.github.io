@@ -33,6 +33,21 @@ svg {
   max-width: 100%;
 }
 
+.photo-frame {
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-frame > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--photo-position, 50% 50%);
+  filter: var(--photo-filter, none);
+}
+
 .skip-link {
   position: fixed;
   top: 12px;
@@ -74,6 +89,7 @@ svg {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   transform: translateX(-50%);
+  transition: opacity 220ms ease, transform 220ms ease;
 }
 
 .concept-nav a,
@@ -96,56 +112,31 @@ svg {
   background: var(--switcher-active, rgba(255, 255, 255, 0.16));
 }
 
-.photo-placeholder {
-  position: relative;
-  isolation: isolate;
-  display: grid;
-  place-items: center;
-  min-height: 260px;
-  overflow: hidden;
-}
-
-.photo-placeholder::before,
-.photo-placeholder::after {
-  position: absolute;
-  z-index: -1;
-  content: "";
-}
-
-.photo-placeholder::before {
-  inset: 0;
-  background:
-    linear-gradient(135deg, transparent 47%, currentColor 48%, currentColor 48.25%, transparent 49%),
-    linear-gradient(45deg, transparent 47%, currentColor 48%, currentColor 48.25%, transparent 49%);
-  opacity: 0.1;
-}
-
-.photo-placeholder::after {
-  width: 68%;
-  aspect-ratio: 1;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  opacity: 0.14;
-}
-
-.photo-placeholder__label {
-  display: flex;
-  flex-direction: column;
+.calendar-link {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 18px;
-  text-align: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 30px;
+  padding: 11px 18px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: inherit;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
-.photo-placeholder__label::before {
-  content: "◇";
-  font-size: 24px;
-  line-height: 1;
+.calendar-link::before {
+  content: "+";
+  font: 18px/1 Georgia, serif;
 }
 
-.photo-placeholder__label small {
-  display: block;
-  opacity: 0.66;
+.calendar-link:hover,
+.calendar-link:focus-visible {
+  background: var(--calendar-hover-bg, rgba(127, 127, 127, 0.12));
 }
 
 .reveal {
@@ -177,6 +168,12 @@ svg {
     min-height: 36px;
     padding-inline: 9px;
     font-size: 10px;
+  }
+
+  .concept-nav.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -160%);
   }
 }
 

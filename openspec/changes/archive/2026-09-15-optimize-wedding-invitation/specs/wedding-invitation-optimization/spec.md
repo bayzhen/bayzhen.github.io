@@ -1,0 +1,67 @@
+## Purpose
+
+让婚礼邀请函在保留人物真实身份和隐私边界的前提下，以更清晰、更协调且更适合移动设备的方式呈现照片，并提供不依赖公开联系方式的保存日期入口。
+
+## ADDED Requirements
+
+### Requirement: Identity-safe image enhancement
+系统 SHALL 只发布不改变人物身份、五官、姿态、服装、道具和原始构图的照片增强版本，且 MUST 不以生成式清晰度换取可辨认的面部重建。
+
+#### Scenario: Enhanced portrait is evaluated
+- **WHEN** 增强版本与原图进行视觉对照
+- **THEN** 人物五官和身份保持一致
+- **THEN** 若生成式版本存在可辨认差异，系统改用非生成式保真锐化版本
+
+### Requirement: Responsive high-quality photo delivery
+所有婚礼照片 SHALL 提供至少一个较小屏幕版本和一个高质量完整版本，并 SHALL 通过浏览器响应式图片属性按实际显示宽度选择资源。
+
+#### Scenario: Visitor opens a page on a phone
+- **WHEN** 照片以较小 CSS 宽度显示
+- **THEN** 浏览器可以选择较小的 WebP 资源
+- **THEN** 页面不需要为每张照片固定下载最大版本
+
+#### Scenario: Visitor opens a hero on a high-density screen
+- **WHEN** 主视觉在高像素密度屏幕上显示
+- **THEN** 浏览器可以选择足以覆盖其渲染尺寸的完整版本
+- **THEN** 图片保持清晰且不出现明显压缩块
+
+### Requirement: Theme-consistent photographic presentation
+总览页和三个候选方案 SHALL 使用克制的对比度、饱和度和遮罩调整，让照片分别融入电影、纸张和东方主题，同时 MUST 保持人物面部清晰可见。
+
+#### Scenario: Compare the three concepts
+- **WHEN** 用户查看总览卡片和各方案主视觉
+- **THEN** 电影方案呈现偏冷的深色质感
+- **THEN** 纸张方案呈现柔和的暖纸质感
+- **THEN** 东方方案保留自然肤色与朱砂红细节
+
+#### Scenario: Editorial hero is viewed on a wide, short screen
+- **WHEN** 纸张方案在超宽桌面视口中显示竖幅主视觉
+- **THEN** 主视觉画框保持与源照片一致的 2:3 竖幅比例
+- **THEN** 新郎、新娘和礼服完整保留，不因横向拉伸画框而发生严重纵向裁切
+
+### Requirement: Non-obstructive mobile concept navigation
+移动端方案切换导航 SHALL 在用户向下浏览内容时减少遮挡，并 SHALL 在回到页面顶部或向上滚动时恢复可见。
+
+#### Scenario: Scroll down through a photo section
+- **WHEN** 移动端用户持续向下滚动且已离开页面顶部
+- **THEN** 固定导航移出可视区域
+
+#### Scenario: Scroll upward or return to the top
+- **WHEN** 用户向上滚动或回到页面顶部
+- **THEN** 方案切换导航重新显示并可操作
+
+### Requirement: Save-the-date download
+每个完整邀请函方案 SHALL 提供同一个静态日历下载入口，且日历内容 MUST 只包含已经确认可公开的信息。
+
+#### Scenario: Download calendar entry before exact details exist
+- **WHEN** 用户点击“保存日期”且准确时间和城市仍待补充
+- **THEN** 下载项记录 2026 年 10 月 6 日全天并在描述中说明婚礼在上午
+- **THEN** 日历文件不包含手机号、酒店或未确认地点
+
+### Requirement: Safe incomplete invitation content
+系统 SHALL 继续明确标记尚未提供的姓名、城市和准确时间，不得从照片或文件名推断这些信息。
+
+#### Scenario: Publish optimized preview before final content
+- **WHEN** 优化页面被构建
+- **THEN** 未知姓名、城市和准确时间仍显示为现有占位内容
+- **THEN** 页面不新增推断出的个人信息

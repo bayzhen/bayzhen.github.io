@@ -29,9 +29,49 @@
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initializeReveal);
-  } else {
+  function initializeConceptNav() {
+    var nav = document.querySelector(".concept-nav");
+    var narrowScreen = window.matchMedia("(max-width: 540px)");
+
+    if (!nav) {
+      return;
+    }
+
+    var lastScrollY = window.scrollY;
+
+    function showNav() {
+      nav.classList.remove("is-hidden");
+    }
+
+    function updateNav() {
+      var currentScrollY = window.scrollY;
+      var delta = currentScrollY - lastScrollY;
+
+      if (!narrowScreen.matches || currentScrollY < 96 || nav.contains(document.activeElement)) {
+        showNav();
+      } else if (delta > 8) {
+        nav.classList.add("is-hidden");
+      } else if (delta < -8) {
+        showNav();
+      }
+
+      lastScrollY = currentScrollY;
+    }
+
+    window.addEventListener("scroll", updateNav, { passive: true });
+
+    nav.addEventListener("focusin", showNav);
+    narrowScreen.addEventListener("change", showNav);
+  }
+
+  function initializePage() {
     initializeReveal();
+    initializeConceptNav();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializePage);
+  } else {
+    initializePage();
   }
 })();

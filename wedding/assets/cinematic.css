@@ -18,6 +18,10 @@ body {
   font-family: "Helvetica Neue", Arial, "PingFang SC", sans-serif;
 }
 
+.photo-frame {
+  --photo-filter: contrast(1.07) saturate(0.94) brightness(0.99);
+}
+
 .eyebrow {
   margin: 0 0 24px;
   color: var(--gold);
@@ -103,6 +107,7 @@ body {
 }
 
 .film-hero__frame {
+  --photo-position: 50% 35%;
   height: min(70vh, 760px);
   min-height: 460px;
   border: 1px solid rgba(238, 233, 222, 0.28);
@@ -216,6 +221,7 @@ body {
 }
 
 .story__visual {
+  --photo-position: 50% 50%;
   min-height: 720px;
   background:
     linear-gradient(120deg, rgba(185, 154, 98, 0.15), transparent 42%),
@@ -230,6 +236,7 @@ body {
   font-size: 9px;
   letter-spacing: 0.2em;
   opacity: 0.5;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
 }
 
 .story__copy {
@@ -310,6 +317,18 @@ body {
   border: 1px solid var(--line);
   background: #1b1d1c;
   color: var(--ivory);
+}
+
+.gallery__photo--wide {
+  --photo-position: 50% 45%;
+}
+
+.gallery__photo--portrait:nth-child(2) {
+  --photo-position: 50% 38%;
+}
+
+.gallery__photo--portrait:last-child {
+  --photo-position: 50% 30%;
 }
 
 .gallery__photo--wide {
@@ -449,6 +468,12 @@ body {
   letter-spacing: 0.08em;
 }
 
+.closing .calendar-link {
+  --calendar-hover-bg: rgba(185, 154, 98, 0.12);
+  justify-self: center;
+  color: var(--gold);
+}
+
 .film-footer {
   display: flex;
   justify-content: space-between;
@@ -551,15 +576,15 @@ body {
     position: relative;
     z-index: 2;
     margin-right: 0;
-    font-size: 18vw;
+    font-size: 16.5vw;
   }
 
   .film-hero__frame {
     align-self: stretch;
-    width: 86%;
-    height: 46svh;
+    width: 88%;
+    height: 49svh;
     min-height: 360px;
-    margin: -22px 0 0 auto;
+    margin: -12px 0 0 auto;
   }
 
   .film-hero__date {

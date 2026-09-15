@@ -185,6 +185,19 @@ body {
   overflow: hidden;
 }
 
+.concept-preview > * {
+  z-index: 2;
+}
+
+.concept-preview__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .preview-number {
   position: absolute;
   top: 20px;
@@ -202,10 +215,23 @@ body {
   text-align: center;
 }
 
+.concept-preview--cinematic::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(rgba(8, 9, 9, 0.18), rgba(8, 9, 9, 0.58));
+  content: "";
+}
+
+.concept-preview--cinematic .concept-preview__photo {
+  object-position: 50% 35%;
+  filter: contrast(1.08) saturate(0.94);
+}
+
 .concept-preview--cinematic::after {
   position: absolute;
   inset: 34px;
-  z-index: -1;
+  z-index: 3;
   border: 1px solid rgba(242, 234, 219, 0.18);
   content: "";
 }
@@ -243,6 +269,12 @@ body {
     #eee7da;
   background-size: 100% 25%;
   color: #701b24;
+}
+
+.concept-preview--editorial .concept-preview__photo {
+  opacity: 0.62;
+  object-position: 50% 30%;
+  filter: contrast(1.04) sepia(0.08) saturate(0.86);
 }
 
 .editorial-issue {
@@ -293,9 +325,15 @@ body {
 .concept-preview--oriental::before {
   position: absolute;
   inset: 30px;
-  z-index: -1;
+  z-index: 3;
   border: 1px solid rgba(44, 43, 39, 0.25);
   content: "";
+}
+
+.concept-preview--oriental .concept-preview__photo {
+  opacity: 0.68;
+  object-position: 50% 28%;
+  filter: contrast(1.03) sepia(0.06) saturate(0.94);
 }
 
 .concept-preview--oriental strong {
