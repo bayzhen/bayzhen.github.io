@@ -12,4 +12,4 @@
 
 - [x] 3.1 Validate syntax, photo mapping completeness, deferred sources before interaction, OpenSpec artifacts, and clean diffs.
 - [x] 3.2 Exercise the full flow and memory review on narrow mobile and desktop viewports, check layout and requested images, and complete a Jekyll production build.
-- [ ] 3.3 Commit and push the implementation, verify GitHub Pages assets, then sync and archive the completed OpenSpec change.
+- [x] 3.3 Commit and push the implementation, verify GitHub Pages assets, then sync and archive the completed OpenSpec change.
