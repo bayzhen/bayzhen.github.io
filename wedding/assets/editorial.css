@@ -648,11 +648,14 @@ body {
     display: flex;
     min-height: auto;
     flex-direction: column;
-    padding: 74px 14px 24px;
+    padding: 62px 12px 18px;
   }
 
   .paper-hero__masthead {
     grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    padding-bottom: 10px;
+    font-size: 8px;
   }
 
   .paper-hero__masthead strong {
@@ -660,24 +663,50 @@ body {
   }
 
   .paper-hero__copy {
-    padding: 54px 8px 20px;
+    padding: 28px 6px 12px;
+  }
+
+  .paper-hero__copy > p:first-child {
+    margin-bottom: 18px;
+    font-size: 14px;
   }
 
   .paper-hero h1 {
-    margin-bottom: 34px;
-    font-size: 22vw;
+    margin-bottom: 20px;
+    font-size: 19vw;
+  }
+
+  .paper-hero__names {
+    gap: 10px;
+    font-size: clamp(22px, 7vw, 28px);
+  }
+
+  .paper-hero__names i {
+    font-size: 16px;
+  }
+
+  .paper-hero__invite {
+    margin-top: 16px;
+    font-size: 15px;
+    line-height: 1.65;
   }
 
   .paper-hero__photo {
-    width: 100%;
+    align-self: center;
+    width: 88%;
     min-height: 0;
     aspect-ratio: 2 / 3;
-    margin-top: 14px;
+    margin-top: 8px;
   }
 
   .paper-hero__date {
     flex-wrap: wrap;
-    padding: 46px 0 26px;
+    gap: 12px;
+    padding: 30px 0 18px;
+  }
+
+  .paper-hero__date strong {
+    font-size: 72px;
   }
 
   .paper-hero__date small {
@@ -687,7 +716,7 @@ body {
   .letter {
     display: block;
     min-height: auto;
-    padding: 100px 20px;
+    padding: 72px 16px;
   }
 
   .letter__aside {
@@ -695,7 +724,7 @@ body {
   }
 
   .letter__paper {
-    padding: 54px 28px;
+    padding: 42px 24px;
     transform: rotate(-0.5deg);
   }
 
@@ -705,20 +734,30 @@ body {
 
   .letter__paper > p:not(.chapter) {
     font-size: 16px;
+    line-height: 1.9;
+  }
+
+  .letter__paper h2 {
+    margin-bottom: 30px;
+  }
+
+  .letter__signature {
+    margin-top: 32px;
   }
 
   .memoire {
-    padding: 110px 14px;
+    padding: 76px 12px;
   }
 
   .memoire__heading {
     display: block;
+    margin-bottom: 48px;
     padding: 0 8px;
   }
 
   .memoire__heading h2 {
-    margin-bottom: 30px;
-    font-size: 21vw;
+    margin-bottom: 20px;
+    font-size: 18vw;
   }
 
   .memoire__collage {
@@ -731,7 +770,7 @@ body {
   }
 
   .memoire__figure--one .photo-frame {
-    min-height: 64svh;
+    min-height: 54svh;
   }
 
   .memoire__figure--two,
@@ -742,7 +781,7 @@ body {
 
   .memoire__figure--two .photo-frame,
   .memoire__figure--three .photo-frame {
-    min-height: 340px;
+    min-height: 300px;
   }
 
   .memoire figcaption {
@@ -750,15 +789,15 @@ body {
   }
 
   .rendezvous {
-    padding: 110px 22px;
+    padding: 76px 18px;
   }
 
   .rendezvous__heading {
-    min-height: 350px;
+    min-height: 270px;
   }
 
   .rendezvous__heading h2 {
-    font-size: 20vw;
+    font-size: 18vw;
   }
 
   .rendezvous__timeline {
@@ -767,6 +806,7 @@ body {
 
   .rendezvous__timeline li {
     min-height: auto;
+    padding: 22px;
     border-right: 0;
     border-bottom: 1px solid var(--line);
   }
@@ -780,9 +820,9 @@ body {
     min-height: auto;
     flex-direction: column;
     align-items: stretch;
-    gap: 80px;
-    margin: 70px 14px;
-    padding: 60px 28px;
+    gap: 52px;
+    margin: 50px 12px;
+    padding: 42px 22px;
   }
 
   .postcard::before {
@@ -800,7 +840,15 @@ body {
   }
 
   .postcard__copy {
-    padding-top: 20px;
+    padding-top: 12px;
+  }
+
+  .postcard h2 {
+    margin: 24px 0;
+  }
+
+  .postcard__names {
+    margin-top: 32px;
   }
 
   .postcard__lines {

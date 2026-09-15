@@ -159,14 +159,15 @@ svg {
 
 @media (max-width: 540px) {
   .concept-nav {
-    top: 10px;
-    gap: 2px;
+    top: 8px;
+    gap: 1px;
+    padding: 4px;
   }
 
   .concept-nav a,
   .concept-nav span {
-    min-height: 36px;
-    padding-inline: 9px;
+    min-height: 32px;
+    padding: 4px 8px;
     font-size: 10px;
   }
 

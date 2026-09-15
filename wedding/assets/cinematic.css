@@ -554,13 +554,14 @@ body {
   .film-hero {
     display: flex;
     flex-direction: column;
-    min-height: 100svh;
-    padding: 76px 16px 28px;
+    min-height: auto;
+    padding: 62px 14px 22px;
   }
 
   .film-hero__topline {
     align-self: stretch;
-    gap: 20px;
+    gap: 14px;
+    padding-bottom: 12px;
   }
 
   .film-hero__topline span:last-child {
@@ -569,39 +570,52 @@ body {
 
   .film-hero__title {
     align-self: stretch;
-    margin-top: 34px;
+    margin-top: 20px;
+  }
+
+  .film-hero__title p {
+    margin-bottom: 14px;
   }
 
   .film-hero__title h1 {
     position: relative;
     z-index: 2;
     margin-right: 0;
-    font-size: 16.5vw;
+    font-size: 15vw;
   }
 
   .film-hero__frame {
     align-self: stretch;
-    width: 88%;
-    height: 49svh;
-    min-height: 360px;
-    margin: -12px 0 0 auto;
+    width: 84%;
+    height: 42svh;
+    min-height: 320px;
+    max-height: 390px;
+    margin: -8px 0 0 auto;
   }
 
   .film-hero__date {
     align-self: stretch;
-    margin-top: -10px;
-    padding-top: 24px;
+    margin-top: -16px;
+    padding-top: 20px;
     background: linear-gradient(transparent, var(--night) 22%);
   }
 
   .film-hero__date strong {
-    font-size: 22vw;
+    font-size: 19vw;
+  }
+
+  .film-hero__date span {
+    margin-bottom: 10px;
+  }
+
+  .film-hero__date span:last-child {
+    margin-top: 14px;
   }
 
   .opening {
     grid-template-columns: 1fr;
-    gap: 28px;
-    padding: 110px 22px;
+    gap: 20px;
+    padding: 72px 20px;
   }
 
   .opening > div,
@@ -610,24 +624,28 @@ body {
   }
 
   .story__visual {
-    min-height: 72svh;
+    min-height: 56svh;
   }
 
   .story__copy {
-    padding: 90px 22px;
+    padding: 64px 20px;
   }
 
   .story__copy .section-number {
-    margin-bottom: 60px;
+    margin-bottom: 34px;
+  }
+
+  .story__copy > p:not(.eyebrow) {
+    margin: 28px 0 36px;
   }
 
   .gallery {
-    padding: 110px 14px;
+    padding: 72px 14px;
   }
 
   .gallery__heading {
     grid-template-columns: 1fr;
-    margin-bottom: 50px;
+    margin-bottom: 32px;
     padding: 0 8px;
   }
 
@@ -637,7 +655,7 @@ body {
   }
 
   .gallery__heading .section-number {
-    margin-bottom: 52px;
+    margin-bottom: 28px;
   }
 
   .gallery__grid {
@@ -648,21 +666,22 @@ body {
   .gallery__photo--wide {
     grid-column: 1 / -1;
     grid-row: auto;
-    min-height: 62svh;
+    min-height: 52svh;
     margin-top: 0;
   }
 
   .gallery__photo--portrait {
-    min-height: 330px;
+    min-height: 290px;
   }
 
   .schedule {
-    padding: 100px 22px;
+    padding: 72px 20px;
   }
 
   .schedule__list li {
     grid-template-columns: 56px 1fr;
     gap: 16px;
+    padding: 24px 0;
   }
 
   .schedule__list p {
@@ -670,15 +689,21 @@ body {
   }
 
   .closing {
-    min-height: 92svh;
+    min-height: auto;
+    padding: 84px 20px;
   }
 
   .closing__date {
+    margin-bottom: 24px;
     font-size: 27vw;
   }
 
+  .closing > p:not(.eyebrow, .closing__date) {
+    margin-top: 24px;
+  }
+
   .closing__contact {
-    margin-top: 54px;
+    margin-top: 36px;
   }
 
   .film-footer {

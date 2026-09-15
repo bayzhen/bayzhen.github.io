@@ -525,7 +525,8 @@ footer a {
 
 @media (max-width: 680px) {
   .intro {
-    min-height: 92svh;
+    min-height: 76svh;
+    padding: 78px 20px 58px;
   }
 
   .intro::before {
@@ -533,24 +534,40 @@ footer a {
   }
 
   .intro h1 {
-    font-size: clamp(42px, 13vw, 64px);
+    font-size: clamp(40px, 12vw, 58px);
+  }
+
+  .intro__kicker {
+    margin-bottom: 18px;
   }
 
   .intro__date {
     gap: 10px;
+    margin: 30px auto 16px;
   }
 
   .intro__date i {
     width: 22px;
   }
 
+  .intro__lead {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .intro__scroll {
+    bottom: 22px;
+  }
+
   .concepts {
-    padding: 90px 14px 110px;
+    padding: 68px 14px 78px;
   }
 
   .section-heading {
     grid-template-columns: 1fr;
     gap: 12px;
+    margin-bottom: 30px;
+    padding-bottom: 18px;
     padding-inline: 6px;
   }
 
@@ -563,19 +580,19 @@ footer a {
   }
 
   .concept-preview {
-    min-height: 460px;
+    min-height: 390px;
   }
 
   .concept-copy {
-    min-height: 250px;
-    padding: 26px 22px;
+    min-height: 220px;
+    padding: 22px 20px;
   }
 
   .placeholder-note {
     grid-template-columns: 1fr;
-    gap: 24px;
-    margin: 0 14px 90px;
-    padding: 34px 24px;
+    gap: 18px;
+    margin: 0 14px 60px;
+    padding: 28px 22px;
   }
 
   .placeholder-note__mark {
