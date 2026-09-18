@@ -1,0 +1,260 @@
+@font-face {
+  font-family: "Poster Songti";
+  src: url("./fonts/poster-songti.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  --red: #971e29;
+  --red-deep: #681923;
+  --gold: #e5bb77;
+  --gold-light: #ffe5ac;
+  --gold-line: rgb(235 191 119 / 45%);
+  font-family: "Poster Songti", "Songti SC", "Noto Serif CJK SC", STSong, SimSun, serif;
+  color: var(--gold-light);
+  background: #6e1721;
+  font-synthesis: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; padding: 28px; }
+figure, h1, h2, p, dl, dd { margin: 0; }
+img { display: block; width: 100%; height: 100%; object-fit: cover; }
+strong { font-weight: 400; }
+.ornament-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.wedding-poster {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 1060px);
+  margin: 0 auto;
+  padding: 28px 50px 24px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 38% 18%, rgb(222 80 61 / 24%), transparent 65%),
+    linear-gradient(120deg, transparent 30%, rgb(250 142 85 / 5%) 50%, transparent 70%),
+    var(--red);
+  box-shadow: 0 16px 80px rgb(39 0 8 / 30%);
+}
+
+.wedding-poster::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: .2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M24 0 48 24 24 48 0 24Z M24 9 39 24 24 39 9 24Z' fill='none' stroke='%23d59b61' stroke-opacity='.2' stroke-width='.6'/%3E%3C/svg%3E");
+  content: "";
+  pointer-events: none;
+}
+
+.poster-border {
+  position: absolute;
+  inset: 12px;
+  border: 1px solid var(--gold-line);
+  pointer-events: none;
+}
+
+.poster-border::before { position: absolute; inset: 5px; border: 1px solid rgb(235 191 119 / 20%); content: ""; }
+.poster-border i { position: absolute; width: 19px; height: 19px; border: 3px double var(--gold); background: var(--red); }
+.poster-border i:nth-child(1) { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.poster-border i:nth-child(2) { top: -1px; right: -1px; border-left: 0; border-bottom: 0; }
+.poster-border i:nth-child(3) { bottom: -1px; left: -1px; border-right: 0; border-top: 0; }
+.poster-border i:nth-child(4) { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+.peony { position: absolute; z-index: -1; width: 230px; color: #d99e64; opacity: .62; pointer-events: none; }
+.peony--left { top: -12px; left: -74px; transform: rotate(24deg); }
+.peony--right { top: -15px; right: -82px; transform: scaleX(-1) rotate(24deg); }
+
+.masthead { display: flex; align-items: center; justify-content: center; gap: 22px; color: var(--gold); font-size: 11px; letter-spacing: .32em; }
+.masthead__seal { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--gold-line); font-size: 20px; line-height: 1; letter-spacing: 0; }
+
+.poster-grid {
+  display: grid;
+  grid-template-columns: 1.12fr 1fr;
+  grid-template-areas: "portrait heading" "portrait invitation";
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  column-gap: 36px;
+  margin-top: 20px;
+}
+
+.poster-heading { grid-area: heading; text-align: center; padding-top: 24px; }
+.eyebrow { color: var(--gold); font-size: 11px; line-height: 1.5; }
+h1 { margin: 14px 0 10px; font-size: clamp(50px, 6.2vw, 72px); font-weight: 400; line-height: 1.12; letter-spacing: .055em; text-shadow: 0 2px 0 rgb(84 15 22 / 25%); }
+h1 span { margin-left: .12em; }
+.heading-note { font-size: 12px; letter-spacing: .3em; color: var(--gold); }
+
+.portrait-stage { grid-area: portrait; position: relative; width: 100%; height: 520px; margin-top: 6px; }
+.portrait-halo { position: absolute; top: 35px; left: 50%; width: 104%; aspect-ratio: 1; transform: translateX(-50%); border: 1px solid rgb(235 191 119 / 20%); border-radius: 50%; }
+.portrait-halo::before { position: absolute; inset: 9px; border: 1px dashed rgb(235 191 119 / 18%); border-radius: inherit; content: ""; }
+.portrait-main { position: absolute; top: 8px; left: 50%; width: 78%; height: 474px; transform: translateX(-50%); padding: 6px; border: 1px solid var(--gold); border-radius: 180px 180px 3px 3px; background: #a82c31; box-shadow: 0 12px 30px rgb(61 6 17 / 28%); }
+.portrait-main img { border-radius: 170px 170px 0 0; object-position: 50% 38%; }
+.portrait-main::after { position: absolute; inset: 10px; border: 1px solid rgb(255 229 172 / 35%); border-radius: 170px 170px 0 0; content: ""; pointer-events: none; }
+
+.portrait-verse { position: absolute; top: 115px; z-index: 1; writing-mode: vertical-rl; font-size: 13px; line-height: 1.5; letter-spacing: .5em; color: var(--gold); }
+.portrait-verse--left { left: 0; }
+.portrait-verse--right { right: 0; }
+.portrait-inset { position: absolute; bottom: 2px; right: -5px; z-index: 2; width: 52%; padding: 5px 5px 0; background: #f1d3a0; box-shadow: 0 6px 18px rgb(57 5 16 / 28%); transform: rotate(5deg); }
+.portrait-inset img { aspect-ratio: 1.5; height: auto; }
+.portrait-inset figcaption { padding: 7px 0 8px; color: #76202a; text-align: center; font-size: 10px; letter-spacing: .13em; }
+.portrait-seal { position: absolute; bottom: 39px; left: 7px; z-index: 2; padding: 9px 7px; border: 1px solid var(--gold); box-shadow: inset 0 0 0 3px var(--red), inset 0 0 0 4px var(--gold-line); background: var(--red); font-size: 17px; line-height: 1.3; letter-spacing: .14em; transform: rotate(-7deg); }
+.cloud { position: absolute; z-index: 1; width: 124px; color: var(--gold); opacity: .6; pointer-events: none; }
+.cloud--left { top: 49px; left: -27px; animation: cloud-settle 4.5s ease-out both; }
+.cloud--right { right: -28px; bottom: 100px; transform: scaleX(-1); }
+
+.invitation-copy { grid-area: invitation; text-align: center; padding-top: 24px; }
+.couple-names { display: flex; align-items: center; justify-content: center; gap: 30px; }
+.couple-names p { display: flex; flex-direction: column; gap: 6px; min-width: 105px; }
+.couple-names p > span { color: var(--gold); font-size: 10px; letter-spacing: .3em; }
+.couple-names strong { font-size: 30px; letter-spacing: .12em; text-indent: .12em; white-space: nowrap; }
+.couple-knot { margin-top: 13px; font-size: 24px; color: var(--gold); }
+.invitation-line { margin-top: 15px; font-size: 11px; line-height: 1.8; color: #f1cea0; }
+
+.wedding-facts { display: grid; grid-template-columns: 1.15fr 1fr; margin-top: 22px; border-top: 1px solid var(--gold-line); }
+.wedding-facts > div { padding: 16px 5px; }
+.wedding-facts dt { color: var(--gold); font-size: 10px; letter-spacing: .14em; }
+.wedding-facts dd { margin-top: 9px; }
+.wedding-facts__date { position: relative; }
+.wedding-facts__date::after { position: absolute; top: 19px; bottom: 19px; right: 0; width: 1px; background: var(--gold-line); content: ""; }
+.wedding-facts__date time { display: flex; flex-direction: column; gap: 3px; }
+.date-year { font-size: 12px; letter-spacing: .1em; }
+.wedding-facts__date strong { font-family: Georgia, "Poster Songti", serif; font-size: 33px; font-variant-numeric: lining-nums tabular-nums; }
+.wedding-facts__date strong span { margin: 0 4px; font-family: "Poster Songti", serif; font-size: 13px; }
+.date-weekday { display: block; margin-top: 5px; font-size: 10px; letter-spacing: .18em; }
+.time-period { display: block; margin-bottom: 3px; font-size: 12px; }
+.wedding-facts__time time { font-family: Georgia, serif; font-size: 36px; line-height: 1.2; font-variant-numeric: lining-nums tabular-nums; }
+.wedding-facts .wedding-facts__venue { grid-column: 1 / -1; border-top: 1px solid var(--gold-line); border-bottom: 1px solid var(--gold-line); padding: 13px 4px 15px; }
+.wedding-facts__venue dd { display: flex; align-items: baseline; justify-content: center; gap: 12px; }
+.wedding-facts__venue dd > span { font-size: 13px; }
+.wedding-facts__venue strong { font-size: 25px; letter-spacing: .1em; }
+.invitation-note { margin-top: 14px; color: #f1cea0; font-size: 10px; line-height: 1.9; letter-spacing: .07em; }
+
+.memories { position: relative; margin-top: 29px; }
+.memories h2 { display: flex; align-items: center; justify-content: center; gap: 13px; margin-bottom: 13px; color: var(--gold); font-size: 11px; font-weight: 400; letter-spacing: .24em; }
+.memories h2::before, .memories h2::after { height: 1px; flex: 1; background: var(--gold-line); content: ""; }
+.memories h2 i { width: 4px; height: 4px; background: var(--gold); transform: rotate(45deg); }
+.memory-strip { display: grid; grid-template-columns: 1fr 1.4fr 1fr 1fr 1fr; gap: 8px; }
+.memory-strip figure { height: 134px; padding: 3px; border: 1px solid var(--gold-line); background: var(--red-deep); }
+.memory-strip img { object-position: 50% 37%; }
+.memory-strip figure:nth-child(2) img { object-position: 50% 45%; }
+.memory-strip figure:nth-child(3) img { object-position: 50% 25%; }
+.memory-strip figure:nth-child(4) img { object-position: 50% 20%; }
+.poster-footer { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 20px; color: var(--gold); font-size: 10px; letter-spacing: .3em; }
+.poster-footer > span:nth-child(2) { font-size: 12px; }
+
+@keyframes cloud-settle {
+  from { translate: -12px 0; }
+  to { translate: 0 0; }
+}
+
+@media (max-width: 900px) and (min-width: 601px) {
+  body { padding: 16px; }
+  .wedding-poster { padding: 28px 35px 24px; }
+  .poster-grid { column-gap: 22px; grid-template-columns: 1fr 1fr; }
+  .poster-heading { padding-top: 14px; }
+  h1 { font-size: 46px; }
+  .portrait-stage { align-self: center; height: 450px; }
+  .portrait-main { top: 25px; height: 390px; width: 88%; }
+  .portrait-verse { top: 6px; writing-mode: horizontal-tb; font-size: 9px; letter-spacing: .15em; }
+  .portrait-verse--left { left: 3%; }
+  .portrait-verse--right { right: 3%; }
+  .portrait-seal { left: -5px; bottom: 16px; font-size: 14px; }
+  .portrait-inset { right: -4px; width: 62%; }
+  .couple-names { gap: 16px; }
+  .couple-names p { min-width: 85px; }
+  .couple-names strong { font-size: 25px; }
+  .invitation-copy { padding-top: 22px; }
+  .invitation-line { font-size: 10px; }
+  .wedding-facts { margin-top: 14px; }
+  .wedding-facts__venue strong { font-size: 21px; }
+  .memory-strip figure { height: 108px; }
+}
+
+@media (max-width: 600px) {
+  body { padding: 0; }
+  .wedding-poster { padding: 22px 28px max(22px, env(safe-area-inset-bottom)); }
+  .poster-border { inset: 9px; }
+  .poster-border::before { inset: 4px; }
+  .peony { width: 156px; opacity: .6; }
+  .peony--left { top: -8px; left: -65px; }
+  .peony--right { top: -8px; right: -65px; }
+  .masthead { gap: 17px; font-size: 9px; }
+  .masthead__seal { width: 24px; height: 24px; font-size: 16px; }
+  .poster-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: "heading" "portrait" "invitation"; gap: 0; margin-top: 16px; }
+  .poster-heading { padding: 0; }
+  .eyebrow { font-size: 9px; }
+  h1 { margin: 8px 0 8px; font-size: clamp(43px, 12vw, 60px); letter-spacing: .12em; text-indent: .12em; }
+  h1 span { margin-left: .08em; }
+  .heading-note { font-size: 10px; letter-spacing: .3em; }
+  .portrait-stage { width: min(100%, 380px); height: 304px; justify-self: center; margin-top: 15px; }
+  .portrait-halo { top: 17px; width: 94%; }
+  .portrait-main { top: 0; width: 70%; height: 282px; padding: 4px; }
+  .portrait-main::after { inset: 7px; }
+  .portrait-main img { object-position: 50% 31%; }
+  .portrait-verse { top: 73px; font-size: 11px; letter-spacing: .35em; }
+  .portrait-verse--left { left: 8px; }
+  .portrait-verse--right { right: 8px; }
+  .portrait-inset { bottom: 2px; right: 4px; width: 40%; padding: 3px 3px 0; transform: rotate(5deg); }
+  .portrait-inset figcaption { padding: 4px 0 5px; font-size: 8px; letter-spacing: .04em; }
+  .portrait-seal { bottom: 18px; left: 15px; padding: 7px 5px; font-size: 13px; }
+  .cloud { width: 94px; }
+  .cloud--left { top: 33px; left: -10px; }
+  .cloud--right { right: -10px; bottom: 75px; }
+  .invitation-copy { padding-top: 14px; }
+  .couple-names { gap: 26px; }
+  .couple-names p { min-width: 90px; gap: 4px; }
+  .couple-names p > span { font-size: 9px; }
+  .couple-names strong { font-size: 27px; }
+  .couple-knot { font-size: 21px; }
+  .invitation-line { margin-top: 8px; font-size: 10px; }
+  .wedding-facts { margin-top: 13px; }
+  .wedding-facts > div { padding: 11px 3px; }
+  .wedding-facts dt { font-size: 9px; }
+  .wedding-facts dd { margin-top: 6px; }
+  .wedding-facts__date dd { position: relative; }
+  .wedding-facts__date time { gap: 0; }
+  .date-year, .time-period { font-size: 10px; }
+  .wedding-facts__date strong { font-size: 29px; line-height: 1.35; }
+  .wedding-facts__date strong span { font-size: 12px; }
+  .date-weekday { margin-top: 1px; font-size: 9px; }
+  .wedding-facts__time time { font-size: 33px; }
+  .wedding-facts .wedding-facts__venue { padding: 10px 3px 12px; }
+  .wedding-facts__venue dd { margin-top: 5px; gap: 10px; }
+  .wedding-facts__venue dd > span { font-size: 12px; }
+  .wedding-facts__venue strong { font-size: 23px; }
+  .invitation-note { margin-top: 10px; font-size: 9px; line-height: 1.8; }
+  .memories { margin-top: 18px; }
+  .memories h2 { margin-bottom: 9px; font-size: 9px; gap: 9px; }
+  .memory-strip { gap: 5px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .memory-strip figure { height: clamp(78px, 24vw, 126px); padding: 2px; }
+  .memory-strip figure:nth-child(2) img { object-position: 72% 50%; }
+  .poster-footer { margin-top: 15px; font-size: 9px; }
+}
+
+@media (max-width: 360px) {
+  .wedding-poster { padding-right: 23px; padding-left: 23px; }
+  .portrait-stage { height: 275px; }
+  .portrait-main { height: 255px; }
+  .portrait-verse--left { left: 3px; }
+  .portrait-verse--right { right: 3px; }
+  .couple-names { gap: 19px; }
+  .couple-names strong { font-size: 25px; }
+  .invitation-line { font-size: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; }
+}
+
+@media print {
+  @page { size: A4 portrait; margin: 0; }
+  :root, body { background: var(--red); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  body { padding: 0; }
+  .wedding-poster { width: 100%; box-shadow: none; break-inside: avoid; }
+  .cloud { animation: none; }
+}
